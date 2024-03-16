@@ -1,7 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import {UserModel, ClientModel} from '../models';
-
-
+import {Client, User} from '../models';
 
 const connection = new Sequelize({
   database: process.env.DB_NAME,
@@ -10,39 +8,17 @@ const connection = new Sequelize({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   dialect: 'postgres',
-  models: [UserModel, ClientModel],
+  models: [User, Client],
   storage: ':memory:',
-  logging: false
 });
 
 async function connect() {
   try {
-    await connection.sync();
+    await connection.sync({alter: true});
     console.log('Connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
 }
 
-export default connection;
-
-// const {initializeUser} = UserModel;
-// const {initializeClient} = ClientModel;
-
-// // Replace the following with database connection string
-// const sequelize = new Sequelize('database', 'username', 'password', {
-//   host: 'localhost',
-//   dialect: 'postgres',
-// });
-
-// initializeUser(sequelize);
-// initializeClient(sequelize);
-
-// establishRelations();
-
-// export default sequelize;
-
-
-
-// alter: true
-
+export default connect;

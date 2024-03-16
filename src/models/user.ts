@@ -1,73 +1,52 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany } from 'sequelize-typescript';
+import { Optional } from 'sequelize';
+import { Client } from './index';
 
-export interface UserAttributes {
+interface UserAttributes {
     id: string;
     name: string;
     email: string;
     password: string;
     role: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-    deletedAt?: Date;
     activeDB?: boolean;
 }
 
-export class User extends Model {
-    public id!: string;
-    public name!: string;
-    public email!: string;
-    public password!: string;
-    public role!: string;
-    public createdAt!: Date;
-    public updatedAt!: Date;
-    public deletedAt!: Date;
-    public activeDB!: boolean;
-}
+export interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 
-export function initializeUser(sequelize: Sequelize): void {
-    User.init({
-        id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            primaryKey: true,
-        },
-        name: {
-            type: new DataTypes.STRING(128),
-            allowNull: false,
-        },
-        email: {
-            type: new DataTypes.STRING(128),
-            allowNull: false,
-        },
-        password: {
-            type: new DataTypes.STRING(128),
-            allowNull: false,
-        },
-        role: {
-            type: new DataTypes.STRING(128),
-            allowNull: false,
-        },
-        createdAt: {
-            type: DataTypes.DATE,
-            defaultValue: new Date(),
-            allowNull: true,
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: true,
-        },
-        deletedAt: {
-            type: DataTypes.DATE,
-            allowNull: true,
-        },
-        activeDB: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: true,
-        },
-    }, {
-        tableName: 'user',
-        sequelize,
-        timestamps: true,
-        paranoid: true,
-    });
+@Table({
+  tableName: 'user',
+  timestamps: true,
+  paranoid: true,
+})
+export class User extends Model<UserAttributes, UserCreationAttributes> {
+
+  @Column(DataType.STRING(128))
+  public name!: string;
+
+  @Column(DataType.STRING(128))
+  public email!: string;
+
+  @Column(DataType.STRING(128))
+  public password!: string;
+
+  @Column(DataType.STRING(128))
+  public role!: string;
+
+  @CreatedAt
+  @Column(DataType.DATE)
+  public createdAt!: Date;
+
+  @UpdatedAt
+  @Column(DataType.DATE)
+  public updatedAt!: Date;
+
+  @DeletedAt
+  @Column(DataType.DATE)
+  public deletedAt!: Date;
+
+  @Column(DataType.BOOLEAN)
+  public activeDB?: boolean;
+
+  @HasMany(() => Client)
+  public clients!: Client[];
 }

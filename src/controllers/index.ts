@@ -1,7 +1,7 @@
-import * as usersController from './users';
-import * as clientsController from './clients';
+// import * as usersController from './users';
+// import * as clientsController from './clients';
 
-export {
-    usersController,
-    clientsController
-}
+// export {
+//     usersController,
+//     clientsController
+// }

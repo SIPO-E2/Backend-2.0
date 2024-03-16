@@ -1,6 +1,7 @@
 import express, {Application} from 'express';
 // import fileUpload from 'express-fileupload';
-import {routerUser, routerClient} from '../routes';
+import dbConnection from '../db/config';
+// import {routerUser, routerClient} from '../routes';
 // import cors from 'cors';
 
     class Server  {
@@ -21,16 +22,24 @@ import {routerUser, routerClient} from '../routes';
         this.port = process.env.PORT;
 
         // DB
-        // this.dbConnection();
+        this.databaseConnect();
 
         // middlewares
         this.middlewares();
         // routes
-        this.routes();
+        // this.routes();
         
 
     }
 
+    async databaseConnect(){
+        try {
+            await dbConnection();
+            console.log('DB connected');
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     middlewares(){
 
@@ -47,16 +56,16 @@ import {routerUser, routerClient} from '../routes';
         // }));
     }
 
-    routes(){
-        //TODO: upload
-        this.app.use(this.routePaths.users, routerUser);
-        this.app.use(this.routePaths.clients, routerClient);
-        // this.app.use(this.routePaths.projects, routerProject);
-        // this.app.use(this.routePaths.jobPositions, routerJobPosition);
-        // this.app.use(this.routePaths.openings, routerOpening);
-        // this.app.use(this.routePaths.employees, routerEmployee);
+    // routes(){
+    //     //TODO: upload
+    //     this.app.use(this.routePaths.users, routerUser);
+    //     this.app.use(this.routePaths.clients, routerClient);
+    //     // this.app.use(this.routePaths.projects, routerProject);
+    //     // this.app.use(this.routePaths.jobPositions, routerJobPosition);
+    //     // this.app.use(this.routePaths.openings, routerOpening);
+    //     // this.app.use(this.routePaths.employees, routerEmployee);
 
-    }
+    // }
 
 
     listen(){

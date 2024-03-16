@@ -1,5 +1,5 @@
-import * as UserModel from "./user";
+import {User, UserCreationAttributes} from "./user";
 import Server from "./server";
-import * as ClientModel from "./client";
+import {Client, ClientCreationAttributes} from "./client";
 
-export { Server, UserModel, ClientModel };
+export { Server, User, Client, UserCreationAttributes, ClientCreationAttributes};
