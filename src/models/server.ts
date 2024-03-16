@@ -22,6 +22,7 @@ import {routerUser, routerClient} from '../routes';
 
         // DB
         // this.dbConnection();
+
         // middlewares
         this.middlewares();
         // routes
@@ -29,6 +30,7 @@ import {routerUser, routerClient} from '../routes';
         
 
     }
+
 
     middlewares(){
 
