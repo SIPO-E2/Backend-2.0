@@ -93,3 +93,71 @@ export const createJobPosition = async (req: Request, res: Response) => {
       });
     });
 };
+
+// Update a job position
+export const updateJobPosition = async (req: Request, res: Response) => {
+  // We get the id from the request parameters, we get it from the URL
+  const { id } = req.params;
+  // We get the data from the request body
+  const {
+    name,
+    bill_rate,
+    posting_type,
+    division,
+    skills_position,
+    region,
+    exclusivity,
+    demand_curation,
+    cross_division,
+    image_url,
+  } = req.body;
+
+  try {
+    // We use the method update to update the job position by its id
+    // updateCount is the number of updated rows
+    const [updateCount] = await JobPosition.update(
+      {
+        name,
+        bill_rate,
+        posting_type,
+        division,
+        skills_position,
+        region,
+        exclusivity,
+        demand_curation,
+        cross_division,
+        image_url,
+      },
+      { where: { ID: id } } // Ensure this ID matches your database column name, Sequelize is case-sensitive
+    );
+
+    // If no rows were updated, return an error
+    if (updateCount === 0) {
+      return res.json({
+        status: "error",
+        message: "Job position not found or no data updated",
+      });
+    }
+
+    // After successfully updating, fetch and return the updated job position
+    const updatedJobPosition = await JobPosition.findByPk(id);
+    if (!updatedJobPosition) {
+      return res.json({
+        status: "error",
+        message: "Job position not found",
+      });
+    }
+
+    res.json({
+      status: "success",
+      message: "Job position updated",
+      data: updatedJobPosition,
+    });
+  } catch (e) {
+    res.json({
+      status: "error",
+      message: "Job position not updated",
+      error: e,
+    });
+  }
+};
