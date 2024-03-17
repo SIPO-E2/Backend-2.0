@@ -1,15 +1,16 @@
 import { Sequelize } from 'sequelize-typescript';
 import {User} from '../models/user';
 import {Client} from '../models/client';
+import { Opening } from '../models/opening';
 
 const connection = new Sequelize({
   database: "sipo",
-  username: "ivan",
-  password: "medina",
+  username: "sisweb_user",
+  password: "HDK#$%Ljkwerff.89",
   host: "localhost",
   port: 5432,
   dialect: 'postgres',
-  models: [User, Client],
+  models: [User, Client, Opening],
   storage: ':memory:',
 });
 

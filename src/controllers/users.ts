@@ -104,7 +104,7 @@ export const putUser = async(req: Request, res: Response) => {
 export const deleteUser = async(req: Request, res: Response) => {
     const { id } = req.params;
 
-    const user = await User.update({ activeDB: false}, { where: { id }}).then(
+    await User.update({ activeDB: false}, { where: { id }}).then(
         user => {
             res.json({
                 status: "success",
