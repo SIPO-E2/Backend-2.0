@@ -1,4 +1,4 @@
-import routerUser from './users.js';
+import routerUser from './users';
 import routerClient from './clients';
 
 export {
