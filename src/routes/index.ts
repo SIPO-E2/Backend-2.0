@@ -1,9 +1,15 @@
 import routerUser from "./users";
 import routerClient from "./clients";
+import routerProject from './projects.js'
 import routerJobPosition from "./jobPosition";
-import routerEmployee from './employees';
 import routerOpening from './openings.js';
+import routerEmployee from './employees';
 
-export { routerUser, routerClient,
+export { 
+    routerUser, 
+    routerClient,
+    routerProject,
+    routerJobPosition, 
+    routerOpening, 
     routerEmployee,
-    routerOpening, routerJobPosition };
+};

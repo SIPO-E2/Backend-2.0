@@ -1,9 +1,10 @@
 import { Sequelize } from 'sequelize-typescript';
 import {User} from '../models/user';
 import {Client} from '../models/client';
+import {Project} from '../models/project';
+import { JobPosition } from '../models/jobPosition';
 import { Opening } from '../models/opening';
 import { Employee } from '../models/employee';
-import { JobPosition } from '../models/jobPosition';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -14,6 +15,7 @@ dotenv.config();
 
 // Hector   "hector" "cehn22za02"
 
+// Camila  "camila" "tititoto"
 
 const connection = new Sequelize({
   database: process.env.DB_NAME,
@@ -22,7 +24,7 @@ const connection = new Sequelize({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   dialect: 'postgres',
-  models: [User, Client, Employee, Opening, JobPosition],
+  models: [User, Client, Project, JobPosition, Opening,  Employee],
   storage: ':memory:',
 });
 

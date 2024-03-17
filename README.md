@@ -2,9 +2,7 @@
 
 # TODOs:
 - <Model>CreationAttributes export is it necessary?
-- Employee Relations
-- User - Role Relation
-- Client - Project Relation
+- Made the relations from the DBDiagram
 - function controllers name
 - db config models import bug
 

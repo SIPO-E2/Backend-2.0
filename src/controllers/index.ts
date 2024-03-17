@@ -1,13 +1,16 @@
 import * as usersController from "./users";
-import * as openingController from './openings';
 import * as clientsController from './clients';
-import * as employeesController from './employees';
+import * as projectsController from './projects'
 import * as jobPositionsController from "./jobPosition";
+import * as openingController from './openings';
+import * as employeesController from './employees';
+
 
 export {
     usersController,
-    openingController,
     clientsController,
-    employeesController,
     jobPositionsController,
+    projectsController,
+    openingController,
+    employeesController,
 };
