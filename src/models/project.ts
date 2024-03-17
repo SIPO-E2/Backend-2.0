@@ -5,6 +5,8 @@ import { User } from './user';
 
 interface ProjectAttributes{
     id: number;
+    user_id: number;
+    client_id: number;
     name: string;
     status: number;
     revenue: number;
@@ -13,7 +15,7 @@ interface ProjectAttributes{
     exp_closure_date: Date;
     image: string;
     owner: User;
-    //client: Client;
+    client: Client;
     //job_positions: JobPosition[];
     activeDB?: boolean;
 }
@@ -49,20 +51,38 @@ export class Project extends Model<ProjectAttributes, ProjectCreationAttributes>
     @Column(DataType.STRING)
     public image!: string;
 
-    //Has one Client
-    //@BelongsTo(() => Client)
-    //public client!: Client;
+    @CreatedAt
+    @Column
+    public createdAt!: Date;
+  
+    @UpdatedAt
+    @Column
+    public updatedAt!: Date;
+  
+    @DeletedAt
+    @Column
+    public deletedAt!: Date;
+
+    // Default true
+    @Column({ type:DataType.BOOLEAN, defaultValue: true })
+    public activeDB?: boolean;
 
     // Foreign key user
     @ForeignKey(() => User)
     @Column(DataType.INTEGER)
     public user_id!: number;
 
+    //Has one User
+    @BelongsTo(() => User)
+    public owner!: User;
+    
     // Foreign key client
-    //@ForeignKey(() => Client)
-    //@Column(DataType.INTEGER)
-    //public client_id!: number;
+    @ForeignKey(() => Client)
+    @Column(DataType.INTEGER)
+    public client_id!: number;
 
-   
-
+    //Has one Client
+    @BelongsTo(() => Client)
+    public client!: Client;
+    
 }
