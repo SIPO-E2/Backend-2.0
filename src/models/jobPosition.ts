@@ -3,10 +3,14 @@ import {
   Column,
   Model,
   DataType,
-  HasMany,
+  AllowNull,
+  CreatedAt,
+  UpdatedAt,
+  DeletedAt,
   ForeignKey,
   BelongsTo,
 } from "sequelize-typescript";
+
 import { Optional } from "sequelize";
 //import { Opening } from "./opening";
 //import { Project } from "./project";
@@ -37,6 +41,8 @@ interface JobPositionAttributes {
   //openings_list: Opening[];
   //project: Project;
   image_url: string;
+  // So we can use soft delete
+  activeDB?: boolean;
 }
 
 // Interfaz para creación donde el ID puede ser opcional
@@ -88,6 +94,9 @@ export class JobPosition extends Model<
   @Column({ type: DataType.BOOLEAN, allowNull: false })
   cross_division!: boolean;
 
+  @Column({ type: DataType.STRING, allowNull: true })
+  image_url!: string;
+
   //@HasMany(() => Opening)
   //openings_list!: Opening[];
 
@@ -98,6 +107,19 @@ export class JobPosition extends Model<
   //@BelongsTo(() => Project)
   //project!: Project;
 
-  @Column({ type: DataType.STRING, allowNull: true })
-  image_url!: string;
+  @CreatedAt
+  @Column(DataType.STRING)
+  public createdAt!: Date;
+
+  @UpdatedAt
+  @Column
+  public updatedAt!: Date;
+
+  @DeletedAt
+  @Column(DataType.DATE)
+  public DeletedAt!: Date;
+
+  // So we can use soft delete
+  @Column(DataType.BOOLEAN)
+  public activeDB?: boolean;
 }

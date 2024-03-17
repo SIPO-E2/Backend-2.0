@@ -161,3 +161,33 @@ export const updateJobPosition = async (req: Request, res: Response) => {
     });
   }
 };
+
+// Soft Delete a job position
+export const deleteJobPosition = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const updated = await JobPosition.update(
+      { activeDB: false },
+      { where: { ID: id } }
+    );
+
+    if (updated[0] === 0) {
+      return res.json({
+        status: "error",
+        message: "Job position not found",
+      });
+    }
+
+    res.json({
+      status: "success",
+      message: "Job position deleted",
+    });
+  } catch (e) {
+    res.json({
+      status: "error",
+      message: "Job position not deleted",
+      error: e.toString(),
+    });
+  }
+};
