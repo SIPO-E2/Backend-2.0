@@ -8,7 +8,13 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
   // Example: /job-positions?from=0&limit=5
   const { from = 0, to = 5 } = req.query;
 
+  // findAll works to get all the job positions from the db
+  // We use the offset and limit options to paginate the results
+  // offset is the number of records to skip
+  // limit is the number of records to return
+  // So in this case we are returning every 5 job positions
   await JobPosition.findAll({ offset: Number(from), limit: Number(to) })
+    // if the promise is resolved, we get the job positions and we write the response in JSON format
     .then((jobPosition) => {
       res.json({
         status: "success",
@@ -31,6 +37,7 @@ export const getJobPositionById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   // We use the method findByPk to find the job position by its id
+  // findByPk works with the primary key of the table
   await JobPosition.findByPk(id)
     .then((jobPosition) => {
       // We wrtite the response in JSON format
