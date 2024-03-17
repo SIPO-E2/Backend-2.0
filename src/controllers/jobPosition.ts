@@ -24,3 +24,27 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
       });
     });
 };
+
+// Get job position by id
+export const getJobPositionById = async (req: Request, res: Response) => {
+  // We get the id from the request parameters, we get it from the URL
+  const { id } = req.params;
+
+  // We use the method findByPk to find the job position by its id
+  await JobPosition.findByPk(id)
+    .then((jobPosition) => {
+      // We wrtite the response in JSON format
+      res.json({
+        status: "success",
+        message: "Job position found",
+        data: jobPosition,
+      });
+    })
+    .catch((e) => {
+      res.json({
+        status: "error",
+        message: "Job position not found",
+        error: e,
+      });
+    });
+};
