@@ -33,18 +33,19 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   public role!: string;
 
   @CreatedAt
-  @Column(DataType.DATE)
+  @Column
   public createdAt!: Date;
 
   @UpdatedAt
-  @Column(DataType.DATE)
+  @Column
   public updatedAt!: Date;
 
   @DeletedAt
-  @Column(DataType.DATE)
+  @Column
   public deletedAt!: Date;
 
-  @Column(DataType.BOOLEAN)
+  // Default true
+  @Column({ type:DataType.BOOLEAN, defaultValue: true })
   public activeDB?: boolean;
 
   @HasMany(() => Client)

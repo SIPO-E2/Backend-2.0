@@ -2,15 +2,24 @@ import { Sequelize } from 'sequelize-typescript';
 import {User} from '../models/user';
 import {Client} from '../models/client';
 import { Opening } from '../models/opening';
+import { Employee } from '../models/employee';
+import dotenv from 'dotenv';
+dotenv.config();
+
+// Daniela
+//  daniela Abelanda22
+
+
+// Uma "sisweb_user" "HDK#$%Ljkwerff.89"
 
 const connection = new Sequelize({
-  database: "sipo",
-  username: "sisweb_user",
-  password: "HDK#$%Ljkwerff.89",
-  host: "localhost",
-  port: 5432,
+  database: process.env.DB_NAME,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
   dialect: 'postgres',
-  models: [User, Client, Opening],
+  models: [User, Client, Employee, Opening],
   storage: ':memory:',
 });
 

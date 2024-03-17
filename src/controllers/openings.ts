@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { Opening } from '../models/opening';
-
 import {OpeningCreationAttributes} from '../models/opening';
 
 
@@ -44,7 +43,7 @@ export const getOpening = async(req: Request, res: Response) => {
         e => {
             res.json({
                 status: "error",
-                message: "User not found",
+                message: "Opening not found",
                 error: e
             });
         }
@@ -54,7 +53,7 @@ export const getOpening = async(req: Request, res: Response) => {
 
 // Creating a opening
 export const createOpening = async(req: Request, res: Response) => {
-    const { status_opening, open_date, close_date, close_reason, hours_required } = req.body;
+    const { status_opening, open_date, close_date, close_reason, hours_required }:OpeningCreationAttributes = req.body;
     
     await Opening.create({ status_opening, open_date, close_date, close_reason, hours_required }).then(
         opening => {
@@ -80,18 +79,19 @@ export const editOpening = async(req: Request, res: Response) => {
     const { id } = req.params;
 
     await Opening.update({...req.body}, { where: { id } }).then(
-        opening => {
+        async () => {
+            const openingUpdated = await Opening.findByPk(id);
             res.json({
                 status: "success",
                 message: "Opening updated",
-                data: opening,
+                data: openingUpdated,
             });
         }
     ).catch(
         e => {
             res.json({
                 status: "error",
-                message: "User not updated",
+                message: "Opening not updated",
                 error: e
             });
         }
@@ -104,18 +104,24 @@ export const editOpening = async(req: Request, res: Response) => {
 // Deleting a user (soft delete)
 export const deleteOpening = async (req: Request, res: Response) => {
     const { id } = req.params;
-    try {
-        const opening = await Opening.destroy({ where: { id } });
-        res.json({
-            status: "success",
-            message: "Opening deleted",
-            data: opening,
-        });
-    } catch (e) {
-        res.json({
-            status: "error",
-            message: "Opening not deleted",
-            error: e
-        });
-    }
+
+    await Opening.update({ activeDB: false}, { where: { id }}).then(
+        () => {
+            res.json({
+                status: "success",
+                message: "Opening deleted",
+                data: {
+                    id
+                },
+            });
+        }
+    ).catch(
+        e => {
+            res.json({
+                status: "error",
+                message: "Opening not deleted",
+                error: e
+            });
+        }
+    );
 };

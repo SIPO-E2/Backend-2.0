@@ -13,6 +13,7 @@ interface OpeningAttributes {
     hours_required: number;
     // employee_id: number;
     // employee: Employee;
+    activeDB?: boolean;
 }
 
 export interface OpeningCreationAttributes extends Optional<OpeningAttributes, 'id'> {}
@@ -53,7 +54,7 @@ export class Opening extends Model<OpeningAttributes, OpeningCreationAttributes>
   
   
   @CreatedAt
-  @Column(DataType.STRING)
+  @Column
   public createdAt!: Date;
 
   @UpdatedAt
@@ -61,6 +62,10 @@ export class Opening extends Model<OpeningAttributes, OpeningCreationAttributes>
   public updatedAt!: Date;
 
   @DeletedAt
-  @Column(DataType.DATE)
+  @Column
   public DeletedAt!: Date;
+
+   // Default true
+   @Column({ type:DataType.BOOLEAN, defaultValue: true })
+   public activeDB?: boolean;
 }
