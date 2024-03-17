@@ -58,8 +58,9 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   public updatedAt!: Date;
 
   @DeletedAt
-  @Column(DataType.DATE)
-  public DeletedAt!: Date;
+  @Column
+  public deletedAt!: Date;
+
 
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
