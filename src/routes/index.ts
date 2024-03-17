@@ -1,7 +1,9 @@
-import routerUser from './users.js';
+import routerUser from './users';
 import routerClient from './clients';
+import routerEmployee from './employees';
 
 export {
     routerUser,
-    routerClient
+    routerClient,
+    routerEmployee
 }

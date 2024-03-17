@@ -1,21 +1,21 @@
 // Importaciones
 import { Router } from "express";
-// import { clientsController } from '../controllers';
+import { clientsController } from '../controllers';
 
 // Controllers
-// const {getClients, getClient, postClient, putClient, deleteClient} = clientsController;
+const {getClients, getClient, postClient, putClient, deleteClient} = clientsController;
 
 // Router
 const router:Router = Router();
 
-// router.get('/', getClients);
+router.get('/', getClients);
 
-// router.get('/:id', [], getClient);
+router.get('/:id', [], getClient);
 
-// router.post('/',[], postClient);
+router.post('/',[], postClient);
 
-// router.put('/:id', [], putClient);
+router.put('/:id', [], putClient);
 
-// router.delete('/:id', [], deleteClient);
+router.delete('/:id', [], deleteClient);
 
 export default router;
