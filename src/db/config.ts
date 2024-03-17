@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import {User} from '../models/user';
 import {Client} from '../models/client';
+import {Project} from '../models/project';
 
 const connection = new Sequelize({
   database: "sipo",
@@ -9,7 +10,7 @@ const connection = new Sequelize({
   host: "localhost",
   port: 5432,
   dialect: 'postgres',
-  models: [User, Client],
+  models: [User, Client, Project],
   storage: ':memory:',
 });
 

@@ -8,7 +8,7 @@ const {getAllProjects, getProjectById, postProject, putProject, deleteProject} =
 const router:Router = Router();
 
 
-router.get('/', getAllProjects);
+router.get('/api/projects', getAllProjects);
 
 router.get('/:id', [
 ], getProjectById);

@@ -2,6 +2,7 @@ import express, {Application} from 'express';
 // import fileUpload from 'express-fileupload';
 import dbConnection from '../db/config';
 import { routerUser } from '../routes';
+import { routerProject } from '../routes';
 // import cors from 'cors';
 
     class Server  {
@@ -60,7 +61,7 @@ import { routerUser } from '../routes';
         //TODO: upload
         this.app.use(this.routePaths.users, routerUser);
         
-        // this.app.use(this.routePaths.projects, routerProject);
+        this.app.use(this.routePaths.projects, routerProject);
         // this.app.use(this.routePaths.jobPositions, routerJobPosition);
         // this.app.use(this.routePaths.openings, routerOpening);
         // this.app.use(this.routePaths.employees, routerEmployee);
