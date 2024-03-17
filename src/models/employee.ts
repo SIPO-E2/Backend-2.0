@@ -39,7 +39,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   @Column(DataType.STRING(128))
   public email!: string;
 
-  @Column(DataType.NUMBER)
+  @Column(DataType.INTEGER)
   public cellphone!: number;
 
   @Column(DataType.STRING(128))
@@ -54,7 +54,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   @Column(DataType.STRING(128))
   public division!: string;
 
-  @Column(DataType.STRING(128))
+  @Column(DataType.ARRAY(DataType.STRING))
   public tech_stack!: string;
 
   @Column(DataType.STRING(128))
@@ -73,15 +73,15 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   public image_url!: string;
   
   @CreatedAt
-  @Column(DataType.DATE)
+  @Column
   public createdAt!: Date;
 
   @UpdatedAt
-  @Column(DataType.DATE)
+  @Column
   public updatedAt!: Date;
 
   @DeletedAt
-  @Column(DataType.DATE)
+  @Column
   public deletedAt!: Date;
 
   // Default true

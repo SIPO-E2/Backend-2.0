@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import {User} from '../models/user';
 import {Client} from '../models/client';
+import { Employee } from '../models/employee';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -14,7 +15,7 @@ const connection = new Sequelize({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   dialect: 'postgres',
-  models: [User, Client],
+  models: [User, Client, Employee],
   storage: ':memory:',
 });
 

@@ -58,7 +58,7 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   public updatedAt!: Date;
 
   @DeletedAt
-  @Column(DataType.DATE)
+  @Column
   public DeletedAt!: Date;
 
   // Default true

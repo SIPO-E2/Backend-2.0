@@ -81,8 +81,8 @@ export const putEmployee = async(req: Request, res: Response) => {
     const { ...resto } = req.body;
 
     await Employee.update(resto, { where: { id } }).then(
-        () => {
-            const updatedEmployee = Employee.findByPk(id);
+        async () => {
+            const updatedEmployee = await Employee.findByPk(id);
             res.json({
                 status: "success",
                 message: "Employee updated",

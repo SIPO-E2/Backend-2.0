@@ -6,6 +6,7 @@
 - User - Role Relation
 - Client - Project Relation
 - function controllers name
+- db config models import bug
 
 # Installations
 
