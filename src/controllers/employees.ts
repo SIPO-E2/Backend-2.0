@@ -55,9 +55,9 @@ export const getEmployee = async(req: Request, res: Response) => {
 
 // Creating a employee
 export const postEmployee = async(req: Request, res: Response) => {
-    const { name, email, password, role } = req.body;
+    const {  name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url } = req.body;
     
-    await Employee.create({ name, email, password, role }).then(
+    await Employee.create({  name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url}).then(
         (        employee: any) => {
             res.json({
                 status: "success",
