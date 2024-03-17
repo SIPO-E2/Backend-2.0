@@ -54,7 +54,7 @@ export const getUser = async(req: Request, res: Response) => {
 
 // Creating a user
 export const postUser = async(req: Request, res: Response) => {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role }:UserCreationAttributes = req.body;
     
     await User.create({ name, email, password, role }).then(
         user => {

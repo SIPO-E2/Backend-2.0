@@ -42,7 +42,6 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   @Column(DataType.NUMBER)
   public cellphone!: number;
 
-
   @Column(DataType.STRING(128))
   public job_title!: string;
 
@@ -71,7 +70,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   public reason_current_state!: string;
 
   @Column(DataType.STRING)
-  public image_url!: URL;
+  public image_url!: string;
   
   @CreatedAt
   @Column(DataType.DATE)
@@ -85,7 +84,8 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   @Column(DataType.DATE)
   public deletedAt!: Date;
 
-  @Column(DataType.BOOLEAN)
+  // Default true
+  @Column({ type:DataType.BOOLEAN, defaultValue: true })
   public activeDB?: boolean;
 
   //@HasMany(() => Client)
