@@ -55,9 +55,9 @@ export const getProjectById = async( req: Request, res:Response) =>{
 //Creating a project
 
 export const postProject = async(req: Request, res: Response) =>{
-    const{ name, status, revenue, owner, client, region, posting_date, exp_closure_date, image } = req.body;
+    const{ name, status, revenue, owner, region, posting_date, exp_closure_date, image } = req.body;
 
-    await Project.create({ name, status, revenue, owner, client, region, posting_date, exp_closure_date, image}).then(
+    await Project.create({ name, status, revenue, owner, region, posting_date, exp_closure_date, image}).then(
         project => {
             res.json({
                 status: "success",

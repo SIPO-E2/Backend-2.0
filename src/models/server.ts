@@ -1,7 +1,7 @@
 import express, {Application} from 'express';
 // import fileUpload from 'express-fileupload';
 import dbConnection from '../db/config';
-import { routerUser, routerClient } from '../routes';
+import { routerUser } from '../routes';
 // import cors from 'cors';
 
     class Server  {
@@ -10,7 +10,7 @@ import { routerUser, routerClient } from '../routes';
     // path for routes
     private routePaths = {
         users: '/api/users',
-        clients: '/api/clients',
+        //clients: '/api/clients',
         projects: '/api/projects',
         jobPositions: '/api/jobPositions',
         openings: '/api/openings',
@@ -59,7 +59,7 @@ import { routerUser, routerClient } from '../routes';
     routes(){
         //TODO: upload
         this.app.use(this.routePaths.users, routerUser);
-        this.app.use(this.routePaths.clients, routerClient);
+        
         // this.app.use(this.routePaths.projects, routerProject);
         // this.app.use(this.routePaths.jobPositions, routerJobPosition);
         // this.app.use(this.routePaths.openings, routerOpening);

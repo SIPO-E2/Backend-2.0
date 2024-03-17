@@ -13,7 +13,7 @@ interface ProjectAttributes{
     exp_closure_date: Date;
     image: string;
     owner: User;
-    client: Client;
+    //client: Client;
     //job_positions: JobPosition[];
     activeDB?: boolean;
 }
@@ -50,8 +50,8 @@ export class Project extends Model<ProjectAttributes, ProjectCreationAttributes>
     public image!: string;
 
     //Has one Client
-    @BelongsTo(() => Client)
-    public client!: Client;
+    //@BelongsTo(() => Client)
+    //public client!: Client;
 
     // Foreign key user
     @ForeignKey(() => User)
@@ -59,9 +59,9 @@ export class Project extends Model<ProjectAttributes, ProjectCreationAttributes>
     public user_id!: number;
 
     // Foreign key client
-    @ForeignKey(() => Client)
-    @Column(DataType.INTEGER)
-    public client_id!: number;
+    //@ForeignKey(() => Client)
+    //@Column(DataType.INTEGER)
+    //public client_id!: number;
 
    
 
