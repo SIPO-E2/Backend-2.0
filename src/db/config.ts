@@ -4,8 +4,8 @@ import {Client} from '../models/client';
 
 const connection = new Sequelize({
   database: "sipo",
-  username: "ivan",
-  password: "medina",
+  username: "camila",
+  password: "tititoto",
   host: "localhost",
   port: 5432,
   dialect: 'postgres',
