@@ -6,7 +6,7 @@ import {EmployeeCreationAttributes} from '../models/employee';
 
 
 // Getting employees
-export const getEmployees = async(req: Request, res: Response) => {
+export const getAllEmployees = async(req: Request, res: Response) => {
     const { from = 0, to = 5 } = req.query;
 
     // DB
@@ -29,7 +29,7 @@ export const getEmployees = async(req: Request, res: Response) => {
 }
 
 // Getting a employee
-export const getEmployee = async(req: Request, res: Response) => {
+export const getEmployeeById = async(req: Request, res: Response) => {
     const { id } = req.params;
 
     // DB

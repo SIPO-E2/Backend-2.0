@@ -39,7 +39,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   @Column(DataType.STRING(128))
   public email!: string;
 
-  @Column(DataType.NUMBER)
+  @Column(DataType.BIGINT)
   public cellphone!: number;
 
 
@@ -71,7 +71,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   public reason_current_state!: string;
 
   @Column(DataType.STRING)
-  public image_url!: URL;
+  public image_url!: string;
   
   @CreatedAt
   @Column(DataType.DATE)
