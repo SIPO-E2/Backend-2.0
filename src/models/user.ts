@@ -1,9 +1,9 @@
 import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
-import { Client } from './index';
+import { Client } from './client';
 
 interface UserAttributes {
-    id: string;
+    id: number;
     name: string;
     email: string;
     password: string;
@@ -50,3 +50,4 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @HasMany(() => Client)
   public clients!: Client[];
 }
+

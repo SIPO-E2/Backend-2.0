@@ -1,12 +1,12 @@
-// // Importaciones
-// import { Router } from "express";
+// Importaciones
+import { Router } from "express";
 // import { clientsController } from '../controllers';
 
-// // Controllers
+// Controllers
 // const {getClients, getClient, postClient, putClient, deleteClient} = clientsController;
 
-// // Router
-// const router:Router = Router();
+// Router
+const router:Router = Router();
 
 // router.get('/', getClients);
 
@@ -18,4 +18,4 @@
 
 // router.delete('/:id', [], deleteClient);
 
-// export default router;
+export default router;

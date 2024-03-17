@@ -1,13 +1,13 @@
 import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
-import { User } from './index';
+import { User } from './user';
 
 
 
 interface ClientAttributes {
-    id: string;
+    id: number;
     name: string;
-    user_id: string;
+    user_id: number;
     user: User;
     division: string;
     details?: string;
@@ -32,8 +32,8 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
 
   // Foreign key user
   @ForeignKey(() => User)
-  @Column(DataType.STRING)
-  public user_id!: string;
+  @Column(DataType.INTEGER)
+  public user_id!: number;
 
   // has one user
   @BelongsTo(() => User)

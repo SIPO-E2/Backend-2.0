@@ -1,7 +1,7 @@
 import express, {Application} from 'express';
 // import fileUpload from 'express-fileupload';
 import dbConnection from '../db/config';
-// import {routerUser, routerClient} from '../routes';
+import { routerUser, routerClient } from '../routes';
 // import cors from 'cors';
 
     class Server  {
@@ -27,7 +27,7 @@ import dbConnection from '../db/config';
         // middlewares
         this.middlewares();
         // routes
-        // this.routes();
+        this.routes();
         
 
     }
@@ -56,16 +56,16 @@ import dbConnection from '../db/config';
         // }));
     }
 
-    // routes(){
-    //     //TODO: upload
-    //     this.app.use(this.routePaths.users, routerUser);
-    //     this.app.use(this.routePaths.clients, routerClient);
-    //     // this.app.use(this.routePaths.projects, routerProject);
-    //     // this.app.use(this.routePaths.jobPositions, routerJobPosition);
-    //     // this.app.use(this.routePaths.openings, routerOpening);
-    //     // this.app.use(this.routePaths.employees, routerEmployee);
+    routes(){
+        //TODO: upload
+        this.app.use(this.routePaths.users, routerUser);
+        this.app.use(this.routePaths.clients, routerClient);
+        // this.app.use(this.routePaths.projects, routerProject);
+        // this.app.use(this.routePaths.jobPositions, routerJobPosition);
+        // this.app.use(this.routePaths.openings, routerOpening);
+        // this.app.use(this.routePaths.employees, routerEmployee);
 
-    // }
+    }
 
 
     listen(){

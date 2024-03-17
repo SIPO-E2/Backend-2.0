@@ -1,27 +1,27 @@
-// // Importaciones
-// import { Router } from "express";
-// import { usersController } from '../controllers';
 
-// // Cotrollers
-// const {getUsers, getUser, postUser, putUser, deleteUser} = usersController;
+import { Router } from "express";
+import { usersController } from '../controllers';
 
-// // Router
-// const router:Router = Router();
+// Controllers
+const {getUsers, getUser, postUser, putUser, deleteUser} = usersController;
 
-
-// router.get('/', getUsers);
-
-// router.get('/:id', [
-// ], getUser);
-
-// router.post('/',[
-// ], postUser);
-
-// router.put('/:id', [
-// ], putUser);
-
-// router.delete('/:id', [
-// ], deleteUser);
+// Router
+const router:Router = Router();
 
 
-// export default router;
+router.get('/', getUsers);
+
+router.get('/:id', [
+], getUser);
+
+router.post('/',[
+], postUser);
+
+router.put('/:id', [
+], putUser);
+
+router.delete('/:id', [
+], deleteUser);
+
+
+export default router;
