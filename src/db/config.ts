@@ -1,24 +1,24 @@
-import { Sequelize } from 'sequelize-typescript';
-import {User} from '../models/user';
-import {Client} from '../models/client';
+import { Sequelize } from "sequelize-typescript";
+import { User } from "../models/user";
+import { Client } from "../models/client";
 
 const connection = new Sequelize({
   database: "sipo",
-  username: "ivan",
-  password: "medina",
+  username: "hector",
+  password: "cehn22za02",
   host: "localhost",
   port: 5432,
-  dialect: 'postgres',
+  dialect: "postgres",
   models: [User, Client],
-  storage: ':memory:',
+  storage: ":memory:",
 });
 
 async function connect() {
   try {
-    await connection.sync({alter: true});
-    console.log('Connection has been established successfully.');
+    await connection.sync({ alter: true });
+    console.log("Connection has been established successfully.");
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    console.error("Unable to connect to the database:", error);
   }
 }
 
