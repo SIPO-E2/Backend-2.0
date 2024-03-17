@@ -98,68 +98,29 @@ export const createJobPosition = async (req: Request, res: Response) => {
 export const updateJobPosition = async (req: Request, res: Response) => {
   // We get the id from the request parameters, we get it from the URL
   const { id } = req.params;
-  // We get the data from the request body
-  const {
-    name,
-    bill_rate,
-    posting_type,
-    division,
-    skills_position,
-    region,
-    exclusivity,
-    demand_curation,
-    cross_division,
-    image_url,
-  } = req.body;
+  // ...resto do takes the rest of the properties from the request body and puts them in the variable resto
+  // The ... means that we can have any number of properties in the request body and they will be put in the variable resto
+  const { ...resto } = req.body;
 
-  try {
-    // We use the method update to update the job position by its id
-    // updateCount is the number of updated rows
-    const [updateCount] = await JobPosition.update(
-      {
-        name,
-        bill_rate,
-        posting_type,
-        division,
-        skills_position,
-        region,
-        exclusivity,
-        demand_curation,
-        cross_division,
-        image_url,
-      },
-      { where: { ID: id } } // Ensure this ID matches your database column name, Sequelize is case-sensitive
-    );
-
-    // If no rows were updated, return an error
-    if (updateCount === 0) {
-      return res.json({
-        status: "error",
-        message: "Job position not found or no data updated",
+  // In here we update the job position with the id from the request parameters and the resto object
+  // The update method returns a promise, so we use then and catch to handle the result of the promise
+  await JobPosition.update(resto, { where: { ID: id } })
+    // jobPosition is the updated job position, it contains the updated data of the job position
+    .then((jobPosition) => {
+      res.json({
+        status: "success",
+        message: "Job position updated",
+        data: jobPosition,
       });
-    }
-
-    // After successfully updating, fetch and return the updated job position
-    const updatedJobPosition = await JobPosition.findByPk(id);
-    if (!updatedJobPosition) {
-      return res.json({
+    })
+    // If jobPosition does not exist, we return an error
+    .catch((e) => {
+      res.json({
         status: "error",
-        message: "Job position not found",
+        message: "Job position not updated",
+        error: e,
       });
-    }
-
-    res.json({
-      status: "success",
-      message: "Job position updated",
-      data: updatedJobPosition,
     });
-  } catch (e) {
-    res.json({
-      status: "error",
-      message: "Job position not updated",
-      error: e,
-    });
-  }
 };
 
 // Soft Delete to job position
