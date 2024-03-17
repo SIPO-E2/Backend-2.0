@@ -1,12 +1,16 @@
 import { Sequelize } from 'sequelize-typescript';
 import {User} from '../models/user';
 import {Client} from '../models/client';
+import { Opening } from '../models/opening';
 import { Employee } from '../models/employee';
 import dotenv from 'dotenv';
 dotenv.config();
 
 // Daniela
 //  daniela Abelanda22
+
+
+// Uma "sisweb_user" "HDK#$%Ljkwerff.89"
 
 const connection = new Sequelize({
   database: process.env.DB_NAME,
@@ -15,7 +19,7 @@ const connection = new Sequelize({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   dialect: 'postgres',
-  models: [User, Client, Employee],
+  models: [User, Client, Employee, Opening],
   storage: ':memory:',
 });
 
