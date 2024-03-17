@@ -162,32 +162,42 @@ export const updateJobPosition = async (req: Request, res: Response) => {
   }
 };
 
-// Soft Delete a job position
+// Soft Delete to job position
 export const deleteJobPosition = async (req: Request, res: Response) => {
+  // We get the id from the request parameters, we get it from the URL
   const { id } = req.params;
 
-  try {
-    const updated = await JobPosition.update(
-      { activeDB: false },
-      { where: { ID: id } }
-    );
+  // The { where: { ID: id } } is to make sure this matches the model's column name for the ID
+  // And also {activeDB: false} is to make sure that the job position is not active
+  // update returns an array with two elements, the number of affected rows and the affected rows
+  // In here we are using soft delete, so we are not deleting the job position from the db
+  // This returns a promise, so we use then and catch to handle the result of the promise
+  JobPosition.update(
+    { activeDB: false },
+    { where: { ID: id } } // To make sure this matches the model's column name for the ID
+  )
 
-    if (updated[0] === 0) {
-      return res.json({
-        status: "error",
-        message: "Job position not found",
+    // affectedRows has how many rows were affected (updayted) by the query. If affectedRows is greater than 0, it means
+    // the update operation did indeed modify one (in this case is mostly 1) or more rows. If affectedRows is 0, it means no rows were updated,
+    //which could happen if the conditions in the where clause didn't match any rows.
+    .then(([affectedRows]) => {
+      if (affectedRows === 0) {
+        return res.status(404).json({
+          status: "error",
+          message: "Job position not found",
+        });
+      }
+      res.json({
+        status: "success",
+        message: "Job position deleted",
+        affectedRows: affectedRows,
       });
-    }
-
-    res.json({
-      status: "success",
-      message: "Job position deleted",
+    })
+    .catch((e) => {
+      res.status(500).json({
+        status: "error",
+        message: "Job position not deleted",
+        error: e.toString(),
+      });
     });
-  } catch (e) {
-    res.json({
-      status: "error",
-      message: "Job position not deleted",
-      error: e.toString(),
-    });
-  }
 };
