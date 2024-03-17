@@ -40,3 +40,4 @@ yarn.lock
 
 # ignore js generated files
 dest/*
+dist/*

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { Employee } from '../models/employee';
-// import { employeeModel } from '../models';
 import {EmployeeCreationAttributes} from '../models/employee';
 
 
@@ -11,14 +10,14 @@ export const getAllEmployees = async(req: Request, res: Response) => {
 
     // DB
     await Employee.findAll({ offset: Number(from), limit: Number(to) }).then(
-        (        employees: any) => {
+        (        employees) => {
             res.json({
                 status: "success",
                 message: "employees found",
                 data: employees,
             });
         }   
-    ).catch( (e: any) =>{
+    ).catch( (e) =>{
         res.json({
             status: "error",
             message: "employees not found",
@@ -34,7 +33,7 @@ export const getEmployeeById = async(req: Request, res: Response) => {
 
     // DB
     await Employee.findByPk(id).then(
-        (        employee: any) => {
+        (employee) => {
             res.json({
                 status: "success",
                 message: "employee found",
@@ -42,7 +41,7 @@ export const getEmployeeById = async(req: Request, res: Response) => {
             });
         }
     ).catch(
-        (        e: any) => {
+        (        e) => {
             res.json({
                 status: "error",
                 message: "employee not found",
@@ -55,10 +54,10 @@ export const getEmployeeById = async(req: Request, res: Response) => {
 
 // Creating a employee
 export const postEmployee = async(req: Request, res: Response) => {
-    const {  name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url } = req.body;
+    const {  name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url}:EmployeeCreationAttributes = req.body;
     
     await Employee.create({  name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url}).then(
-        (        employee: any) => {
+        (        employee) => {
             res.json({
                 status: "success",
                 message: "employee created",
@@ -66,7 +65,7 @@ export const postEmployee = async(req: Request, res: Response) => {
             });
         }
     ).catch(
-        (        e: any) => {
+        (        e) => {
             res.json({
                 status: "error",
                 message: "employee not created",
@@ -82,15 +81,16 @@ export const putEmployee = async(req: Request, res: Response) => {
     const { ...resto } = req.body;
 
     await Employee.update(resto, { where: { id } }).then(
-        (        employee: any) => {
+        async () => {
+            const updatedEmployee = await Employee.findByPk(id);
             res.json({
                 status: "success",
-                message: "employee updated",
-                data: employee,
+                message: "Employee updated",
+                data: updatedEmployee,
             });
         }
     ).catch(
-        (        e: any) => {
+        (e) => {
             res.json({
                 status: "error",
                 message: "employee not updated",
@@ -104,16 +104,18 @@ export const putEmployee = async(req: Request, res: Response) => {
 export const deleteEmployee = async(req: Request, res: Response) => {
     const { id } = req.params;
 
-    const deletedEmployee = await Employee.update({ activeDB: false}, { where: { id }}).then(
-        (        employee: any) => {
+    await Employee.update({ activeDB: false}, { where: { id }}).then(
+        () => {
             res.json({
                 status: "success",
-                message: "employee deleted",
-                data: employee,
+                message: "Employee deleted",
+                data: {
+                    id
+                },
             });
         }
     ).catch(
-        (        e: any) => {
+        (        e) => {
             res.json({
                 status: "error",
                 message: "employee not deleted",
