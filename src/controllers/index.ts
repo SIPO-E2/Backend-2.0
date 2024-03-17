@@ -1,9 +1,10 @@
 import * as usersController from './users';
+import * as clientsController from './clients';
 import * as employeesController from './employees';
-// import * as clientsController from './clients';
+
 
 export {
     usersController,
-    employeesController,
-    // clientsController
+    clientsController,
+    employeesController
 }
