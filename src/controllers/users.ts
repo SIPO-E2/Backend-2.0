@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { User } from '../models';
-// import { UserModel } from '../models';
 import {UserCreationAttributes} from '../models/user';
 
 
@@ -55,7 +54,7 @@ export const getUser = async(req: Request, res: Response) => {
 
 // Creating a user
 export const postUser = async(req: Request, res: Response) => {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role }:UserCreationAttributes = req.body;
     
     await User.create({ name, email, password, role }).then(
         user => {
@@ -77,16 +76,18 @@ export const postUser = async(req: Request, res: Response) => {
 }
 
 // Updating a user
+// Updating a user
 export const putUser = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
     await User.update(resto, { where: { id } }).then(
-        user => {
+        async () => {
+            const updatedUser = await User.findByPk(id);
             res.json({
                 status: "success",
                 message: "User updated",
-                data: user,
+                data: updatedUser,
             });
         }
     ).catch(
@@ -104,12 +105,14 @@ export const putUser = async(req: Request, res: Response) => {
 export const deleteUser = async(req: Request, res: Response) => {
     const { id } = req.params;
 
-    const user = await User.update({ activeDB: false}, { where: { id }}).then(
-        user => {
+    await User.update({ activeDB: false}, { where: { id }}).then(
+        () => {
             res.json({
                 status: "success",
                 message: "User deleted",
-                data: user,
+                data: {
+                    id
+                },
             });
         }
     ).catch(

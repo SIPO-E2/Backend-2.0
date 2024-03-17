@@ -8,13 +8,7 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
   // Example: /job-positions?from=0&limit=5
   const { from = 0, to = 5 } = req.query;
 
-  // findAll works to get all the job positions from the db
-  // We use the offset and limit options to paginate the results
-  // offset is the number of records to skip
-  // limit is the number of records to return
-  // So in this case we are returning every 5 job positions
   await JobPosition.findAll({ offset: Number(from), limit: Number(to) })
-    // if the promise is resolved, we get the job positions and we write the response in JSON format
     .then((jobPosition) => {
       res.json({
         status: "success",
@@ -36,11 +30,8 @@ export const getJobPositionById = async (req: Request, res: Response) => {
   // We get the id from the request parameters, we get it from the URL
   const { id } = req.params;
 
-  // We use the method findByPk to find the job position by its id
-  // findByPk works with the primary key of the table
   await JobPosition.findByPk(id)
     .then((jobPosition) => {
-      // We wrtite the response in JSON format
       res.json({
         status: "success",
         message: "Job position found",
@@ -70,7 +61,7 @@ export const createJobPosition = async (req: Request, res: Response) => {
     demand_curation,
     cross_division,
     image_url,
-  } = req.body;
+  }:JobPositionCreationAttributes  = req.body;
 
   // We create a new job position with the data from the request body
   await JobPosition.create({
@@ -111,16 +102,18 @@ export const updateJobPosition = async (req: Request, res: Response) => {
 
   // In here we update the job position with the id from the request parameters and the resto object
   // The update method returns a promise, so we use then and catch to handle the result of the promise
-  await JobPosition.update(resto, { where: { ID: id } })
-    // jobPosition is the updated job position, it contains the updated data of the job position
-    .then((jobPosition) => {
-      res.json({
-        status: "success",
-        message: "Job position updated",
-        data: jobPosition,
-      });
-    })
-    // If jobPosition does not exist, we return an error
+  await JobPosition.update(resto, { where: { id } })
+    .then(
+      async () => {
+        // If the update is successful we get the updated job position and send it in the response
+        const jobPositionUpdated = await JobPosition.findByPk(id);
+        res.json({
+          status: "success",
+          message: "Job position updated",
+          data: jobPositionUpdated,
+        });
+      }
+    )
     .catch((e) => {
       res.json({
         status: "error",
@@ -128,37 +121,25 @@ export const updateJobPosition = async (req: Request, res: Response) => {
         error: e,
       });
     });
+
+    
 };
 
 // Soft Delete to job position
 export const deleteJobPosition = async (req: Request, res: Response) => {
-  // We get the id from the request parameters, we get it from the URL
   const { id } = req.params;
 
-  // The { where: { ID: id } } is to make sure this matches the model's column name for the ID
-  // And also {activeDB: false} is to make sure that the job position is not active
-  // update returns an array with two elements, the number of affected rows and the affected rows
-  // In here we are using soft delete, so we are not deleting the job position from the db
-  // This returns a promise, so we use then and catch to handle the result of the promise
-  JobPosition.update(
+  await JobPosition.update(
     { activeDB: false },
-    { where: { ID: id } } // To make sure this matches the model's column name for the ID
+    { where: { id: id } } 
   )
-
-    // affectedRows has how many rows were affected (updayted) by the query. If affectedRows is greater than 0, it means
-    // the update operation did indeed modify one (in this case is mostly 1) or more rows. If affectedRows is 0, it means no rows were updated,
-    //which could happen if the conditions in the where clause didn't match any rows.
-    .then(([affectedRows]) => {
-      if (affectedRows === 0) {
-        return res.status(404).json({
-          status: "error",
-          message: "Job position not found",
-        });
-      }
+    .then(() => {
       res.json({
         status: "success",
         message: "Job position deleted",
-        affectedRows: affectedRows,
+        data: {
+          id,
+        },
       });
     })
     .catch((e) => {

@@ -1,5 +1,13 @@
 ## 3.7.4-Seminario-Evaluativo
 
+# TODOs:
+- <Model>CreationAttributes export is it necessary?
+- Employee Relations
+- User - Role Relation
+- Client - Project Relation
+- function controllers name
+- db config models import bug
+
 # Installations
 
 you need to have typescript (globally) and node installed beforehand

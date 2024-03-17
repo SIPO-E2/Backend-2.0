@@ -28,12 +28,12 @@ enum DemandCuration {
 }
 
 interface JobPositionAttributes {
-  ID: number;
+  id: number;
   name: string;
   bill_rate: number;
   posting_type: string;
   division: string;
-  skills_position: string[]; // Asumiendo que es un array de strings
+  skills_position: string[];
   region: string;
   exclusivity: Exclusivity;
   demand_curation: DemandCuration;
@@ -45,12 +45,11 @@ interface JobPositionAttributes {
   activeDB?: boolean;
 }
 
-// Interfaz para creación donde el ID puede ser opcional
 export interface JobPositionCreationAttributes
-  extends Optional<JobPositionAttributes, "ID"> {}
+  extends Optional<JobPositionAttributes, "id"> {}
 
 @Table({
-  tableName: "job_positions",
+  tableName: "job_position",
   timestamps: true,
   paranoid: true,
 })
@@ -59,7 +58,7 @@ export class JobPosition extends Model<
   JobPositionCreationAttributes
 > {
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
-  ID!: number;
+  id!: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
   name!: string;
@@ -108,7 +107,7 @@ export class JobPosition extends Model<
   //project!: Project;
 
   @CreatedAt
-  @Column(DataType.STRING)
+  @Column
   public createdAt!: Date;
 
   @UpdatedAt
@@ -116,7 +115,7 @@ export class JobPosition extends Model<
   public updatedAt!: Date;
 
   @DeletedAt
-  @Column(DataType.DATE)
+  @Column
   public DeletedAt!: Date;
 
   // So we can use soft delete
