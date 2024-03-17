@@ -48,6 +48,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
   public activeDB?: boolean;
 
+  //Has many clients
   @HasMany(() => Client)
   public clients!: Client[];
 }

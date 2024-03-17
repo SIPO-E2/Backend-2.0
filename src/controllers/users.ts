@@ -54,7 +54,7 @@ export const getUser = async(req: Request, res: Response) => {
 
 // Creating a user
 export const postUser = async(req: Request, res: Response) => {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role }:UserCreationAttributes = req.body;
     
     await User.create({ name, email, password, role }).then(
         user => {
@@ -105,7 +105,7 @@ export const putUser = async(req: Request, res: Response) => {
 export const deleteUser = async(req: Request, res: Response) => {
     const { id } = req.params;
 
-    const user = await User.update({ activeDB: false}, { where: { id }}).then(
+    await User.update({ activeDB: false}, { where: { id }}).then(
         () => {
             res.json({
                 status: "success",

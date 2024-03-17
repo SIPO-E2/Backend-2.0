@@ -1,6 +1,7 @@
-import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
 import { User } from './user';
+import { Project } from './project';
 
 interface ClientAttributes {
     id: number;
@@ -65,4 +66,8 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
   public activeDB?: boolean;
+
+  //Has many projects
+  @HasMany(() => Project)
+  public projects!: Project[];
 }
