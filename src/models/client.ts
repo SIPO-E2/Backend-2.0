@@ -1,8 +1,7 @@
-import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
 import { User } from './user';
-
-
+import { Project } from './project';
 
 interface ClientAttributes {
     id: number;
@@ -39,7 +38,6 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   @BelongsTo(() => User)
   public user!: User;
 
-
   @Column(DataType.STRING)
   public division!: string;
 
@@ -53,7 +51,7 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   public image!: string;
   
   @CreatedAt
-  @Column(DataType.STRING)
+  @Column
   public createdAt!: Date;
 
   @UpdatedAt
@@ -61,9 +59,14 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   public updatedAt!: Date;
 
   @DeletedAt
-  @Column(DataType.DATE)
+  @Column
   public DeletedAt!: Date;
 
-  @Column(DataType.BOOLEAN)
+  // Default true
+  @Column({ type:DataType.BOOLEAN, defaultValue: true })
   public activeDB?: boolean;
+
+  //Has many projects
+  @HasMany(() => Project)
+  public projects!: Project[];
 }

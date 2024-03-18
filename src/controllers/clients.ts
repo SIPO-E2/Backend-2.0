@@ -1,77 +1,142 @@
-// import { Request, Response } from "express";
-// import { ClientCreationAttributes } from '../models';
-// import { mockDataUser } from "./users";
+import { Request, Response } from "express";
+import { Client } from '../models';
+import {User} from '../models';
+import {ClientCreationAttributes} from '../models/client';
 
-// // include getall include model, attributes.
-// // status, message, data, error
+// Getting clients
+export const getClients = async(req: Request, res: Response) => {
+    const { from = 0, to = 5 } = req.query;
 
-// const mockDataUserModel = mockDataUser.map(user => {
-//     return { name: user.name, email: user.email, role: user.role, activeDB: user.activeDB, createdAt: new Date(), updatedAt: new Date(), deletedAt: new Date() };
-// }
-
-
-
-// // mock data for testing Client model
-// const mockData: ClientCreationAttributes[] = [
-//     { name: 'Client 1', user_id: '1', user: mockDataUserModel[0] ,division: 'Division 1', details: 'Details 1', high_growth: true, image: 'http://example.com/image1' , activeDB: true},
-//     { name: 'Client 2', user_id: '2', user: mockDataUser[1]  ,division: 'Division 2', details: 'Details 2', high_growth: false, image: 'http://example.com/image2', activeDB: true },
-//     { name: 'Client 3', user_id: '3', user: mockDataUser[2]  ,division: 'Division 3', details: 'Details 3', high_growth: true, image: 'http://example.com/image3', activeDB: true },
-//     { name: 'Client 4', user_id: '4', user: mockDataUser[3]  ,division: 'Division 4', details: 'Details 4', high_growth: false, image: 'http://example.com/image4', activeDB: true },
-//     { name: 'Client 5', user_id: '5', user: mockDataUser[4]  ,division: 'Division 5', details: 'Details 5', high_growth: true, image: 'http://example.com/image5', activeDB: true},
-// ];
-
-// // Getting clients
-// export const getClients = async(req: Request, res: Response) => {
-//     const { from = 0, to = 5 } = req.query;
-
-//     // mock data
-//     const clients = mockData.slice(Number(from), Number(to));
-//     const all = mockData.length;
-
-//     res.json({ all, clients });
-// }
-
-// // Getting a client
-// export const getClient = async(req: Request, res: Response) => {
-//     const { id } = req.params;
-
-//     // mock data
-//     const client = mockData.find(client => client.id === id);
-
-//     res.json(client);
-// }
-
-// // Creating a client
-// export const postClient = async(req: Request, res: Response) => {
-//     const { name, user_id, division, details, high_growth, image } = req.body;
-
-//     // mock data
-//     const client: Client = { id: "newid", name, user_id, division, details, high_growth, image: new URL(image), createdAt: new Date(), updatedAt: new Date(), deletedAt: new Date(), activeDB: true };
-//     mockData.push(client);
-
-//     res.json(client);
-// }
-
-// // Updating a client
-// export const putClient = async(req: Request, res: Response) => {
-//     const { id } = req.params;
-//     const { ...resto } = req.body;
-
-//     // mock data
-//     const client = mockData.find(client => client.id === id);
-//     if(client) Object.assign(client, resto);
-
-//     res.json(client);
-// }
-
-// // Deleting a client (soft delete)
-// export const deleteClient = async(req: Request, res: Response) => {
-//     const { id } = req.params;
-
-//     // mock data
-//     const client = mockData.find(client => client.id === id);
+    // DB
+    await Client.findAll({ offset: Number(from), limit: Number(to) }).then(
+        clients => {
+            res.json({
+                status: "success",
+                message: "Clients found",
+                data: clients,
+            });
+        }   
+    ).catch( e =>{
+        res.json({
+            status: "error",
+            message: "Clients not found",
+            error: e
+        });
     
-//     if(client) client.activeDB = false;
+    });
+}
 
-//     res.json(client);
-// }
+// Getting a client
+export const getClient = async(req: Request, res: Response) => {
+    const { id } = req.params;
+
+    // DB
+    await Client.findByPk(id).then(
+        client => {
+            res.json({
+                status: "success",
+                message: "Client found",
+                data: client,
+            });
+        }
+    ).catch(
+        e => {
+            res.json({
+                status: "error",
+                message: "Client not found",
+                error: e
+            });
+        }
+    );
+    
+}
+
+// Creating a client
+export const postClient = async(req: Request, res: Response) => {
+    const { name, user_id, division, details, high_growth, image }:ClientCreationAttributes = req.body;
+    
+
+    // if user not found return error because the relationship is required
+    const user = await User.findByPk(user_id);
+    if (!user) {
+        res.json({
+            status: "error",
+            message: " User of Client not found",
+        });
+        return;
+    }
+    
+    await Client.create({ name, user_id, user, division, details, high_growth, image }).then(
+        client => {
+            res.json({
+                status: "success",
+                message: "Client created",
+                data: client,
+            });
+        }
+    ).catch(
+        e => {
+            res.json({
+                status: "error",
+                message: "Client not created",
+                error: e
+            });
+        }
+    );
+}
+
+
+
+// Updating a client
+export const putClient = async(req: Request, res: Response) => {
+    const { id } = req.params;
+    const { ...resto } = req.body;
+
+    // dont update user_id
+    delete resto.user_id;
+
+    await Client.update(resto, { where: { id } }).then(
+        async () => {
+            const updatedClient = await Client.findByPk(id);
+            res.json({
+                status: "success",
+                message: "Client updated",
+                data: updatedClient,
+            });
+        }
+    ).catch(
+        e => {
+            res.json({
+                status: "error",
+                message: "Client not updated",
+                error: e
+            });
+        }
+    );
+}
+
+
+//Delete a client(soft delete)
+export const deleteClient = async(req: Request, res: Response) => {
+    const { id } = req.params;
+
+    await Client.update({activeDB:false},{ where: { id } }).then(
+        () => {
+            res.json({
+                status: "success",
+                message: "Client deleted",
+                data: {
+                    id
+                },
+            });
+        }
+    ).catch(
+        e => {
+            res.json({
+                status: "error",
+                message: "Client not deleted",
+                error: e
+            });
+        }
+    );
+}

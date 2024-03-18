@@ -1,6 +1,8 @@
 import { Request, Response} from 'express';
 import { Project } from '../models/project';
 import { ProjectCreationAttributes } from '../models/project';
+import { User } from '../models/user';
+import { Client } from '../models/client';
 
 
 //Getting projects
@@ -55,9 +57,23 @@ export const getProjectById = async( req: Request, res:Response) =>{
 //Creating a project
 
 export const postProject = async(req: Request, res: Response) =>{
-    const{ name, status, revenue, owner, region, posting_date, exp_closure_date, image } = req.body;
+    const{ name, status, user_id, client_id, revenue, region, posting_date, exp_closure_date, image }:ProjectCreationAttributes = req.body;
 
-    await Project.create({ name, status, revenue, owner, region, posting_date, exp_closure_date, image}).then(
+    const owner = await User.findByPk(user_id);
+    const client = await Client.findByPk(client_id);
+
+    // if user or client not found return error because the relationship is required
+    if (!client || !owner) {
+        res.json({
+            status: "error",
+            message: "User or Client of Project not found",
+            data: null,
+        });
+        return;
+    }
+
+
+    await Project.create({ name, status, revenue, user_id,owner, client_id, client, region, posting_date, exp_closure_date, image}).then(
         project => {
             res.json({
                 status: "success",
@@ -77,17 +93,17 @@ export const postProject = async(req: Request, res: Response) =>{
 }
 
 //Updating a project 
-
 export const putProject = async(req:Request, res:Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
     await Project.update(resto, { where: { id }}).then(
-        project => {
+        async () => {
+            const updatedProject = await Project.findByPk(id);
             res.json({
                 status: "success",
                 message: "Project updated",
-                data: project,
+                data: updatedProject,
             });
         }
     ).catch(
@@ -106,12 +122,14 @@ export const putProject = async(req:Request, res:Response) => {
 export const deleteProject = async (req:Request, res:Response) => {
     const { id } = req.params;
 
-    const project = await Project.update({ activeDB: false}, { where: { id }}).then(
-        project => {
+    await Project.update({ activeDB: false}, { where: { id }}).then(
+        () => {
             res.json({
                 status: "success",
                 message: "Project deleted",
-                data: project,
+                data: {
+                    id
+                },
             });
         }
     ).catch(
