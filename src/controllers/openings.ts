@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
-import { Opening } from "../models/opening";
-import { OpeningCreationAttributes } from "../models/opening";
+import { Employee } from '../models';
+import { JobPosition } from '../models';
+import { Opening } from '../models';
+import {OpeningCreationAttributes} from '../models/opening';
+
 
 // Getting openings
 export const getOpenings = async (req: Request, res: Response) => {
@@ -47,43 +50,58 @@ export const getOpening = async (req: Request, res: Response) => {
 };
 
 // Creating a opening
-export const createOpening = async (req: Request, res: Response) => {
-  const {
-    status_opening,
-    open_date,
-    close_date,
-    close_reason,
-    hours_required,
-  }: OpeningCreationAttributes = req.body;
+export const createOpening = async(req: Request, res: Response) => {
+    const { status_opening, open_date, close_date, close_reason, hours_required, employee_id, jobPosition_id }:OpeningCreationAttributes = req.body;
+    
+    // if employee not found return error because the relationship is required
+    const employee = await Employee.findByPk(employee_id);
+    if (!employee) {
+        res.json({
+            status: "error",
+            message: " Employee of Opening not found",
+        });
+        return;
+    }
 
-  await Opening.create({
-    status_opening,
-    open_date,
-    close_date,
-    close_reason,
-    hours_required,
-  })
-    .then((opening) => {
-      res.json({
-        status: "success",
-        message: "Opening created",
-        data: opening,
-      });
-    })
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "Opening not created",
-        error: e,
-      });
-    });
-};
+    const jobPosition = await JobPosition.findByPk(jobPosition_id);
+    if (!jobPosition) {
+        res.json({
+            status: "error",
+            message: "Job position of Opening not found",
+        });
+        return;
+    }
+    
+    await Opening.create({ status_opening, open_date, close_date, close_reason, hours_required, employee_id, employee, jobPosition_id, jobPosition }).then(
+        opening => {
+            res.json({
+                status: "success",
+                message: "Opening created",
+                data: opening,
+            });
+        }
+    ).catch(
+        e => {
+            res.json({
+                status: "error",
+                message: "Opening not created",
+                error: e
+            });
+        }
+    );
+}
 
-// Updating a user
+
+// Updating a opening
 export const editOpening = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const {...resto } = req.body;  
 
-  await Opening.update({ ...req.body }, { where: { id } })
+//   dont update jobPosition_id
+//   delete resto.jobPosition_id;
+
+
+  await Opening.update(resto , { where: { id } })
     .then(async () => {
       const openingUpdated = await Opening.findByPk(id);
       res.json({
@@ -101,10 +119,7 @@ export const editOpening = async (req: Request, res: Response) => {
     });
 };
 
-// export const seePostulates = async (req: Request, res: Response) => {
-// }
-
-// Deleting a user (soft delete)
+// Deleting a opening (soft delete)
 export const deleteOpening = async (req: Request, res: Response) => {
   const { id } = req.params;
 

@@ -92,8 +92,8 @@ export const putClient = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
-    // dont update user_id
-    delete resto.user_id;
+    // // dont update user_id
+    // delete resto.user_id;
 
     await Client.update(resto, { where: { id } }).then(
         async () => {
