@@ -13,7 +13,7 @@ router.get('/:id', [
 
 router.post("/", [], postProject);
 
-router.put("/:id", [], putProject);
+router.patch("/:id", [], putProject);
 
 router.delete("/:id", [], deleteProject);
 

@@ -14,7 +14,7 @@ routerOpening.get("/:id", [], getOpening);
 
 routerOpening.post("/", [], createOpening);
 
-routerOpening.put("/:id", [], editOpening);
+routerOpening.patch("/:id", [], editOpening);
 
 routerOpening.delete("/:id", [], deleteOpening);
 

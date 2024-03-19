@@ -17,7 +17,7 @@ const router: Router = Router();
 router.get("/", getAllJobPositions);
 router.get("/:id", getJobPositionById);
 router.post("/", createJobPosition);
-router.put("/:id", updateJobPosition);
+router.patch("/:id", updateJobPosition);
 // We add the id in delete route to delete the job position by its id
 // but this in the future will be implemented with validation, so
 // not everyone can delete a job position

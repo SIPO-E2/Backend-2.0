@@ -14,7 +14,7 @@ router.get('/:id', [], getClient);
 
 router.post('/',[], postClient);
 
-router.put('/:id', [], putClient);
+router.patch('/:id', [], putClient);
 
 router.delete('/:id', [], deleteClient);
 
