@@ -17,12 +17,12 @@ import { Opening } from "./opening";
 import { Project } from "./project";
 
 // Asumiendo que Exclusivity y DemandCuration son enums o tipos definidos anteriormente
-enum Exclusivity {
+export enum Exclusivity {
   Committed = "Committed",
   NonCommitted = "NonCommitted",
 }
 
-enum DemandCuration {
+export enum DemandCuration {
   Strategic = "Strategic",
   Committed = "Committed",
   Open = "Open",

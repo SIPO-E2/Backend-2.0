@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
-import { JobPosition } from "../models/jobPosition";
-import { JobPositionCreationAttributes } from "../models/jobPosition";
+import {
+  JobPosition,
+  JobPositionCreationAttributes,
+  Exclusivity,
+  DemandCuration,
+} from "../models/jobPosition";
+import { Client } from "../models/client"; // Asegúrate de tener un modelo para Client
 
 // Get all job positions
 export const getAllJobPositions = async (req: Request, res: Response) => {
