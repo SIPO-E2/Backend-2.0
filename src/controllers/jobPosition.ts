@@ -57,47 +57,22 @@ export const getJobPositionById = async (req: Request, res: Response) => {
 
 // Create a new job position
 export const createJobPosition = async (req: Request, res: Response) => {
-  // We get the data from the request body
-  const {
-    name,
-    bill_rate,
-    posting_type,
-    division,
-    skills_position,
-    region,
-    exclusivity,
-    demand_curation,
-    cross_division,
-    image_url,
-  }: JobPositionCreationAttributes = req.body;
-
-  // We create a new job position with the data from the request body
-  await JobPosition.create({
-    name,
-    bill_rate,
-    posting_type,
-    division,
-    skills_position,
-    region,
-    exclusivity,
-    demand_curation,
-    cross_division,
-    image_url,
-  })
-    .then((jobPosition) => {
-      res.json({
-        status: "success",
-        message: "Job position created",
-        data: jobPosition,
-      });
-    })
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "Job position not created",
-        error: e,
-      });
+  try {
+    const jobPosition = await JobPosition.create(
+      req.body as JobPositionCreationAttributes
+    );
+    res.json({
+      status: "success",
+      message: "Job position created",
+      data: jobPosition,
     });
+  } catch (e) {
+    res.status(500).json({
+      status: "error",
+      message: "Error creating job position",
+      error: e.toString(),
+    });
+  }
 };
 
 // Update a job position
