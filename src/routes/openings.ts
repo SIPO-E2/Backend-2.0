@@ -1,3 +1,4 @@
+
 import { Router } from "express";
 import { openingController } from '../controllers';
 

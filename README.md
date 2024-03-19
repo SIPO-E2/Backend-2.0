@@ -2,9 +2,7 @@
 
 # TODOs:
 - <Model>CreationAttributes export is it necessary?
-- Employee Relations
-- User - Role Relation
-- Client - Project Relation
+- Made the relations from the DBDiagram
 - function controllers name
 - db config models import bug
 
@@ -18,11 +16,11 @@ npm i
 ```
 
 # Configure the .env.example
+
 Remember modify the file and delete the .example
 it needs to be .env
 
 - PORT = 8080 (example it can be any number)
-
 
 # Compile
 

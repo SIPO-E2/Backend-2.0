@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { JobPosition } from "../models/jobPosition";
-import { JobPositionCreationAttributes } from '../models/jobPosition';
+import { JobPositionCreationAttributes } from "../models/jobPosition";
 
 // Get all job positions
 export const getAllJobPositions = async (req: Request, res: Response) => {
