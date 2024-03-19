@@ -92,3 +92,5 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   @HasMany(() => Opening)
   public openings!: Opening[];
 }
+
+//path: src/models/opening.ts
