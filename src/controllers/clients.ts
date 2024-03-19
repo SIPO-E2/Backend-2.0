@@ -90,7 +90,7 @@ export const postClient = async(req: Request, res: Response) => {
 
 
 // Updating a client
-export const putClient = async(req: Request, res: Response) => {
+export const updateClient = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 

@@ -3,7 +3,7 @@ import { Router } from "express";
 import { employeesController } from '../controllers';
 
 // Controllers
-const {getEmployees, getEmployee, postEmployee, putEmployee, deleteEmployee} = employeesController;
+const {getEmployees, getEmployee, postEmployee, updateEmployee, deleteEmployee} = employeesController;
 
 // Router
 const router:Router = Router();
@@ -18,7 +18,7 @@ router.post('/',[
 ], postEmployee);
 
 router.patch('/:id', [
-], putEmployee);
+], updateEmployee);
 
 router.delete('/:id', [
 ], deleteEmployee);
