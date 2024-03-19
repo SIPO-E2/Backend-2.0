@@ -7,7 +7,7 @@ import { Client } from '../models/client';
 
 //Getting projects
 
-export const getAllProjects = async(req:Request, res:Response) => {
+export const getProjects = async(req:Request, res:Response) => {
     const { from = 0, to = 5} = req.query;
 
     // DB
@@ -30,7 +30,7 @@ export const getAllProjects = async(req:Request, res:Response) => {
 
 //Getting a project
 
-export const getProjectById = async( req: Request, res:Response) =>{
+export const getProject = async( req: Request, res:Response) =>{
     const { id } = req.params;
 
     //DB

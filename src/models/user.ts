@@ -53,5 +53,3 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   public clients!: Client[];
 }
 
-
-
