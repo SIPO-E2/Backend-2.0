@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
 import { Client } from './client';
 
@@ -8,6 +8,8 @@ interface EmployeeAttributes {
     status: string;
     email: string;
     cellphone: number;
+    client_id: number;
+    client: Client;
     job_title: string;
     job_grade:string;
     joining_date: Date;
@@ -21,7 +23,7 @@ interface EmployeeAttributes {
     activeDB?: boolean;
 }
 
-export interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id'> {}
+export interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id'| "client"> {}
 
 @Table({
   tableName: 'employee',
@@ -87,6 +89,15 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
   public activeDB?: boolean;
+
+  // Foreign key client
+  @ForeignKey(() => Client)
+  @Column(DataType.INTEGER)
+  public client_id!: number;
+
+  // has one client
+  @BelongsTo(() => Client)
+  public client!: Client;
 
   //@HasMany(() => Client)
   //public clients!: Client[];

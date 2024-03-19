@@ -2,6 +2,7 @@ import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, Foreig
 import { Optional } from 'sequelize';
 import { User } from './user';
 import { Project } from './project';
+import { Employee } from './employee';
 
 interface ClientAttributes {
     id: number;
@@ -9,13 +10,15 @@ interface ClientAttributes {
     user_id: number;
     user: User;
     division: string;
-    details?: string;
+    details: string;
     high_growth: boolean;
+    projects: Project[];
+    employees: Employee[];
     image: string;
-    activeDB?: boolean;
+    activeDB: boolean;
 }
 
-export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id'> {}
+export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id' | "activeDB" |"details" | "user" | "projects" | "employees" > {}
 
 
 @Table({
@@ -60,13 +63,18 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
 
   @DeletedAt
   @Column
-  public DeletedAt!: Date;
+  public deletedAt!: Date;
+
 
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
-  public activeDB?: boolean;
+  public activeDB!: boolean;
 
   //Has many projects
   @HasMany(() => Project)
   public projects!: Project[];
+
+  //Has many employees
+  @HasMany(() => Employee)
+  public employees!: Employee[];
 }

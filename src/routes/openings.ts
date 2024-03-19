@@ -1,27 +1,21 @@
-
 import { Router } from "express";
-import { openingController } from '../controllers';
+import { openingController } from "../controllers";
 
 // Controllers
-const { getOpenings, getOpening, createOpening, editOpening, deleteOpening } = openingController;
+const { getOpenings, getOpening, createOpening, editOpening, deleteOpening } =
+  openingController;
 
 // Router
 const routerOpening: Router = Router();
 
+routerOpening.get("/", getOpenings);
 
-routerOpening.get('/', getOpenings);
+routerOpening.get("/:id", [], getOpening);
 
-routerOpening.get('/:id', [
-], getOpening);
+routerOpening.post("/", [], createOpening);
 
-routerOpening.post('/', [
-], createOpening);
+routerOpening.put("/:id", [], editOpening);
 
-routerOpening.put('/:id', [
-], editOpening);
-
-routerOpening.delete('/:id', [
-], deleteOpening);
-
+routerOpening.delete("/:id", [], deleteOpening);
 
 export default routerOpening;

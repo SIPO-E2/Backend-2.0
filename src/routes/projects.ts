@@ -1,26 +1,20 @@
-import { Router } from 'express';
-import { projectsController } from '../controllers';
-
+import { Router } from "express";
+import { projectsController } from "../controllers";
 
 // Controllers
-const {getAllProjects, getProjectById, postProject, putProject, deleteProject} = projectsController;
+const {getProjects, getProject, postProject, putProject, deleteProject} = projectsController;
 
-const router:Router = Router();
+const router: Router = Router();
 
-
-router.get('/api/projects', getAllProjects);
+router.get('/', getProjects);
 
 router.get('/:id', [
-], getProjectById);
+], getProject);
 
-router.post('/',[
-], postProject);
+router.post("/", [], postProject);
 
-router.put('/:id', [
-], putProject);
+router.put("/:id", [], putProject);
 
-router.delete('/:id', [
-], deleteProject);
-
+router.delete("/:id", [], deleteProject);
 
 export default router;
