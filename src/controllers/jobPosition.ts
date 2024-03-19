@@ -25,24 +25,34 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
 };
 // Get job position by id
 export const getJobPositionById = async (req: Request, res: Response) => {
-  // We get the id from the request parameters, we get it from the URL
-  const { id } = req.params;
+  const id = parseInt(req.params.id);
+  if (!id) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid job position ID",
+    });
+  }
 
-  await JobPosition.findByPk(id)
-    .then((jobPosition) => {
-      res.json({
-        status: "success",
-        message: "Job position found",
-        data: jobPosition,
-      });
-    })
-    .catch((e) => {
-      res.json({
+  try {
+    const jobPosition = await JobPosition.findByPk(id);
+    if (!jobPosition) {
+      return res.status(404).json({
         status: "error",
         message: "Job position not found",
-        error: e,
       });
+    }
+    res.json({
+      status: "success",
+      message: "Job position found",
+      data: jobPosition,
     });
+  } catch (e) {
+    res.status(500).json({
+      status: "error",
+      message: "Error fetching job position",
+      error: e.toString(),
+    });
+  }
 };
 
 // Create a new job position
