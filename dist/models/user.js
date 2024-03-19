@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const client_1 = require("./client");
+const project_1 = require("./project");
 let User = class User extends sequelize_typescript_1.Model {
 };
 exports.User = User;
@@ -54,6 +55,10 @@ __decorate([
     (0, sequelize_typescript_1.HasMany)(() => client_1.Client),
     __metadata("design:type", Array)
 ], User.prototype, "clients", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => project_1.Project),
+    __metadata("design:type", Array)
+], User.prototype, "projects", void 0);
 exports.User = User = __decorate([
     (0, sequelize_typescript_1.Table)({
         tableName: 'user',

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Opening = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const employee_1 = require("./employee");
+const jobPosition_1 = require("./jobPosition");
 let Opening = class Opening extends sequelize_typescript_1.Model {
 };
 exports.Opening = Opening;
@@ -27,7 +28,16 @@ __decorate([
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => employee_1.Employee),
     __metadata("design:type", employee_1.Employee)
-], Opening.prototype, "employe", void 0);
+], Opening.prototype, "employee", void 0);
+__decorate([
+    (0, sequelize_typescript_1.ForeignKey)(() => jobPosition_1.JobPosition),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
+    __metadata("design:type", Number)
+], Opening.prototype, "jobPosition_id", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => jobPosition_1.JobPosition),
+    __metadata("design:type", jobPosition_1.JobPosition)
+], Opening.prototype, "jobPosition", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.DATE),
     __metadata("design:type", Date)
@@ -65,7 +75,7 @@ __decorate([
 ], Opening.prototype, "activeDB", void 0);
 exports.Opening = Opening = __decorate([
     (0, sequelize_typescript_1.Table)({
-        tableName: 'opening',
+        tableName: "opening",
         timestamps: true,
         paranoid: true,
     })

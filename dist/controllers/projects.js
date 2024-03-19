@@ -24,17 +24,20 @@ exports.deleteProject = exports.putProject = exports.postProject = exports.getPr
 const project_1 = require("../models/project");
 const user_1 = require("../models/user");
 const client_1 = require("../models/client");
+const jobPosition_1 = require("../models/jobPosition");
 //Getting projects
 const getProjects = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { from = 0, to = 5 } = req.query;
     // DB
-    yield project_1.Project.findAll({ offset: Number(from), limit: Number(to) }).then(projects => {
+    yield project_1.Project.findAll({ offset: Number(from), limit: Number(to), include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] })
+        .then((projects) => {
         res.json({
             status: "success",
             message: "Projects found",
             data: projects,
         });
-    }).catch(e => {
+    })
+        .catch((e) => {
         res.json({
             status: "error",
             message: "Projects not found",
@@ -47,13 +50,15 @@ exports.getProjects = getProjects;
 const getProject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     //DB
-    yield project_1.Project.findByPk(id).then(project => {
+    yield project_1.Project.findByPk(id, { include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] })
+        .then((project) => {
         res.json({
             status: "success",
             message: "Project found",
             data: project,
         });
-    }).catch(e => {
+    })
+        .catch((e) => {
         res.json({
             status: "error",
             message: "Project not found",
@@ -64,7 +69,7 @@ const getProject = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getProject = getProject;
 //Creating a project
 const postProject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, status, user_id, client_id, revenue, region, posting_date, exp_closure_date, image } = req.body;
+    const { name, status, user_id, client_id, region, job_positions = [], posting_date, exp_closure_date, image, } = req.body;
     const owner = yield user_1.User.findByPk(user_id);
     const client = yield client_1.Client.findByPk(client_id);
     // if user or client not found return error because the relationship is required
@@ -76,13 +81,26 @@ const postProject = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
         return;
     }
-    yield project_1.Project.create({ name, status, revenue, user_id, owner, client_id, client, region, posting_date, exp_closure_date, image }).then(project => {
+    yield project_1.Project.create({
+        name,
+        status,
+        user_id,
+        client_id,
+        region,
+        job_positions,
+        posting_date,
+        exp_closure_date,
+        image,
+    }, { include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] })
+        .then((project) => __awaiter(void 0, void 0, void 0, function* () {
+        const projectWithAssociations = yield project_1.Project.findByPk(project.id, { include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] });
         res.json({
             status: "success",
             message: "Project created",
-            data: project,
+            data: projectWithAssociations,
         });
-    }).catch(e => {
+    }))
+        .catch((e) => {
         res.json({
             status: "suerrorccess",
             message: "Project not created",
@@ -91,18 +109,20 @@ const postProject = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     });
 });
 exports.postProject = postProject;
-//Updating a project 
+//Updating a project
 const putProject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const resto = __rest(req.body, []);
-    yield project_1.Project.update(resto, { where: { id } }).then(() => __awaiter(void 0, void 0, void 0, function* () {
-        const updatedProject = yield project_1.Project.findByPk(id);
+    yield project_1.Project.update(resto, { where: { id } })
+        .then(() => __awaiter(void 0, void 0, void 0, function* () {
+        const updatedProject = yield project_1.Project.findByPk(id, { include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] });
         res.json({
             status: "success",
             message: "Project updated",
             data: updatedProject,
         });
-    })).catch(e => {
+    }))
+        .catch((e) => {
         res.json({
             status: "error",
             message: "Project not updated",
@@ -114,15 +134,17 @@ exports.putProject = putProject;
 //Deleting a user (soft delete)
 const deleteProject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    yield project_1.Project.update({ activeDB: false }, { where: { id } }).then(() => {
+    yield project_1.Project.update({ activeDB: false }, { where: { id } })
+        .then(() => {
         res.json({
             status: "success",
             message: "Project deleted",
             data: {
-                id
+                id,
             },
         });
-    }).catch(e => {
+    })
+        .catch((e) => {
         res.json({
             status: "success",
             message: "Project not deleted",

@@ -21,20 +21,15 @@ const opening_1 = require("../models/opening");
 const employee_1 = require("../models/employee");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-// Daniela
-//  daniela Abelanda22
-// Uma "sisweb_user" "HDK#$%Ljkwerff.89"
-// Hector   "hector" "cehn22za02"
-// Camila  "camila" "tititoto"
 const connection = new sequelize_typescript_1.Sequelize({
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
-    dialect: 'postgres',
+    dialect: "postgres",
     models: [user_1.User, client_1.Client, project_1.Project, jobPosition_1.JobPosition, opening_1.Opening, employee_1.Employee],
-    storage: ':memory:',
+    storage: ":memory:",
 });
 function connect() {
     return __awaiter(this, void 0, void 0, function* () {

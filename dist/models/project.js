@@ -13,6 +13,7 @@ exports.Project = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const client_1 = require("./client");
 const user_1 = require("./user");
+const jobPosition_1 = require("./jobPosition");
 let Project = class Project extends sequelize_typescript_1.Model {
 };
 exports.Project = Project;
@@ -25,7 +26,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Project.prototype, "status", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.FLOAT),
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.DECIMAL(10, 2), defaultValue: 0 }),
     __metadata("design:type", Number)
 ], Project.prototype, "revenue", void 0);
 __decorate([
@@ -81,9 +82,13 @@ __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => client_1.Client),
     __metadata("design:type", client_1.Client)
 ], Project.prototype, "client", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => jobPosition_1.JobPosition),
+    __metadata("design:type", Array)
+], Project.prototype, "job_positions", void 0);
 exports.Project = Project = __decorate([
     (0, sequelize_typescript_1.Table)({
-        tableName: 'project',
+        tableName: "project",
         timestamps: true,
         paranoid: true,
     })

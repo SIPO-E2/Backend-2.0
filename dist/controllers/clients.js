@@ -23,11 +23,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteClient = exports.putClient = exports.postClient = exports.getClient = exports.getClients = void 0;
 const models_1 = require("../models");
 const models_2 = require("../models");
+const models_3 = require("../models");
+const models_4 = require("../models");
 // Getting clients
 const getClients = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { from = 0, to = 5 } = req.query;
     // DB
-    yield models_1.Client.findAll({ offset: Number(from), limit: Number(to) }).then(clients => {
+    yield models_1.Client.findAll({ offset: Number(from), limit: Number(to), include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] }).then(clients => {
         res.json({
             status: "success",
             message: "Clients found",
@@ -46,7 +48,7 @@ exports.getClients = getClients;
 const getClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     // DB
-    yield models_1.Client.findByPk(id).then(client => {
+    yield models_1.Client.findByPk(id, { include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] }).then(client => {
         res.json({
             status: "success",
             message: "Client found",
@@ -73,13 +75,14 @@ const postClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
         return;
     }
-    yield models_1.Client.create({ name, user_id, user, division, details, high_growth, image }).then(client => {
+    yield models_1.Client.create({ name, user_id, division, details, high_growth, image }, { include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] }).then((client) => __awaiter(void 0, void 0, void 0, function* () {
+        const clientWithAssociations = yield models_1.Client.findByPk(client.id, { include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] });
         res.json({
             status: "success",
             message: "Client created",
-            data: client,
+            data: clientWithAssociations,
         });
-    }).catch(e => {
+    })).catch(e => {
         res.json({
             status: "error",
             message: "Client not created",
@@ -92,10 +95,10 @@ exports.postClient = postClient;
 const putClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const resto = __rest(req.body, []);
-    // dont update user_id
-    delete resto.user_id;
+    // // dont update user_id
+    // delete resto.user_id;
     yield models_1.Client.update(resto, { where: { id } }).then(() => __awaiter(void 0, void 0, void 0, function* () {
-        const updatedClient = yield models_1.Client.findByPk(id);
+        const updatedClient = yield models_1.Client.findByPk(id, { include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] });
         res.json({
             status: "success",
             message: "Client updated",

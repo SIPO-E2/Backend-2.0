@@ -62,8 +62,8 @@ const getEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getEmployee = getEmployee;
 // Creating a employee
 const postEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url } = req.body;
-    yield employee_1.Employee.create({ name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url }).then((employee) => {
+    const { name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url, client_id } = req.body;
+    yield employee_1.Employee.create({ name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url, client_id }).then((employee) => {
         res.json({
             status: "success",
             message: "employee created",

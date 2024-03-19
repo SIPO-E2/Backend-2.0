@@ -9,22 +9,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JobPosition = void 0;
+exports.JobPosition = exports.DemandCuration = exports.Exclusivity = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
-//import { Opening } from "./opening";
-//import { Project } from "./project";
+const opening_1 = require("./opening");
+const project_1 = require("./project");
 // Asumiendo que Exclusivity y DemandCuration son enums o tipos definidos anteriormente
 var Exclusivity;
 (function (Exclusivity) {
     Exclusivity["Committed"] = "Committed";
     Exclusivity["NonCommitted"] = "NonCommitted";
-})(Exclusivity || (Exclusivity = {}));
+})(Exclusivity || (exports.Exclusivity = Exclusivity = {}));
 var DemandCuration;
 (function (DemandCuration) {
     DemandCuration["Strategic"] = "Strategic";
     DemandCuration["Committed"] = "Committed";
     DemandCuration["Open"] = "Open";
-})(DemandCuration || (DemandCuration = {}));
+})(DemandCuration || (exports.DemandCuration = DemandCuration = {}));
 let JobPosition = class JobPosition extends sequelize_typescript_1.Model {
 };
 exports.JobPosition = JobPosition;
@@ -79,6 +79,19 @@ __decorate([
     __metadata("design:type", String)
 ], JobPosition.prototype, "image_url", void 0);
 __decorate([
+    (0, sequelize_typescript_1.HasMany)(() => opening_1.Opening),
+    __metadata("design:type", Array)
+], JobPosition.prototype, "openings_list", void 0);
+__decorate([
+    (0, sequelize_typescript_1.ForeignKey)(() => project_1.Project),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
+    __metadata("design:type", Number)
+], JobPosition.prototype, "project_id", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => project_1.Project),
+    __metadata("design:type", project_1.Project)
+], JobPosition.prototype, "project", void 0);
+__decorate([
     sequelize_typescript_1.CreatedAt,
     sequelize_typescript_1.Column,
     __metadata("design:type", Date)
@@ -92,9 +105,9 @@ __decorate([
     sequelize_typescript_1.DeletedAt,
     sequelize_typescript_1.Column,
     __metadata("design:type", Date)
-], JobPosition.prototype, "DeletedAt", void 0);
+], JobPosition.prototype, "deletedAt", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.BOOLEAN),
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.BOOLEAN, allowNull: true }),
     __metadata("design:type", Boolean)
 ], JobPosition.prototype, "activeDB", void 0);
 exports.JobPosition = JobPosition = __decorate([

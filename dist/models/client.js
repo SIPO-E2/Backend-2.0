@@ -13,6 +13,7 @@ exports.Client = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const user_1 = require("./user");
 const project_1 = require("./project");
+const employee_1 = require("./employee");
 let Client = class Client extends sequelize_typescript_1.Model {
 };
 exports.Client = Client;
@@ -59,7 +60,7 @@ __decorate([
     sequelize_typescript_1.DeletedAt,
     sequelize_typescript_1.Column,
     __metadata("design:type", Date)
-], Client.prototype, "DeletedAt", void 0);
+], Client.prototype, "deletedAt", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.BOOLEAN, defaultValue: true }),
     __metadata("design:type", Boolean)
@@ -68,6 +69,10 @@ __decorate([
     (0, sequelize_typescript_1.HasMany)(() => project_1.Project),
     __metadata("design:type", Array)
 ], Client.prototype, "projects", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => employee_1.Employee),
+    __metadata("design:type", Array)
+], Client.prototype, "employees", void 0);
 exports.Client = Client = __decorate([
     (0, sequelize_typescript_1.Table)({
         tableName: 'client',
