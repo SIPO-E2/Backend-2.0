@@ -40,7 +40,8 @@ interface JobPositionAttributes {
   demand_curation: DemandCuration;
   cross_division: boolean;
   openings_list: Opening[];
-  project_id: Project;
+  project_id: number; // Correction
+  project: Project; // Correction
   image_url: string;
   // So we can use soft delete
   activeDB?: boolean;
@@ -101,7 +102,7 @@ export class JobPosition extends Model<
   openings_list!: Opening[];
 
   @ForeignKey(() => Project)
-  @Column({ type: DataType.INTEGER })
+  @Column(DataType.INTEGER)
   project_id!: number;
 
   @BelongsTo(() => Project)

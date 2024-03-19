@@ -7,6 +7,64 @@ import {
 } from "../models/jobPosition";
 import { Client } from "../models/client"; // Asegúrate de tener un modelo para Client
 
+// Función para determinar DemandCuration basado en las reglas proporcionadas
+const determineDemandCuration = async (
+  clientId: string,
+  exclusivity: Exclusivity
+): Promise<DemandCuration> => {
+  const client = await Client.findByPk(clientId);
+
+  if (!client) {
+    throw new Error("Client not found");
+  }
+
+  if (client.high_growth && exclusivity === Exclusivity.Committed) {
+    return DemandCuration.Strategic;
+  } else if (!client.high_growth && exclusivity === Exclusivity.Committed) {
+    return DemandCuration.Committed;
+  } else if (!client.high_growth && exclusivity === Exclusivity.NonCommitted) {
+    return DemandCuration.Open;
+  }
+
+  // Valor por defecto o manejo de casos no contemplados
+  return DemandCuration.Open;
+};
+
+// Ejemplo de uso en una ruta de Express para crear un JobPosition
+export const createJobPosition = async (req: Request, res: Response) => {
+  try {
+    // Asume que el body ya contiene todos los atributos necesarios excepto demand_curation
+    const { client_id, exclusivity, ...restOfAttributes } = req.body;
+
+    const demandCuration = await determineDemandCuration(
+      client_id,
+      exclusivity
+    );
+
+    const jobPosition = await JobPosition.create({
+      ...restOfAttributes,
+      client_id,
+      exclusivity,
+      demand_curation: demandCuration,
+    });
+
+    res.json({
+      status: "success",
+      message: "Job position created successfully",
+      data: jobPosition,
+    });
+  } catch (error) {
+    let errorMessage = "Unknown error";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    res.status(500).json({
+      status: "error",
+      message: errorMessage,
+    });
+  }
+};
+
 // Get all job positions
 export const getAllJobPositions = async (req: Request, res: Response) => {
   // Corrección: Uso de 'limit' y 'offset' para la paginación, con valores predeterminados más claros
@@ -55,26 +113,6 @@ export const getJobPositionById = async (req: Request, res: Response) => {
     res.status(500).json({
       status: "error",
       message: "Error fetching job position",
-      error: e,
-    });
-  }
-};
-
-// Create a new job position
-export const createJobPosition = async (req: Request, res: Response) => {
-  try {
-    const jobPosition = await JobPosition.create(
-      req.body as JobPositionCreationAttributes
-    );
-    res.json({
-      status: "success",
-      message: "Job position created",
-      data: jobPosition,
-    });
-  } catch (e) {
-    res.status(500).json({
-      status: "error",
-      message: "Error creating job position",
       error: e,
     });
   }
