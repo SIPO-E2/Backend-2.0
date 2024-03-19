@@ -9,19 +9,20 @@ import {
   DeletedAt,
   ForeignKey,
   BelongsTo,
+  HasMany,
 } from "sequelize-typescript";
 
 import { Optional } from "sequelize";
-//import { Opening } from "./opening";
-//import { Project } from "./project";
+import { Opening } from "./opening";
+import { Project } from "./project";
 
 // Asumiendo que Exclusivity y DemandCuration son enums o tipos definidos anteriormente
-enum Exclusivity {
+export enum Exclusivity {
   Committed = "Committed",
   NonCommitted = "NonCommitted",
 }
 
-enum DemandCuration {
+export enum DemandCuration {
   Strategic = "Strategic",
   Committed = "Committed",
   Open = "Open",
@@ -38,15 +39,16 @@ interface JobPositionAttributes {
   exclusivity: Exclusivity;
   demand_curation: DemandCuration;
   cross_division: boolean;
-  //openings_list: Opening[];
-  //project: Project;
+  openings_list: Opening[];
+  project_id: number; 
+  project: Project; 
   image_url: string;
   // So we can use soft delete
-  activeDB?: boolean;
+  activeDB: boolean;
 }
 
 export interface JobPositionCreationAttributes
-  extends Optional<JobPositionAttributes, "id"> {}
+  extends Optional<JobPositionAttributes, "id" | "activeDB" | "openings_list"> {}
 
 @Table({
   tableName: "job_position",
@@ -73,10 +75,10 @@ export class JobPosition extends Model<
   division!: string;
 
   @Column({ type: DataType.ARRAY(DataType.STRING), allowNull: true })
-  skills_position!: string[];
+  skills_position?: string[];
 
   @Column({ type: DataType.STRING, allowNull: true })
-  region!: string;
+  region?: string;
 
   @Column({
     type: DataType.ENUM(...Object.values(Exclusivity)),
@@ -94,31 +96,33 @@ export class JobPosition extends Model<
   cross_division!: boolean;
 
   @Column({ type: DataType.STRING, allowNull: true })
-  image_url!: string;
+  image_url?: string;
 
-  //@HasMany(() => Opening)
-  //openings_list!: Opening[];
+  @HasMany(() => Opening)
+  openings_list!: Opening[];
 
-  //@ForeignKey(() => Project)
-  //@Column({ type: DataType.INTEGER })
-  //projectId!: number;
+  // Foreign key project
+  @ForeignKey(() => Project)
+  @Column(DataType.INTEGER)
+  project_id!: number;
 
-  //@BelongsTo(() => Project)
-  //project!: Project;
+  // has one project
+  @BelongsTo(() => Project)
+  project!: Project;
 
   @CreatedAt
   @Column
-  public createdAt!: Date;
+  createdAt!: Date;
 
   @UpdatedAt
   @Column
-  public updatedAt!: Date;
+  updatedAt!: Date;
 
   @DeletedAt
   @Column
-  public DeletedAt!: Date;
+  deletedAt?: Date;
 
-  // So we can use soft delete
-  @Column(DataType.BOOLEAN)
-  public activeDB?: boolean;
+  // Para el manejo de borrado suave
+  @Column({ type: DataType.BOOLEAN, allowNull: true })
+  activeDB?: boolean;
 }

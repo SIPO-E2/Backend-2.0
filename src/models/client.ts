@@ -9,13 +9,13 @@ interface ClientAttributes {
     user_id: number;
     user: User;
     division: string;
-    details?: string;
+    details: string;
     high_growth: boolean;
     image: string;
     activeDB: boolean;
 }
 
-export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id' | "activeDB"> {}
+export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id' | "activeDB" |"details" > {}
 
 
 @Table({
