@@ -3,6 +3,7 @@ import { Project } from "../models/project";
 import { ProjectCreationAttributes } from "../models/project";
 import { User } from "../models/user";
 import { Client } from "../models/client";
+import { JobPosition } from "../models/jobPosition";
 
 //Getting projects
 
@@ -10,7 +11,7 @@ export const getProjects = async(req:Request, res:Response) => {
     const { from = 0, to = 5} = req.query;
 
   // DB
-  await Project.findAll({ offset: Number(from), limit: Number(to) })
+  await Project.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]} )
     .then((projects) => {
       res.json({
         status: "success",
@@ -33,7 +34,7 @@ export const getProject = async( req: Request, res:Response) =>{
     const { id } = req.params;
 
   //DB
-  await Project.findByPk(id)
+  await Project.findByPk(id, {include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]})
     .then((project) => {
       res.json({
         status: "success",
@@ -82,21 +83,19 @@ export const postProject = async (req: Request, res: Response) => {
     name,
     status,
     user_id,
-    owner,
     client_id,
-    client,
     region,
     job_positions,
     posting_date,
     exp_closure_date,
     image,
-  })
+  }, {include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]})
     .then(async(project) => {
-      
+      const projectWithAssociations = await Project.findByPk(project.id, {include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]});
       res.json({
         status: "success",
         message: "Project created",
-        data: project,
+        data: projectWithAssociations,
       });
     })
     .catch((e) => {
@@ -116,7 +115,7 @@ export const putProject = async (req: Request, res: Response) => {
 
   await Project.update(resto, { where: { id } })
     .then(async () => {
-      const updatedProject = await Project.findByPk(id);
+      const updatedProject = await Project.findByPk(id, {include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]});
       res.json({
         status: "success",
         message: "Project updated",

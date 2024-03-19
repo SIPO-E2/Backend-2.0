@@ -28,7 +28,7 @@ interface OpeningAttributes {
   activeDB: boolean;
 }
 
-export interface OpeningCreationAttributes extends Optional<OpeningAttributes, 'id' | "activeDB"> { }
+export interface OpeningCreationAttributes extends Optional<OpeningAttributes, 'id' | "activeDB" | "jobPosition" | "employee"> { }
 
 
 @Table({

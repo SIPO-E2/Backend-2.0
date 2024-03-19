@@ -2,6 +2,7 @@ import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, Foreig
 import { Optional } from 'sequelize';
 import { User } from './user';
 import { Project } from './project';
+import { Employee } from './employee';
 
 interface ClientAttributes {
     id: number;
@@ -11,11 +12,13 @@ interface ClientAttributes {
     division: string;
     details: string;
     high_growth: boolean;
+    projects: Project[];
+    employees: Employee[];
     image: string;
     activeDB: boolean;
 }
 
-export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id' | "activeDB" |"details" > {}
+export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id' | "activeDB" |"details" | "user" | "projects" | "employees" > {}
 
 
 @Table({
@@ -70,4 +73,8 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   //Has many projects
   @HasMany(() => Project)
   public projects!: Project[];
+
+  //Has many employees
+  @HasMany(() => Employee)
+  public employees!: Employee[];
 }

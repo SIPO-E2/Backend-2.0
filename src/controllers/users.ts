@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { User } from '../models';
 import {UserCreationAttributes} from '../models/user';
-
+import { Project } from '../models';
+import {Client} from '../models';
 
 
 // Getting users
@@ -9,7 +10,7 @@ export const getUsers = async(req: Request, res: Response) => {
     const { from = 0, to = 5 } = req.query;
 
     // DB
-    await User.findAll({ offset: Number(from), limit: Number(to) }).then(
+    await User.findAll({ offset: Number(from), limit: Number(to), include: [{model: Project, as: "projects"}, {model: Client, as:"clients"}]}).then(
         users => {
             res.json({
                 status: "success",
@@ -32,7 +33,7 @@ export const getUser = async(req: Request, res: Response) => {
     const { id } = req.params;
 
     // DB
-    await User.findByPk(id).then(
+    await User.findByPk(id, {include: [{model: Project, as: "projects"}, {model: Client, as:"clients"}]}).then(
         user => {
             res.json({
                 status: "success",
@@ -56,7 +57,7 @@ export const getUser = async(req: Request, res: Response) => {
 export const postUser = async(req: Request, res: Response) => {
     const { name, email, password, role }:UserCreationAttributes = req.body;
     
-    await User.create({ name, email, password, role }).then(
+    await User.create({ name, email, password, role}, {include:[{model: Project, as: "projects"}, {model: Client, as:"clients"}]}).then(
         user => {
             res.json({
                 status: "success",
@@ -76,14 +77,13 @@ export const postUser = async(req: Request, res: Response) => {
 }
 
 // Updating a user
-// Updating a user
 export const putUser = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
     await User.update(resto, { where: { id } }).then(
         async () => {
-            const updatedUser = await User.findByPk(id);
+            const updatedUser = await User.findByPk(id, {include: [{model: Project, as: "projects"}, {model: Client, as:"clients"}]});
             res.json({
                 status: "success",
                 message: "User updated",

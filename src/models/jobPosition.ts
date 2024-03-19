@@ -48,7 +48,7 @@ interface JobPositionAttributes {
 }
 
 export interface JobPositionCreationAttributes
-  extends Optional<JobPositionAttributes, "id" | "activeDB" | "openings_list"> {}
+  extends Optional<JobPositionAttributes, "id" | "activeDB" | "openings_list" | "project"> {}
 
 @Table({
   tableName: "job_position",

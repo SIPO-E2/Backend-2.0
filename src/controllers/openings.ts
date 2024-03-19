@@ -10,7 +10,7 @@ export const getOpenings = async (req: Request, res: Response) => {
   const { from = 0, to = 5 } = req.query;
 
   // DB
-  await Opening.findAll({ offset: Number(from), limit: Number(to) })
+  await Opening.findAll({ offset: Number(from), limit: Number(to), include: [{model: Employee, as: "employee"}, {model: JobPosition, as: "jobPosition"}] })
     .then((openings) => {
       res.json({
         status: "success",
@@ -32,7 +32,7 @@ export const getOpening = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   // DB
-  await Opening.findByPk(id)
+  await Opening.findByPk(id, { include: [{ model: Employee, as: "employee" }, { model: JobPosition, as: "jobPosition" }] })
     .then((openings) => {
       res.json({
         status: "success",
@@ -72,12 +72,13 @@ export const createOpening = async(req: Request, res: Response) => {
         return;
     }
     
-    await Opening.create({ status_opening, open_date, close_date, close_reason, hours_required, employee_id, employee, jobPosition_id, jobPosition }).then(
-        opening => {
+    await Opening.create({ status_opening, open_date, close_date, close_reason, hours_required, employee_id, jobPosition_id }, {include: [{ model: Employee, as: "employee" }, { model: JobPosition, as: "jobPosition" }] }).then(
+        async(opening) => {
+            const openingWithAssociations = await Opening.findByPk(opening.id, {include: [{ model: Employee, as: "employee" }, { model: JobPosition, as: "jobPosition" }]});
             res.json({
                 status: "success",
                 message: "Opening created",
-                data: opening,
+                data: openingWithAssociations,
             });
         }
     ).catch(
@@ -103,7 +104,7 @@ export const editOpening = async (req: Request, res: Response) => {
 
   await Opening.update(resto , { where: { id } })
     .then(async () => {
-      const openingUpdated = await Opening.findByPk(id);
+      const openingUpdated = await Opening.findByPk(id, { include: [{ model: Employee, as: "employee" }, { model: JobPosition, as: "jobPosition" }] });
       res.json({
         status: "success",
         message: "Opening updated",

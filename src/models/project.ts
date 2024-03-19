@@ -29,11 +29,11 @@ interface ProjectAttributes{
     image: string;
     owner: User;
     client: Client;
-    job_positions?: JobPosition[];
+    job_positions: JobPosition[];
     activeDB: boolean;
 }
 // Optional id, revenue and activeDB
-export interface ProjectCreationAttributes extends Optional<ProjectAttributes, 'id' | 'revenue' | 'activeDB'> {}
+export interface ProjectCreationAttributes extends Optional<ProjectAttributes, 'id' | 'revenue' | 'activeDB' | "owner" | "client" | "job_positions"> {}
 
 @Table({
   tableName: "project",
@@ -50,8 +50,8 @@ export class Project extends Model<
   @Column(DataType.INTEGER)
   public status!: number;
 
-    @Column({ type: DataType.DECIMAL(10, 2), defaultValue: 0 })
-    public revenue!: number;
+  @Column({ type: DataType.DECIMAL(10, 2), defaultValue: 0 })
+  public revenue!: number;
 
   @Column(DataType.STRING)
   public region!: string;
@@ -77,7 +77,6 @@ export class Project extends Model<
   @Column
   public deletedAt!: Date;
 
-
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
   public activeDB!: boolean;
@@ -102,6 +101,6 @@ export class Project extends Model<
 
   //Has many job_positions
   @HasMany(() => JobPosition)
-  public job_positions?: JobPosition[];
+  public job_positions!: JobPosition[];
     
 }

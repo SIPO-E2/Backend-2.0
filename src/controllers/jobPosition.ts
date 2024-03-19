@@ -7,6 +7,7 @@ import {
 } from "../models/jobPosition";
 import { Project } from "../models/project";
 import { Client } from "../models/client";
+import { Opening } from "../models/opening";
 
 
 const determineDemandCuration =  (
@@ -61,14 +62,14 @@ export const createJobPosition = async (req: Request, res: Response) => {
       demand_curation,
       cross_division,
       project_id,
-      project,
       image_url,
-    }).then(
-      jobPosition => {
+    }, {include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}]}).then(
+      async(jobPosition) => {
+        const jobPositionWithAssociations = await JobPosition.findByPk(jobPosition.id, {include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}]});
         res.json({
           status: "success",
           message: "Job position created successfully",
-          data: jobPosition,
+          data: jobPositionWithAssociations,
         });
       }
     ).catch(
@@ -90,7 +91,7 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
   const offset = parseInt(req.query.offset as string) || 0;
 
   try {
-    const jobPositions = await JobPosition.findAll({ offset, limit });
+    const jobPositions = await JobPosition.findAll({ offset, limit, include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}] });
     res.json({
       status: "success",
       message: "All job positions found",
@@ -115,7 +116,7 @@ export const getJobPositionById = async (req: Request, res: Response) => {
   }
 
   try {
-    const jobPosition = await JobPosition.findByPk(id);
+    const jobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}]} );
     if (!jobPosition) {
       return res.status(404).json({
         status: "error",
@@ -147,23 +148,31 @@ export const updateJobPosition = async (req: Request, res: Response) => {
   }
 
   try {
-    const existingJobPosition = await JobPosition.findByPk(id);
+    const existingJobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'project'}]});
     if (!existingJobPosition) {
       return res
-        .status(404)
-        .json({ status: "error", message: "Job position not found" });
+      .status(404)
+      .json({ status: "error", message: "Job position not found" });
+    }
+    const project = await Project.findByPk(existingJobPosition.project_id, { include: [{model: Client, as: 'client'}]});
+    
+    if (!project) {
+      return res.status(400).json({
+        status: "error",
+        message: "Project of JobPosition not found",
+      });
     }
 
     const { exclusivity } = req.body;
 
-    const demand_curation:DemandCuration = determineDemandCuration(existingJobPosition.project.client.high_growth, exclusivity);
+    const demand_curation:DemandCuration = determineDemandCuration(project.client.high_growth, exclusivity);
 
     await JobPosition.update(
       { ...req.body, demand_curation},
       { where: { id } }
     );
 
-    const updatedJobPosition = await JobPosition.findByPk(id);
+    const updatedJobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}]});
     res.json({
       status: "success",
       message: "Job position updated",
