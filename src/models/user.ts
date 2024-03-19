@@ -8,10 +8,10 @@ interface UserAttributes {
     email: string;
     password: string;
     role: string;
-    activeDB?: boolean;
+    activeDB: boolean;
 }
 
-export interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
+export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | "activeDB"> {}
 
 @Table({
   tableName: 'user',
@@ -46,7 +46,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
-  public activeDB?: boolean;
+  public activeDB!: boolean;
 
   //Has many clients
   @HasMany(() => Client)

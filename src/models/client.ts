@@ -12,10 +12,10 @@ interface ClientAttributes {
     details?: string;
     high_growth: boolean;
     image: string;
-    activeDB?: boolean;
+    activeDB: boolean;
 }
 
-export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id'> {}
+export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id' | "activeDB"> {}
 
 
 @Table({
@@ -65,7 +65,7 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
 
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
-  public activeDB?: boolean;
+  public activeDB!: boolean;
 
   //Has many projects
   @HasMany(() => Project)

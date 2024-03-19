@@ -2,6 +2,7 @@ import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, Delete
 import { Optional } from 'sequelize';
 import { Client } from './client';
 import { User } from './user';
+import { JobPosition } from './jobPosition';
 
 interface ProjectAttributes{
     id: number;
@@ -16,11 +17,11 @@ interface ProjectAttributes{
     image: string;
     owner: User;
     client: Client;
-    //job_positions: JobPosition[];
-    activeDB?: boolean;
+    job_positions?: JobPosition[];
+    activeDB: boolean;
 }
-
-export interface ProjectCreationAttributes extends Optional<ProjectAttributes,'id'> {}
+// Optional id, revenue and activeDB
+export interface ProjectCreationAttributes extends Optional<ProjectAttributes, 'id' | 'revenue' | 'activeDB'> {}
 
 @Table({
     tableName: 'project',
@@ -36,7 +37,7 @@ export class Project extends Model<ProjectAttributes, ProjectCreationAttributes>
     @Column(DataType.INTEGER)
     public status!: number;
 
-    @Column(DataType.FLOAT)
+    @Column({ type: DataType.DECIMAL(10, 2), defaultValue: 0 })
     public revenue!: number;
 
     @Column(DataType.STRING)
@@ -63,9 +64,10 @@ export class Project extends Model<ProjectAttributes, ProjectCreationAttributes>
     @Column
     public deletedAt!: Date;
 
+
     // Default true
     @Column({ type:DataType.BOOLEAN, defaultValue: true })
-    public activeDB?: boolean;
+    public activeDB!: boolean;
 
     // Foreign key user
     @ForeignKey(() => User)
@@ -84,5 +86,9 @@ export class Project extends Model<ProjectAttributes, ProjectCreationAttributes>
     //Has one Client
     @BelongsTo(() => Client)
     public client!: Client;
+
+    //Has many job_positions
+    @HasMany(() => JobPosition)
+    public job_positions?: JobPosition[];
     
 }

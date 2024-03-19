@@ -7,7 +7,7 @@ import { Client } from '../models/client';
 
 //Getting projects
 
-export const getAllProjects = async(req:Request, res:Response) => {
+export const getProjects = async(req:Request, res:Response) => {
     const { from = 0, to = 5} = req.query;
 
     // DB
@@ -30,7 +30,7 @@ export const getAllProjects = async(req:Request, res:Response) => {
 
 //Getting a project
 
-export const getProjectById = async( req: Request, res:Response) =>{
+export const getProject = async( req: Request, res:Response) =>{
     const { id } = req.params;
 
     //DB
@@ -57,7 +57,7 @@ export const getProjectById = async( req: Request, res:Response) =>{
 //Creating a project
 
 export const postProject = async(req: Request, res: Response) =>{
-    const{ name, status, user_id, client_id, revenue, region, posting_date, exp_closure_date, image }:ProjectCreationAttributes = req.body;
+    const{ name, status, user_id, client_id, region, job_positions = [],posting_date, exp_closure_date, image }:ProjectCreationAttributes = req.body;
 
     const owner = await User.findByPk(user_id);
     const client = await Client.findByPk(client_id);
@@ -73,7 +73,7 @@ export const postProject = async(req: Request, res: Response) =>{
     }
 
 
-    await Project.create({ name, status, revenue, user_id,owner, client_id, client, region, posting_date, exp_closure_date, image}).then(
+    await Project.create({ name, status, user_id,owner, client_id, client, region, job_positions, posting_date, exp_closure_date, image}).then(
         project => {
             res.json({
                 status: "success",
