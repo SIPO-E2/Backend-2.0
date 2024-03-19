@@ -77,31 +77,29 @@ export const createJobPosition = async (req: Request, res: Response) => {
 
 // Update a job position
 export const updateJobPosition = async (req: Request, res: Response) => {
-  // We get the id from the request parameters, we get it from the URL
-  const { id } = req.params;
-  // ...resto do takes the rest of the properties from the request body and puts them in the variable resto
-  // The ... means that we can have any number of properties in the request body and they will be put in the variable resto
-  const { ...resto } = req.body;
-
-  // In here we update the job position with the id from the request parameters and the resto object
-  // The update method returns a promise, so we use then and catch to handle the result of the promise
-  await JobPosition.update(resto, { where: { id } })
-    .then(async () => {
-      // If the update is successful we get the updated job position and send it in the response
-      const jobPositionUpdated = await JobPosition.findByPk(id);
-      res.json({
-        status: "success",
-        message: "Job position updated",
-        data: jobPositionUpdated,
-      });
-    })
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "Job position not updated",
-        error: e,
-      });
+  const id = parseInt(req.params.id);
+  if (!id) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid job position ID",
     });
+  }
+
+  try {
+    await JobPosition.update(req.body, { where: { id } });
+    const updatedJobPosition = await JobPosition.findByPk(id);
+    res.json({
+      status: "success",
+      message: "Job position updated",
+      data: updatedJobPosition,
+    });
+  } catch (e) {
+    res.status(500).json({
+      status: "error",
+      message: "Error updating job position",
+      error: e.toString(),
+    });
+  }
 };
 
 // Soft Delete to job position
