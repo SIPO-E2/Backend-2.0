@@ -61,7 +61,7 @@ export const postClient = async(req: Request, res: Response) => {
     if (!user) {
         res.json({
             status: "error",
-            message: "Client User not found",
+            message: " User of Client not found",
         });
         return;
     }

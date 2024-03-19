@@ -1,6 +1,5 @@
-// Importaciones
 import { Router } from "express";
-import { clientsController } from '../controllers';
+import { clientsController} from '../controllers';
 
 // Controllers
 const {getClients, getClient, postClient, putClient, deleteClient} = clientsController;

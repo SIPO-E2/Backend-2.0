@@ -1,10 +1,8 @@
-
 import { Router } from "express";
 import { usersController } from '../controllers';
 
 // Controllers
 const {getUsers, getUser, postUser, putUser, deleteUser} = usersController;
-
 
 // Router
 const router:Router = Router();

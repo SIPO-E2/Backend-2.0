@@ -1,6 +1,6 @@
 import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
-import { Client } from './client';
+import { Opening } from './opening';
 
 interface EmployeeAttributes {
     id: number;
@@ -39,9 +39,8 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   @Column(DataType.STRING(128))
   public email!: string;
 
-  @Column(DataType.BIGINT)
+  @Column(DataType.INTEGER)
   public cellphone!: number;
-
 
   @Column(DataType.STRING(128))
   public job_title!: string;
@@ -55,7 +54,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   @Column(DataType.STRING(128))
   public division!: string;
 
-  @Column(DataType.STRING(128))
+  @Column(DataType.ARRAY(DataType.STRING))
   public tech_stack!: string;
 
   @Column(DataType.STRING(128))
@@ -74,20 +73,22 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   public image_url!: string;
   
   @CreatedAt
-  @Column(DataType.DATE)
+  @Column
   public createdAt!: Date;
 
   @UpdatedAt
-  @Column(DataType.DATE)
+  @Column
   public updatedAt!: Date;
 
   @DeletedAt
-  @Column(DataType.DATE)
+  @Column
   public deletedAt!: Date;
 
-  @Column(DataType.BOOLEAN)
+  // Default true
+  @Column({ type:DataType.BOOLEAN, defaultValue: true })
   public activeDB?: boolean;
 
-  //@HasMany(() => Client)
-  //public clients!: Client[];
+  // Relación uno a muchos con Opening
+  @HasMany(() => Opening)
+  public openings!: Opening[];
 }
