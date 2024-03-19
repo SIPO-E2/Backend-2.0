@@ -11,7 +11,6 @@ import {
   BelongsTo,
 } from "sequelize-typescript";
 import { Optional } from "sequelize";
-import { JobPosition } from "./jobPosition";
 // import { Employee } from './employee';
 
 interface OpeningAttributes {
@@ -21,7 +20,6 @@ interface OpeningAttributes {
   close_date: Date;
   close_reason: string;
   hours_required: number;
-  job_position_id: number;
   // employee_id: number;
   // employee: Employee;
   activeDB?: boolean;
@@ -50,10 +48,6 @@ export class Opening extends Model<
   // has one user
   // @BelongsTo(() => Employee)
   // public employe!: Employee;
-
-  @ForeignKey(() => JobPosition)
-  @Column({ type: DataType.INTEGER })
-  public job_position_id!: number; // Asegúrate de que este nombre coincida con cómo lo tienes en tu base de datos
 
   @Column(DataType.DATE)
   public open_date!: Date;

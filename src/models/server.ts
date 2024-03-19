@@ -1,7 +1,14 @@
 import express, { Application } from "express";
 // import fileUpload from 'express-fileupload';
 import dbConnection from "../db/config";
-import { routerUser, routerClient, routerProject ,routerOpening, routerEmployee, routerJobPosition} from "../routes";
+import {
+  routerUser,
+  routerClient,
+  routerProject,
+  routerOpening,
+  routerEmployee,
+  routerJobPosition,
+} from "../routes";
 // import cors from 'cors';
 
 class Server {

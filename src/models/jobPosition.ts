@@ -101,10 +101,12 @@ export class JobPosition extends Model<
   @HasMany(() => Opening)
   openings_list!: Opening[];
 
+  // Foreign key project
   @ForeignKey(() => Project)
   @Column(DataType.INTEGER)
   project_id!: number;
 
+  // A job position has one project
   @BelongsTo(() => Project)
   project!: Project;
 
