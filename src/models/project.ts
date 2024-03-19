@@ -29,7 +29,7 @@ interface ProjectAttributes {
   image: string;
   owner: User;
   client: Client;
-  //job_positions: JobPosition[];
+  job_positions: JobPosition[];
   activeDB?: boolean;
 }
 

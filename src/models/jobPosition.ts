@@ -39,7 +39,7 @@ interface JobPositionAttributes {
   exclusivity: Exclusivity;
   demand_curation: DemandCuration;
   cross_division: boolean;
-  openings_list: Opening[];
+  // openings_list: Opening[];
   project_id: number; // Correction
   project: Project; // Correction
   image_url: string;
@@ -98,8 +98,8 @@ export class JobPosition extends Model<
   @Column({ type: DataType.STRING, allowNull: true })
   image_url?: string;
 
-  @HasMany(() => Opening)
-  openings_list!: Opening[];
+  // @HasMany(() => Opening)
+  // openings_list!: Opening[];
 
   // Foreign key project
   @ForeignKey(() => Project)

@@ -129,7 +129,27 @@ export const updateJobPosition = async (req: Request, res: Response) => {
   }
 
   try {
-    await JobPosition.update(req.body, { where: { id } });
+    // Aquí se puede incluir lógica para verificar si `exclusivity` o alguna otra propiedad relevante ha cambiado
+    // y, por lo tanto, se necesita recalcula `demand_curation`.
+    const existingJobPosition = await JobPosition.findByPk(id);
+    if (!existingJobPosition) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Job position not found" });
+    }
+
+    const { exclusivity, client_id } = req.body;
+
+    let demandCuration;
+    if (exclusivity && client_id) {
+      demandCuration = await determineDemandCuration(client_id, exclusivity);
+    }
+
+    await JobPosition.update(
+      { ...req.body, demand_curation: demandCuration },
+      { where: { id } }
+    );
+
     const updatedJobPosition = await JobPosition.findByPk(id);
     res.json({
       status: "success",
@@ -137,6 +157,7 @@ export const updateJobPosition = async (req: Request, res: Response) => {
       data: updatedJobPosition,
     });
   } catch (e) {
+    console.error(e);
     res.status(500).json({
       status: "error",
       message: "Error updating job position",
