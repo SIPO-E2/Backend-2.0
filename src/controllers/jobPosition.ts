@@ -61,7 +61,7 @@ export const createJobPosition = async (req: Request, res: Response) => {
     demand_curation,
     cross_division,
     image_url,
-  }:JobPositionCreationAttributes  = req.body;
+  }: JobPositionCreationAttributes = req.body;
 
   // We create a new job position with the data from the request body
   await JobPosition.create({
@@ -103,17 +103,15 @@ export const updateJobPosition = async (req: Request, res: Response) => {
   // In here we update the job position with the id from the request parameters and the resto object
   // The update method returns a promise, so we use then and catch to handle the result of the promise
   await JobPosition.update(resto, { where: { id } })
-    .then(
-      async () => {
-        // If the update is successful we get the updated job position and send it in the response
-        const jobPositionUpdated = await JobPosition.findByPk(id);
-        res.json({
-          status: "success",
-          message: "Job position updated",
-          data: jobPositionUpdated,
-        });
-      }
-    )
+    .then(async () => {
+      // If the update is successful we get the updated job position and send it in the response
+      const jobPositionUpdated = await JobPosition.findByPk(id);
+      res.json({
+        status: "success",
+        message: "Job position updated",
+        data: jobPositionUpdated,
+      });
+    })
     .catch((e) => {
       res.json({
         status: "error",
@@ -121,18 +119,13 @@ export const updateJobPosition = async (req: Request, res: Response) => {
         error: e,
       });
     });
-
-    
 };
 
 // Soft Delete to job position
 export const deleteJobPosition = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  await JobPosition.update(
-    { activeDB: false },
-    { where: { id: id } } 
-  )
+  await JobPosition.update({ activeDB: false }, { where: { id: id } })
     .then(() => {
       res.json({
         status: "success",
