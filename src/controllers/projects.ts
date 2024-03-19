@@ -91,7 +91,8 @@ export const postProject = async (req: Request, res: Response) => {
     exp_closure_date,
     image,
   })
-    .then((project) => {
+    .then(async(project) => {
+      
       res.json({
         status: "success",
         message: "Project created",
@@ -105,6 +106,7 @@ export const postProject = async (req: Request, res: Response) => {
         data: e,
       });
     });
+    
 };
 
 //Updating a project

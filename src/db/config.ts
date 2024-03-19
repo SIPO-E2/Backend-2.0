@@ -8,21 +8,12 @@ import { Employee } from "../models/employee";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Daniela
-//  daniela Abelanda22
-
-// Uma "sisweb_user" "HDK#$%Ljkwerff.89"
-
-// Hector   "hector" "cehn22za02"
-
-// Camila  "camila" "tititoto"
-
 const connection = new Sequelize({
-  database: "sipo",
-  username: "hector",
-  password: "cehn22za02",
-  host: "localhost",
-  port: Number("5432"),
+  database: process.env.DB_NAME,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
   dialect: "postgres",
   models: [User, Client, Project, JobPosition, Opening, Employee],
   storage: ":memory:",

@@ -6,6 +6,7 @@ import {
   DemandCuration,
 } from "../models/jobPosition";
 import { Project } from "../models/project";
+import { Client } from "../models/client";
 
 
 const determineDemandCuration =  (
@@ -27,10 +28,10 @@ const determineDemandCuration =  (
 
 
 export const createJobPosition = async (req: Request, res: Response) => {
-  try {
     const { name, bill_rate, posting_type, division, openings_list = [], skills_position, region, exclusivity, cross_division, project_id, image_url}:JobPositionCreationAttributes = req.body;
+    
+    const project = await Project.findByPk(project_id, { include: [{model: Client, as: 'client'}]});
 
-    const project = await Project.findByPk(project_id);
     if (!project) {
       return res.status(400).json({
         status: "error",
@@ -49,7 +50,7 @@ export const createJobPosition = async (req: Request, res: Response) => {
 
 
 
-    const jobPosition = await JobPosition.create({
+    await JobPosition.create({
       name,
       bill_rate,
       posting_type,
@@ -62,23 +63,24 @@ export const createJobPosition = async (req: Request, res: Response) => {
       project_id,
       project,
       image_url,
-    });
+    }).then(
+      jobPosition => {
+        res.json({
+          status: "success",
+          message: "Job position created successfully",
+          data: jobPosition,
+        });
+      }
+    ).catch(
+      e => {
+        res.json({
+          status: "error",
+          message: "Job position not created",
+          error: e
+        });
+      }
+    );
 
-    res.json({
-      status: "success",
-      message: "Job position created successfully",
-      data: jobPosition,
-    });
-  } catch (error) {
-    let errorMessage = "Unknown error";
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-    res.status(500).json({
-      status: "error",
-      message: errorMessage,
-    });
-  }
 };
 
 // Get all job positions
