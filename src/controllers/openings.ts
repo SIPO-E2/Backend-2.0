@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
-import { Opening } from '../models/opening';
+import { Employee } from '../models';
+import { JobPosition } from '../models';
+import { Opening } from '../models';
 import {OpeningCreationAttributes} from '../models/opening';
 
 
@@ -53,9 +55,28 @@ export const getOpening = async(req: Request, res: Response) => {
 
 // Creating a opening
 export const createOpening = async(req: Request, res: Response) => {
-    const { status_opening, open_date, close_date, close_reason, hours_required }:OpeningCreationAttributes = req.body;
+    const { status_opening, open_date, close_date, close_reason, hours_required, employee_id, jobPosition_id }:OpeningCreationAttributes = req.body;
     
-    await Opening.create({ status_opening, open_date, close_date, close_reason, hours_required }).then(
+    // if user not found return error because the relationship is required
+    const employee = await Employee.findByPk(employee_id);
+    if (!employee) {
+        res.json({
+            status: "error",
+            message: " Employee of Opening not found",
+        });
+        return;
+    }
+
+    const jobPosition = await JobPosition.findByPk(jobPosition_id);
+    if (!jobPosition) {
+        res.json({
+            status: "error",
+            message: "Job position of Opening not found",
+        });
+        return;
+    }
+    
+    await Opening.create({ status_opening, open_date, close_date, close_reason, hours_required, employee_id, employee, jobPosition_id, jobPosition }).then(
         opening => {
             res.json({
                 status: "success",
@@ -73,6 +94,7 @@ export const createOpening = async(req: Request, res: Response) => {
         }
     );
 }
+
 
 // Updating a user
 export const editOpening = async(req: Request, res: Response) => {
