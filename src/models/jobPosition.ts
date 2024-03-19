@@ -39,7 +39,7 @@ interface JobPositionAttributes {
   demand_curation: DemandCuration;
   cross_division: boolean;
   //openings_list: Opening[];
-  //project: Project;
+  //project_id: Project;
   image_url: string;
   // So we can use soft delete
   activeDB?: boolean;
