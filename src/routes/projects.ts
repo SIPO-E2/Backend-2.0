@@ -3,15 +3,15 @@ import { projectsController } from '../controllers';
 
 
 // Controllers
-const {getAllProjects, getProjectById, postProject, putProject, deleteProject} = projectsController;
+const {getProjects, getProject, postProject, putProject, deleteProject} = projectsController;
 
 const router:Router = Router();
 
 
-router.get('/', getAllProjects);
+router.get('/', getProjects);
 
 router.get('/:id', [
-], getProjectById);
+], getProject);
 
 router.post('/',[
 ], postProject);

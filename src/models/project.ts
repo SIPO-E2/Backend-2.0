@@ -2,6 +2,7 @@ import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, Delete
 import { Optional } from 'sequelize';
 import { Client } from './client';
 import { User } from './user';
+import { JobPosition } from './jobPosition';
 
 interface ProjectAttributes{
     id: number;
@@ -62,6 +63,7 @@ export class Project extends Model<ProjectAttributes, ProjectCreationAttributes>
     @DeletedAt
     @Column
     public deletedAt!: Date;
+
 
     // Default true
     @Column({ type:DataType.BOOLEAN, defaultValue: true })
