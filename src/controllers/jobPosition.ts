@@ -19,7 +19,7 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
     res.status(500).json({
       status: "error",
       message: "Error fetching job positions",
-      error: e.toString(),
+      error: e,
     });
   }
 };
@@ -50,7 +50,7 @@ export const getJobPositionById = async (req: Request, res: Response) => {
     res.status(500).json({
       status: "error",
       message: "Error fetching job position",
-      error: e.toString(),
+      error: e,
     });
   }
 };
@@ -70,7 +70,7 @@ export const createJobPosition = async (req: Request, res: Response) => {
     res.status(500).json({
       status: "error",
       message: "Error creating job position",
-      error: e.toString(),
+      error: e,
     });
   }
 };
@@ -97,30 +97,32 @@ export const updateJobPosition = async (req: Request, res: Response) => {
     res.status(500).json({
       status: "error",
       message: "Error updating job position",
-      error: e.toString(),
+      error: e,
     });
   }
 };
 
-// Soft Delete to job position
+// Soft Delete a job position
 export const deleteJobPosition = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  await JobPosition.update({ activeDB: false }, { where: { id: id } })
-    .then(() => {
-      res.json({
-        status: "success",
-        message: "Job position deleted",
-        data: {
-          id,
-        },
-      });
-    })
-    .catch((e) => {
-      res.status(500).json({
-        status: "error",
-        message: "Job position not deleted",
-        error: e.toString(),
-      });
+  const id = parseInt(req.params.id);
+  if (!id) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid job position ID",
     });
+  }
+
+  try {
+    await JobPosition.update({ activeDB: false }, { where: { id } });
+    res.json({
+      status: "success",
+      message: "Job position deleted",
+    });
+  } catch (e) {
+    res.status(500).json({
+      status: "error",
+      message: "Error deleting job position",
+      error: e,
+    });
+  }
 };
