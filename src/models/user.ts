@@ -59,4 +59,3 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @HasMany(() => Project)
   public projects!: Project[];
 }
-
