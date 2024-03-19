@@ -1,152 +1,214 @@
 import { Request, Response } from "express";
-import { JobPosition } from "../models/jobPosition";
-import { JobPositionCreationAttributes } from "../models/jobPosition";
+import {
+  JobPosition,
+  JobPositionCreationAttributes,
+  Exclusivity,
+  DemandCuration,
+} from "../models/jobPosition";
+import { Project } from "../models/project";
+import { Client } from "../models/client";
+import { Opening } from "../models/opening";
+
+
+const determineDemandCuration =  (
+  high_growth: boolean,
+  exclusivity: Exclusivity
+) => {
+
+  if (high_growth && exclusivity === Exclusivity.Committed) {
+    return DemandCuration.Strategic;
+  } else if (high_growth && exclusivity === Exclusivity.Committed) {
+    return DemandCuration.Committed;
+  } else if (high_growth && exclusivity === Exclusivity.NonCommitted) {
+    return DemandCuration.Open;
+  }
+
+  // Valor por defecto o manejo de casos no contemplados
+  return DemandCuration.Open;
+};
+
+
+export const createJobPosition = async (req: Request, res: Response) => {
+    const { name, bill_rate, posting_type, division, openings_list = [], skills_position, region, exclusivity, cross_division, project_id, image_url}:JobPositionCreationAttributes = req.body;
+    
+    const project = await Project.findByPk(project_id, { include: [{model: Client, as: 'client'}]});
+
+    if (!project) {
+      return res.status(400).json({
+        status: "error",
+        message: "Project of JobPosition not found",
+      });
+    }
+
+    if (exclusivity != Exclusivity.Committed && exclusivity != Exclusivity.NonCommitted) {
+      return res.status(400).json({
+        status: "error",
+        message: "Committed exclusivity is only available for high growth clients",
+      });
+    }
+    
+    const demand_curation:DemandCuration = determineDemandCuration(project.client.high_growth, exclusivity);
+
+
+
+    await JobPosition.create({
+      name,
+      bill_rate,
+      posting_type,
+      division,
+      skills_position,
+      region,
+      exclusivity,
+      demand_curation,
+      cross_division,
+      project_id,
+      image_url,
+    }, {include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}]}).then(
+      async(jobPosition) => {
+        const jobPositionWithAssociations = await JobPosition.findByPk(jobPosition.id, {include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}]});
+        res.json({
+          status: "success",
+          message: "Job position created successfully",
+          data: jobPositionWithAssociations,
+        });
+      }
+    ).catch(
+      e => {
+        res.json({
+          status: "error",
+          message: "Job position not created",
+          error: e
+        });
+      }
+    );
+
+};
 
 // Get all job positions
 export const getAllJobPositions = async (req: Request, res: Response) => {
-  // We add this so we can use the query parameters to paginate the results of the job positions
-  // Example: /job-positions?from=0&limit=5
-  const { from = 0, to = 5 } = req.query;
+  // Corrección: Uso de 'limit' y 'offset' para la paginación, con valores predeterminados más claros
+  const limit = parseInt(req.query.limit as string) || 5;
+  const offset = parseInt(req.query.offset as string) || 0;
 
-  await JobPosition.findAll({ offset: Number(from), limit: Number(to) })
-    .then((jobPosition) => {
-      res.json({
-        status: "success",
-        message: " All job positions found",
-        data: jobPosition,
-      });
-    })
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "All job positions not found",
-        error: e,
-      });
+  try {
+    const jobPositions = await JobPosition.findAll({ offset, limit, include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}] });
+    res.json({
+      status: "success",
+      message: "All job positions found",
+      data: jobPositions,
     });
+  } catch (e) {
+    res.status(500).json({
+      status: "error",
+      message: "Error fetching job positions",
+      error: e,
+    });
+  }
 };
-
 // Get job position by id
 export const getJobPositionById = async (req: Request, res: Response) => {
-  // We get the id from the request parameters, we get it from the URL
-  const { id } = req.params;
+  const id = parseInt(req.params.id);
+  if (!id) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid job position ID",
+    });
+  }
 
-  await JobPosition.findByPk(id)
-    .then((jobPosition) => {
-      res.json({
-        status: "success",
-        message: "Job position found",
-        data: jobPosition,
-      });
-    })
-    .catch((e) => {
-      res.json({
+  try {
+    const jobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}]} );
+    if (!jobPosition) {
+      return res.status(404).json({
         status: "error",
         message: "Job position not found",
-        error: e,
       });
+    }
+    res.json({
+      status: "success",
+      message: "Job position found",
+      data: jobPosition,
     });
-};
-
-// Create a new job position
-export const createJobPosition = async (req: Request, res: Response) => {
-  // We get the data from the request body
-  const {
-    name,
-    bill_rate,
-    posting_type,
-    division,
-    skills_position,
-    region,
-    exclusivity,
-    demand_curation,
-    cross_division,
-    image_url,
-  }:JobPositionCreationAttributes  = req.body;
-
-  // We create a new job position with the data from the request body
-  await JobPosition.create({
-    name,
-    bill_rate,
-    posting_type,
-    division,
-    skills_position,
-    region,
-    exclusivity,
-    demand_curation,
-    cross_division,
-    image_url,
-  })
-    .then((jobPosition) => {
-      res.json({
-        status: "success",
-        message: "Job position created",
-        data: jobPosition,
-      });
-    })
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "Job position not created",
-        error: e,
-      });
+  } catch (e) {
+    res.status(500).json({
+      status: "error",
+      message: "Error fetching job position",
+      error: e,
     });
+  }
 };
 
 // Update a job position
 export const updateJobPosition = async (req: Request, res: Response) => {
-  // We get the id from the request parameters, we get it from the URL
-  const { id } = req.params;
-  // ...resto do takes the rest of the properties from the request body and puts them in the variable resto
-  // The ... means that we can have any number of properties in the request body and they will be put in the variable resto
-  const { ...resto } = req.body;
-
-  // In here we update the job position with the id from the request parameters and the resto object
-  // The update method returns a promise, so we use then and catch to handle the result of the promise
-  await JobPosition.update(resto, { where: { id } })
-    .then(
-      async () => {
-        // If the update is successful we get the updated job position and send it in the response
-        const jobPositionUpdated = await JobPosition.findByPk(id);
-        res.json({
-          status: "success",
-          message: "Job position updated",
-          data: jobPositionUpdated,
-        });
-      }
-    )
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "Job position not updated",
-        error: e,
-      });
+  const id = parseInt(req.params.id);
+  if (!id) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid job position ID",
     });
+  }
 
+  try {
+    const existingJobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'project'}]});
+    if (!existingJobPosition) {
+      return res
+      .status(404)
+      .json({ status: "error", message: "Job position not found" });
+    }
+    const project = await Project.findByPk(existingJobPosition.project_id, { include: [{model: Client, as: 'client'}]});
     
+    if (!project) {
+      return res.status(400).json({
+        status: "error",
+        message: "Project of JobPosition not found",
+      });
+    }
+
+    const { exclusivity } = req.body;
+
+    const demand_curation:DemandCuration = determineDemandCuration(project.client.high_growth, exclusivity);
+
+    await JobPosition.update(
+      { ...req.body, demand_curation},
+      { where: { id } }
+    );
+
+    const updatedJobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'project'}, {model: Opening, as: 'openings_list'}]});
+    res.json({
+      status: "success",
+      message: "Job position updated",
+      data: updatedJobPosition,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({
+      status: "error",
+      message: "Error updating job position",
+      error: e,
+    });
+  }
 };
 
-// Soft Delete to job position
+// Soft Delete a job position
 export const deleteJobPosition = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  await JobPosition.update(
-    { activeDB: false },
-    { where: { id: id } } 
-  )
-    .then(() => {
-      res.json({
-        status: "success",
-        message: "Job position deleted",
-        data: {
-          id,
-        },
-      });
-    })
-    .catch((e) => {
-      res.status(500).json({
-        status: "error",
-        message: "Job position not deleted",
-        error: e.toString(),
-      });
+  const id = parseInt(req.params.id);
+  if (!id) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid job position ID",
     });
+  }
+
+  try {
+    await JobPosition.update({ activeDB: false }, { where: { id } });
+    res.json({
+      status: "success",
+      message: "Job position deleted",
+    });
+  } catch (e) {
+    res.status(500).json({
+      status: "error",
+      message: "Error deleting job position",
+      error: e,
+    });
+  }
 };

@@ -124,5 +124,4 @@ export const deleteEmployee = async(req: Request, res: Response) => {
             });
         }
     );
-
 }

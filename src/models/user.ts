@@ -1,6 +1,7 @@
 import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
 import { Client } from './client';
+import { Project } from './project';
 
 interface UserAttributes {
     id: number;
@@ -8,10 +9,12 @@ interface UserAttributes {
     email: string;
     password: string;
     role: string;
-    activeDB?: boolean;
+    clients: Client[];
+    projects: Project[];
+    activeDB: boolean;
 }
 
-export interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
+export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | "activeDB" | "clients" | "projects"> {}
 
 @Table({
   tableName: 'user',
@@ -46,10 +49,13 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
-  public activeDB?: boolean;
+  public activeDB!: boolean;
 
   //Has many clients
   @HasMany(() => Client)
   public clients!: Client[];
-}
 
+  //Has many projects
+  @HasMany(() => Project)
+  public projects!: Project[];
+}
