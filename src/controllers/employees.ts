@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { Employee } from '../models/employee';
 import {EmployeeCreationAttributes} from '../models/employee';
+import {Client} from '../models';
+import { Opening } from "../models";
 
 
 
@@ -10,7 +12,7 @@ export const getEmployees = async(req: Request, res: Response) => {
     const { from = 0, to = 5 } = req.query;
 
     // DB
-    await Employee.findAll({ offset: Number(from), limit: Number(to) }).then(
+    await Employee.findAll({ offset: Number(from), limit: Number(to), include:[{model:Client,as: "client"}, {model:Opening,as: "openings"} ] }).then(
         (        employees) => {
             res.json({
                 status: "success",
@@ -33,7 +35,7 @@ export const getEmployee = async(req: Request, res: Response) => {
     const { id } = req.params;
 
     // DB
-    await Employee.findByPk(id).then(
+    await Employee.findByPk(id, {include:[{model:Client,as: "client"}, {model:Opening,as: "openings"} ]}).then(
         (employee) => {
             res.json({
                 status: "success",
@@ -57,7 +59,7 @@ export const getEmployee = async(req: Request, res: Response) => {
 export const postEmployee = async(req: Request, res: Response) => {
     const {  name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url, client_id}:EmployeeCreationAttributes = req.body;
     
-    await Employee.create({  name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url, client_id}).then(
+    await Employee.create({  name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url, client_id}, {include:[{model:Client,as: "client"}, {model:Opening,as: "openings"} ]}).then(
         (        employee) => {
             res.json({
                 status: "success",
@@ -83,7 +85,7 @@ export const updateEmployee = async(req: Request, res: Response) => {
 
     await Employee.update(resto, { where: { id } }).then(
         async () => {
-            const updatedEmployee = await Employee.findByPk(id);
+            const updatedEmployee = await Employee.findByPk(id, {include:[{model:Client,as: "client"}, {model:Opening,as: "openings"} ]});
             res.json({
                 status: "success",
                 message: "Employee updated",

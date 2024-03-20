@@ -17,14 +17,15 @@ interface EmployeeAttributes {
     division: string;
     tech_stack: string;
     gender: string;
+    openings: Opening[];
     skills_employee: string[];
     propose_action: string;
     reason_current_state: string;
     image_url: string;
-    activeDB?: boolean;
+    activeDB: boolean;
 }
 
-export interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id'| "client"> {}
+export interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id'| "client" | "openings" | "activeDB"> {}
 
 @Table({
   tableName: 'employee',
@@ -89,7 +90,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
 
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
-  public activeDB?: boolean;
+  public activeDB!: boolean;
 
   // Foreign key client
   @ForeignKey(() => Client)
