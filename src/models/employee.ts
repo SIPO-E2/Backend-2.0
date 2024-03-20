@@ -1,6 +1,7 @@
 import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
 import { Client } from './client';
+import { Opening } from './opening';
 
 interface EmployeeAttributes {
     id: number;
@@ -16,14 +17,15 @@ interface EmployeeAttributes {
     division: string;
     tech_stack: string;
     gender: string;
+    openings: Opening[];
     skills_employee: string[];
     propose_action: string;
     reason_current_state: string;
     image_url: string;
-    activeDB?: boolean;
+    activeDB: boolean;
 }
 
-export interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id'| "client"> {}
+export interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id'| "client" | "openings" | "activeDB"> {}
 
 @Table({
   tableName: 'employee',
@@ -88,7 +90,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
 
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
-  public activeDB?: boolean;
+  public activeDB!: boolean;
 
   // Foreign key client
   @ForeignKey(() => Client)
@@ -99,6 +101,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   @BelongsTo(() => Client)
   public client!: Client;
 
-  //@HasMany(() => Client)
-  //public clients!: Client[];
+  // Relación uno a muchos con Opening
+  @HasMany(() => Opening)
+  public openings!: Opening[];
 }

@@ -109,7 +109,7 @@ export const postProject = async (req: Request, res: Response) => {
 };
 
 //Updating a project
-export const putProject = async (req: Request, res: Response) => {
+export const updateProject = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { ...resto } = req.body;
 

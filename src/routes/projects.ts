@@ -2,7 +2,7 @@ import { Router } from "express";
 import { projectsController } from "../controllers";
 
 // Controllers
-const {getProjects, getProject, postProject, putProject, deleteProject} = projectsController;
+const {getProjects, getProject, postProject, updateProject, deleteProject} = projectsController;
 
 const router: Router = Router();
 
@@ -13,7 +13,7 @@ router.get('/:id', [
 
 router.post("/", [], postProject);
 
-router.put("/:id", [], putProject);
+router.patch("/:id", [], updateProject);
 
 router.delete("/:id", [], deleteProject);
 

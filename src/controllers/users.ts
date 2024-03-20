@@ -77,7 +77,7 @@ export const postUser = async(req: Request, res: Response) => {
 }
 
 // Updating a user
-export const putUser = async(req: Request, res: Response) => {
+export const updateUser = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
