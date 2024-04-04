@@ -10,7 +10,7 @@ export const getClients = async(req: Request, res: Response) => {
     const { from = 0, to = 5 } = req.query;
 
     // DB
-    await Client.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "user"}, {model: Project, as:"projects"}, {model: Employee, as: "employees"}]}).then(
+    await Client.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "owner_user"}, {model: Project, as:"projects"}]}).then(
         clients => {
             res.json({
                 status: "success",
@@ -33,7 +33,7 @@ export const getClient = async(req: Request, res: Response) => {
     const { id } = req.params;
 
     // DB
-    await Client.findByPk(id, {include: [{model: User, as: "user"}, {model: Project, as:"projects"}, {model: Employee, as: "employees"}]}).then(
+    await Client.findByPk(id, {include: [{model: User, as: "owner_user"}, {model: Project, as:"projects"}]}).then(
         client => {
             res.json({
                 status: "success",
@@ -55,10 +55,10 @@ export const getClient = async(req: Request, res: Response) => {
 
 // Creating a client
 export const postClient = async(req: Request, res: Response) => {
-    const { name, user_id, division, details, high_growth, image }:ClientCreationAttributes = req.body;
+    const { name, owner_user_id, division, details, high_growth, image, contract_pdf }:ClientCreationAttributes = req.body;
     
     // if user not found return error because the relationship is required
-    const user = await User.findByPk(user_id);
+    const user = await User.findByPk(owner_user_id);
     if (!user) {
         res.json({
             status: "error",
@@ -67,9 +67,9 @@ export const postClient = async(req: Request, res: Response) => {
         return;
     }
     
-    await Client.create({ name, user_id, division, details, high_growth, image}, {include: [{model: User, as: "user"}, {model: Project, as:"projects"}, {model: Employee, as: "employees"}]}).then(
+    await Client.create({ name, owner_user_id, division, details, high_growth, image, contract_pdf}, {include: [{model: User, as: "owner_user"}, {model: Project, as:"projects"}]}).then(
         async(client) => {
-            const clientWithAssociations = await Client.findByPk(client.id, {include: [{model: User, as: "user"}, {model: Project, as:"projects"}, {model: Employee, as: "employees"}]});
+            const clientWithAssociations = await Client.findByPk(client.id, {include: [{model: User, as: "owner_user"}, {model: Project, as:"projects"}]});
             res.json({
                 status: "success",
                 message: "Client created",
@@ -99,7 +99,7 @@ export const updateClient = async(req: Request, res: Response) => {
 
     await Client.update(resto, { where: { id } }).then(
         async () => {
-            const updatedClient = await Client.findByPk(id, {include: [{model: User, as: "user"}, {model: Project, as:"projects"}, {model: Employee, as: "employees"}]});
+            const updatedClient = await Client.findByPk(id, {include: [{model: User, as: "owner_user"}, {model: Project, as:"projects"}]});
             res.json({
                 status: "success",
                 message: "Client updated",

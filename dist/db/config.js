@@ -19,6 +19,16 @@ const project_1 = require("../models/project");
 const jobPosition_1 = require("../models/jobPosition");
 const opening_1 = require("../models/opening");
 const employee_1 = require("../models/employee");
+const role_1 = require("../models/role");
+const userRole_1 = require("../models/userRole");
+const employeeOpening_1 = require("../models/employeeOpening");
+const candidate_1 = require("../models/candidate");
+const person_1 = require("../models/person");
+const allocation_1 = require("../models/allocation");
+const interview_1 = require("../models/interview");
+const pipeline_1 = require("../models/pipeline");
+const bench_1 = require("../models/bench");
+const billing_1 = require("../models/billing");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const connection = new sequelize_typescript_1.Sequelize({
@@ -28,7 +38,7 @@ const connection = new sequelize_typescript_1.Sequelize({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
     dialect: "postgres",
-    models: [user_1.User, client_1.Client, project_1.Project, jobPosition_1.JobPosition, opening_1.Opening, employee_1.Employee],
+    models: [user_1.User, client_1.Client, project_1.Project, jobPosition_1.JobPosition, opening_1.Opening, employee_1.Employee, role_1.Role, userRole_1.UserRole, employeeOpening_1.EmployeeOpening, candidate_1.Candidate, person_1.Person, allocation_1.Allocation, interview_1.Interview, pipeline_1.Pipeline, bench_1.Bench, billing_1.Billing],
     storage: ":memory:",
 });
 function connect() {

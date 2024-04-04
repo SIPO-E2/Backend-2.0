@@ -10,7 +10,7 @@ export const getOpenings = async (req: Request, res: Response) => {
   const { from = 0, to = 5 } = req.query;
 
   // DB
-  await Opening.findAll({ offset: Number(from), limit: Number(to), include: [{model: Employee, as: "employee"}, {model: JobPosition, as: "jobPosition"}] })
+  await Opening.findAll({ offset: Number(from), limit: Number(to), include: [{model: JobPosition, as: "owner_jobPosition"}] })
     .then((openings) => {
       res.json({
         status: "success",
@@ -32,7 +32,7 @@ export const getOpening = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   // DB
-  await Opening.findByPk(id, { include: [{ model: Employee, as: "employee" }, { model: JobPosition, as: "jobPosition" }] })
+  await Opening.findByPk(id, { include: [{ model: JobPosition, as: "owner_jobPosition" }] })
     .then((openings) => {
       res.json({
         status: "success",
@@ -51,19 +51,19 @@ export const getOpening = async (req: Request, res: Response) => {
 
 // Creating a opening
 export const createOpening = async(req: Request, res: Response) => {
-    const { status_opening, open_date, close_date, close_reason, hours_required, employee_id, jobPosition_id }:OpeningCreationAttributes = req.body;
+    const { status, reason_current_status, open_date, close_date, close_reason, hours_required, owner_jobPosition_id }:OpeningCreationAttributes = req.body;
     
-    // if employee not found return error because the relationship is required
-    const employee = await Employee.findByPk(employee_id);
-    if (!employee) {
-        res.json({
-            status: "error",
-            message: " Employee of Opening not found",
-        });
-        return;
-    }
+    // // if employee not found return error because the relationship is required
+    // const employee = await Employee.findByPk(employee_id);
+    // if (!employee) {
+    //     res.json({
+    //         status: "error",
+    //         message: " Employee of Opening not found",
+    //     });
+    //     return;
+    // }
 
-    const jobPosition = await JobPosition.findByPk(jobPosition_id);
+    const jobPosition = await JobPosition.findByPk(owner_jobPosition_id);
     if (!jobPosition) {
         res.json({
             status: "error",
@@ -72,9 +72,9 @@ export const createOpening = async(req: Request, res: Response) => {
         return;
     }
     
-    await Opening.create({ status_opening, open_date, close_date, close_reason, hours_required, employee_id, jobPosition_id }, {include: [{ model: Employee, as: "employee" }, { model: JobPosition, as: "jobPosition" }] }).then(
+    await Opening.create({ status, open_date, close_date, close_reason, hours_required, owner_jobPosition_id, reason_current_status }, {include: [ { model: JobPosition, as: "owner_jobPosition" }] }).then(
         async(opening) => {
-            const openingWithAssociations = await Opening.findByPk(opening.id, {include: [{ model: Employee, as: "employee" }, { model: JobPosition, as: "jobPosition" }]});
+            const openingWithAssociations = await Opening.findByPk(opening.id, {include: [{ model: JobPosition, as: "owner_jobPosition" }]});
             res.json({
                 status: "success",
                 message: "Opening created",
@@ -104,7 +104,7 @@ export const editOpening = async (req: Request, res: Response) => {
 
   await Opening.update(resto , { where: { id } })
     .then(async () => {
-      const openingUpdated = await Opening.findByPk(id, { include: [{ model: Employee, as: "employee" }, { model: JobPosition, as: "jobPosition" }] });
+      const openingUpdated = await Opening.findByPk(id, { include: [{ model: JobPosition, as: "owner_jobPosition" }] });
       res.json({
         status: "success",
         message: "Opening updated",

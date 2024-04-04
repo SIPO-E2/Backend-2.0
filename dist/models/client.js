@@ -13,7 +13,6 @@ exports.Client = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const user_1 = require("./user");
 const project_1 = require("./project");
-const employee_1 = require("./employee");
 let Client = class Client extends sequelize_typescript_1.Model {
 };
 exports.Client = Client;
@@ -25,11 +24,11 @@ __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => user_1.User),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Client.prototype, "user_id", void 0);
+], Client.prototype, "owner_user_id", void 0);
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => user_1.User),
     __metadata("design:type", user_1.User)
-], Client.prototype, "user", void 0);
+], Client.prototype, "owner_user", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", String)
@@ -46,6 +45,10 @@ __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", String)
 ], Client.prototype, "image", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", String)
+], Client.prototype, "contract_pdf", void 0);
 __decorate([
     sequelize_typescript_1.CreatedAt,
     sequelize_typescript_1.Column,
@@ -69,10 +72,6 @@ __decorate([
     (0, sequelize_typescript_1.HasMany)(() => project_1.Project),
     __metadata("design:type", Array)
 ], Client.prototype, "projects", void 0);
-__decorate([
-    (0, sequelize_typescript_1.HasMany)(() => employee_1.Employee),
-    __metadata("design:type", Array)
-], Client.prototype, "employees", void 0);
 exports.Client = Client = __decorate([
     (0, sequelize_typescript_1.Table)({
         tableName: 'client',

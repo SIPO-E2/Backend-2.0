@@ -15,25 +15,30 @@ import { Optional } from "sequelize";
 import { Client } from "./client";
 import { User } from "./user";
 import { JobPosition } from "./jobPosition";
+import { Status, Region } from "./enums";
+
 
 interface ProjectAttributes{
     id: number;
-    user_id: number;
-    client_id: number;
+    owner_user_id: number;
+    owner_user: User;
+    owner_client_id: number;
+    owner_client: Client;
     name: string;
-    status: number;
+    status: Status;
+    reason_current_status: string;
+    status_date: Date;
+    progress: number;
     revenue: number;
-    region: string;
+    region: Region;
     posting_date: Date;
     exp_closure_date: Date;
     image: string;
-    owner: User;
-    client: Client;
-    job_positions: JobPosition[];
+    job_positions_list: JobPosition[];
     activeDB: boolean;
 }
 // Optional id, revenue and activeDB
-export interface ProjectCreationAttributes extends Optional<ProjectAttributes, 'id' | 'revenue' | 'activeDB' | "owner" | "client" | "job_positions"> {}
+export interface ProjectCreationAttributes extends Optional<ProjectAttributes, 'id' |'progress'| 'status_date' | 'revenue' | 'activeDB' | "owner_user" | "owner_client" | "job_positions_list"> {}
 
 @Table({
   tableName: "project",
@@ -47,14 +52,20 @@ export class Project extends Model<
   @Column(DataType.STRING)
   public name!: string;
 
-  @Column(DataType.INTEGER)
-  public status!: number;
+  @Column(DataType.ENUM(...Object.values(Status)))
+  public status!: Region;
+
+  @Column(DataType.STRING)
+  public reason_current_status!: string;
+
+  @Column({ type: DataType.DECIMAL(10, 2), defaultValue: 0 })
+  public progress!: number;
 
   @Column({ type: DataType.DECIMAL(10, 2), defaultValue: 0 })
   public revenue!: number;
 
-  @Column(DataType.STRING)
-  public region!: string;
+  @Column(DataType.ENUM(...Object.values(Region)))
+  public region!: Region;
 
   @Column(DataType.DATE)
   public posting_date!: Date;
@@ -84,23 +95,23 @@ export class Project extends Model<
   // Foreign key user
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)
-  public user_id!: number;
+  public owner_user_id!: number;
 
   //Has one User
   @BelongsTo(() => User)
-  public owner!: User;
+  public owner_user!: User;
 
   // Foreign key client
   @ForeignKey(() => Client)
   @Column(DataType.INTEGER)
-  public client_id!: number;
+  public owner_client_id!: number;
 
   //Has one Client
   @BelongsTo(() => Client)
-  public client!: Client;
+  public owner_client!: Client;
 
   //Has many job_positions
   @HasMany(() => JobPosition)
-  public job_positions!: JobPosition[];
+  public job_positions_list!: JobPosition[];
     
 }

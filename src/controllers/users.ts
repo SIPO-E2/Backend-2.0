@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User } from '../models';
+import { Role, User } from '../models';
 import {UserCreationAttributes} from '../models/user';
 import { Project } from '../models';
 import {Client} from '../models';
@@ -10,7 +10,7 @@ export const getUsers = async(req: Request, res: Response) => {
     const { from = 0, to = 5 } = req.query;
 
     // DB
-    await User.findAll({ offset: Number(from), limit: Number(to), include: [{model: Project, as: "projects"}, {model: Client, as:"clients"}]}).then(
+    await User.findAll({ offset: Number(from), limit: Number(to), include: [{model: Project, as: "projects"}, {model: Client, as:"clients"},  {model: Role, as: "roles"}]}).then(
         users => {
             res.json({
                 status: "success",
@@ -33,7 +33,7 @@ export const getUser = async(req: Request, res: Response) => {
     const { id } = req.params;
 
     // DB
-    await User.findByPk(id, {include: [{model: Project, as: "projects"}, {model: Client, as:"clients"}]}).then(
+    await User.findByPk(id, {include: [{model: Project, as: "projects"}, {model: Client, as:"clients"}, {model: Role, as: "roles"}]}).then(
         user => {
             res.json({
                 status: "success",
@@ -55,9 +55,9 @@ export const getUser = async(req: Request, res: Response) => {
 
 // Creating a user
 export const postUser = async(req: Request, res: Response) => {
-    const { name, email, password, role }:UserCreationAttributes = req.body;
+    const { name, email, password }:UserCreationAttributes = req.body;
     
-    await User.create({ name, email, password, role}, {include:[{model: Project, as: "projects"}, {model: Client, as:"clients"}]}).then(
+    await User.create({ name, email, password}, {include:[{model: Project, as: "projects"}, {model: Client, as:"clients"},  {model: Role, as: "roles"}]}).then(
         user => {
             res.json({
                 status: "success",
@@ -83,7 +83,7 @@ export const updateUser = async(req: Request, res: Response) => {
 
     await User.update(resto, { where: { id } }).then(
         async () => {
-            const updatedUser = await User.findByPk(id, {include: [{model: Project, as: "projects"}, {model: Client, as:"clients"}]});
+            const updatedUser = await User.findByPk(id, {include: [{model: Project, as: "projects"}, {model: Client, as:"clients"},  {model: Role, as: "roles"}]});
             res.json({
                 status: "success",
                 message: "User updated",

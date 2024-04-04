@@ -28,7 +28,7 @@ const models_3 = require("../models");
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { from = 0, to = 5 } = req.query;
     // DB
-    yield models_1.User.findAll({ offset: Number(from), limit: Number(to), include: [{ model: models_2.Project, as: "projects" }, { model: models_3.Client, as: "clients" }] }).then(users => {
+    yield models_1.User.findAll({ offset: Number(from), limit: Number(to), include: [{ model: models_2.Project, as: "projects" }, { model: models_3.Client, as: "clients" }, { model: models_1.Role, as: "roles" }] }).then(users => {
         res.json({
             status: "success",
             message: "Users found",
@@ -47,7 +47,7 @@ exports.getUsers = getUsers;
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     // DB
-    yield models_1.User.findByPk(id, { include: [{ model: models_2.Project, as: "projects" }, { model: models_3.Client, as: "clients" }] }).then(user => {
+    yield models_1.User.findByPk(id, { include: [{ model: models_2.Project, as: "projects" }, { model: models_3.Client, as: "clients" }, { model: models_1.Role, as: "roles" }] }).then(user => {
         res.json({
             status: "success",
             message: "User found",
@@ -64,8 +64,8 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getUser = getUser;
 // Creating a user
 const postUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, email, password, role } = req.body;
-    yield models_1.User.create({ name, email, password, role }, { include: [{ model: models_2.Project, as: "projects" }, { model: models_3.Client, as: "clients" }] }).then(user => {
+    const { name, email, password } = req.body;
+    yield models_1.User.create({ name, email, password }, { include: [{ model: models_2.Project, as: "projects" }, { model: models_3.Client, as: "clients" }, { model: models_1.Role, as: "roles" }] }).then(user => {
         res.json({
             status: "success",
             message: "User created",
@@ -85,7 +85,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { id } = req.params;
     const resto = __rest(req.body, []);
     yield models_1.User.update(resto, { where: { id } }).then(() => __awaiter(void 0, void 0, void 0, function* () {
-        const updatedUser = yield models_1.User.findByPk(id, { include: [{ model: models_2.Project, as: "projects" }, { model: models_3.Client, as: "clients" }] });
+        const updatedUser = yield models_1.User.findByPk(id, { include: [{ model: models_2.Project, as: "projects" }, { model: models_3.Client, as: "clients" }, { model: models_1.Role, as: "roles" }] });
         res.json({
             status: "success",
             message: "User updated",

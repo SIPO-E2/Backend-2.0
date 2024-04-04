@@ -14,6 +14,7 @@ const sequelize_typescript_1 = require("sequelize-typescript");
 const client_1 = require("./client");
 const user_1 = require("./user");
 const jobPosition_1 = require("./jobPosition");
+const enums_1 = require("./enums");
 let Project = class Project extends sequelize_typescript_1.Model {
 };
 exports.Project = Project;
@@ -22,15 +23,23 @@ __decorate([
     __metadata("design:type", String)
 ], Project.prototype, "name", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
-    __metadata("design:type", Number)
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.ENUM(...Object.values(enums_1.Status))),
+    __metadata("design:type", String)
 ], Project.prototype, "status", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", String)
+], Project.prototype, "reason_current_status", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.DECIMAL(10, 2), defaultValue: 0 }),
+    __metadata("design:type", Number)
+], Project.prototype, "progress", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.DECIMAL(10, 2), defaultValue: 0 }),
     __metadata("design:type", Number)
 ], Project.prototype, "revenue", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.ENUM(...Object.values(enums_1.Region))),
     __metadata("design:type", String)
 ], Project.prototype, "region", void 0);
 __decorate([
@@ -68,24 +77,24 @@ __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => user_1.User),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Project.prototype, "user_id", void 0);
+], Project.prototype, "owner_user_id", void 0);
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => user_1.User),
     __metadata("design:type", user_1.User)
-], Project.prototype, "owner", void 0);
+], Project.prototype, "owner_user", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => client_1.Client),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Project.prototype, "client_id", void 0);
+], Project.prototype, "owner_client_id", void 0);
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => client_1.Client),
     __metadata("design:type", client_1.Client)
-], Project.prototype, "client", void 0);
+], Project.prototype, "owner_client", void 0);
 __decorate([
     (0, sequelize_typescript_1.HasMany)(() => jobPosition_1.JobPosition),
     __metadata("design:type", Array)
-], Project.prototype, "job_positions", void 0);
+], Project.prototype, "job_positions_list", void 0);
 exports.Project = Project = __decorate([
     (0, sequelize_typescript_1.Table)({
         tableName: "project",
