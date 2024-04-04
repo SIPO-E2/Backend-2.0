@@ -24,12 +24,11 @@ exports.deleteClient = exports.updateClient = exports.postClient = exports.getCl
 const models_1 = require("../models");
 const models_2 = require("../models");
 const models_3 = require("../models");
-const models_4 = require("../models");
 // Getting clients
 const getClients = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { from = 0, to = 5 } = req.query;
     // DB
-    yield models_1.Client.findAll({ offset: Number(from), limit: Number(to), include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] }).then(clients => {
+    yield models_1.Client.findAll({ offset: Number(from), limit: Number(to), include: [{ model: models_2.User, as: "owner_user" }, { model: models_3.Project, as: "projects" }] }).then(clients => {
         res.json({
             status: "success",
             message: "Clients found",
@@ -48,7 +47,7 @@ exports.getClients = getClients;
 const getClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     // DB
-    yield models_1.Client.findByPk(id, { include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] }).then(client => {
+    yield models_1.Client.findByPk(id, { include: [{ model: models_2.User, as: "owner_user" }, { model: models_3.Project, as: "projects" }] }).then(client => {
         res.json({
             status: "success",
             message: "Client found",
@@ -65,9 +64,9 @@ const getClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getClient = getClient;
 // Creating a client
 const postClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, user_id, division, details, high_growth, image } = req.body;
+    const { name, owner_user_id, division, details, high_growth, image, contract_pdf } = req.body;
     // if user not found return error because the relationship is required
-    const user = yield models_2.User.findByPk(user_id);
+    const user = yield models_2.User.findByPk(owner_user_id);
     if (!user) {
         res.json({
             status: "error",
@@ -75,8 +74,8 @@ const postClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
         return;
     }
-    yield models_1.Client.create({ name, user_id, division, details, high_growth, image }, { include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] }).then((client) => __awaiter(void 0, void 0, void 0, function* () {
-        const clientWithAssociations = yield models_1.Client.findByPk(client.id, { include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] });
+    yield models_1.Client.create({ name, owner_user_id, division, details, high_growth, image, contract_pdf }, { include: [{ model: models_2.User, as: "owner_user" }, { model: models_3.Project, as: "projects" }] }).then((client) => __awaiter(void 0, void 0, void 0, function* () {
+        const clientWithAssociations = yield models_1.Client.findByPk(client.id, { include: [{ model: models_2.User, as: "owner_user" }, { model: models_3.Project, as: "projects" }] });
         res.json({
             status: "success",
             message: "Client created",
@@ -98,7 +97,7 @@ const updateClient = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     // // dont update user_id
     // delete resto.user_id;
     yield models_1.Client.update(resto, { where: { id } }).then(() => __awaiter(void 0, void 0, void 0, function* () {
-        const updatedClient = yield models_1.Client.findByPk(id, { include: [{ model: models_2.User, as: "user" }, { model: models_3.Project, as: "projects" }, { model: models_4.Employee, as: "employees" }] });
+        const updatedClient = yield models_1.Client.findByPk(id, { include: [{ model: models_2.User, as: "owner_user" }, { model: models_3.Project, as: "projects" }] });
         res.json({
             status: "success",
             message: "Client updated",

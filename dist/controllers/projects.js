@@ -29,7 +29,7 @@ const jobPosition_1 = require("../models/jobPosition");
 const getProjects = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { from = 0, to = 5 } = req.query;
     // DB
-    yield project_1.Project.findAll({ offset: Number(from), limit: Number(to), include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] })
+    yield project_1.Project.findAll({ offset: Number(from), limit: Number(to), include: [{ model: user_1.User, as: "owner_user" }, { model: client_1.Client, as: "owner_client" }, { model: jobPosition_1.JobPosition, as: "job_positions_list" }] })
         .then((projects) => {
         res.json({
             status: "success",
@@ -50,7 +50,7 @@ exports.getProjects = getProjects;
 const getProject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     //DB
-    yield project_1.Project.findByPk(id, { include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] })
+    yield project_1.Project.findByPk(id, { include: [{ model: user_1.User, as: "owner_user" }, { model: client_1.Client, as: "owner_client" }, { model: jobPosition_1.JobPosition, as: "job_positions_list" }] })
         .then((project) => {
         res.json({
             status: "success",
@@ -69,11 +69,11 @@ const getProject = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getProject = getProject;
 //Creating a project
 const postProject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, status, user_id, client_id, region, job_positions = [], posting_date, exp_closure_date, image, } = req.body;
-    const owner = yield user_1.User.findByPk(user_id);
-    const client = yield client_1.Client.findByPk(client_id);
+    const { name, status, reason_current_status, owner_user_id, owner_client_id, region, job_positions_list = [], posting_date, exp_closure_date, image, } = req.body;
+    const owner_user = yield user_1.User.findByPk(owner_user_id);
+    const client = yield client_1.Client.findByPk(owner_client_id);
     // if user or client not found return error because the relationship is required
-    if (!client || !owner) {
+    if (!client || !owner_user) {
         res.json({
             status: "error",
             message: "User or Client of Project not found",
@@ -84,16 +84,17 @@ const postProject = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     yield project_1.Project.create({
         name,
         status,
-        user_id,
-        client_id,
+        reason_current_status,
+        owner_user_id,
+        owner_client_id,
         region,
-        job_positions,
+        job_positions_list,
         posting_date,
         exp_closure_date,
         image,
-    }, { include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] })
+    }, { include: [{ model: user_1.User, as: "owner_user" }, { model: client_1.Client, as: "owner_client" }, { model: jobPosition_1.JobPosition, as: "job_positions_list" }] })
         .then((project) => __awaiter(void 0, void 0, void 0, function* () {
-        const projectWithAssociations = yield project_1.Project.findByPk(project.id, { include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] });
+        const projectWithAssociations = yield project_1.Project.findByPk(project.id, { include: [{ model: user_1.User, as: "owner_user" }, { model: client_1.Client, as: "owner_client" }, { model: jobPosition_1.JobPosition, as: "job_positions_list" }] });
         res.json({
             status: "success",
             message: "Project created",
@@ -115,7 +116,7 @@ const updateProject = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const resto = __rest(req.body, []);
     yield project_1.Project.update(resto, { where: { id } })
         .then(() => __awaiter(void 0, void 0, void 0, function* () {
-        const updatedProject = yield project_1.Project.findByPk(id, { include: [{ model: user_1.User, as: "owner" }, { model: client_1.Client, as: "client" }, { model: jobPosition_1.JobPosition, as: "job_positions" }] });
+        const updatedProject = yield project_1.Project.findByPk(id, { include: [{ model: user_1.User, as: "owner_user" }, { model: client_1.Client, as: "owner_client" }, { model: jobPosition_1.JobPosition, as: "job_positions_list" }] });
         res.json({
             status: "success",
             message: "Project updated",

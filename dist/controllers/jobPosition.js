@@ -14,37 +14,40 @@ const jobPosition_1 = require("../models/jobPosition");
 const project_1 = require("../models/project");
 const client_1 = require("../models/client");
 const opening_1 = require("../models/opening");
+const enums_1 = require("../models/enums");
 const determineDemandCuration = (high_growth, exclusivity) => {
-    if (high_growth && exclusivity === jobPosition_1.Exclusivity.Committed) {
-        return jobPosition_1.DemandCuration.Strategic;
+    if (high_growth && exclusivity === enums_1.Exclusivity.Committed) {
+        return enums_1.DemandCuration.Strategic;
     }
-    else if (high_growth && exclusivity === jobPosition_1.Exclusivity.Committed) {
-        return jobPosition_1.DemandCuration.Committed;
+    else if (high_growth && exclusivity === enums_1.Exclusivity.Committed) {
+        return enums_1.DemandCuration.Committed;
     }
-    else if (high_growth && exclusivity === jobPosition_1.Exclusivity.NonCommitted) {
-        return jobPosition_1.DemandCuration.Open;
+    else if (high_growth && exclusivity === enums_1.Exclusivity.NonCommitted) {
+        return enums_1.DemandCuration.Open;
     }
     // Valor por defecto o manejo de casos no contemplados
-    return jobPosition_1.DemandCuration.Open;
+    return enums_1.DemandCuration.Open;
 };
 const createJobPosition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, bill_rate, posting_type, division, openings_list = [], skills_position, region, exclusivity, cross_division, project_id, image_url } = req.body;
-    const project = yield project_1.Project.findByPk(project_id, { include: [{ model: client_1.Client, as: 'client' }] });
+    const { name, bill_rate, posting_type, status, reason_current_status, division, openings_list = [], skills_position, region, exclusivity, cross_division, owner_project_id, image } = req.body;
+    const project = yield project_1.Project.findByPk(owner_project_id, { include: [{ model: client_1.Client, as: 'owner_client' }] });
     if (!project) {
         return res.status(400).json({
             status: "error",
             message: "Project of JobPosition not found",
         });
     }
-    if (exclusivity != jobPosition_1.Exclusivity.Committed && exclusivity != jobPosition_1.Exclusivity.NonCommitted) {
+    if (exclusivity != enums_1.Exclusivity.Committed && exclusivity != enums_1.Exclusivity.NonCommitted) {
         return res.status(400).json({
             status: "error",
             message: "Committed exclusivity is only available for high growth clients",
         });
     }
-    const demand_curation = determineDemandCuration(project.client.high_growth, exclusivity);
+    const demand_curation = determineDemandCuration(project.owner_client.high_growth, exclusivity);
     yield jobPosition_1.JobPosition.create({
         name,
+        status,
+        reason_current_status,
         bill_rate,
         posting_type,
         division,
@@ -53,10 +56,10 @@ const createJobPosition = (req, res) => __awaiter(void 0, void 0, void 0, functi
         exclusivity,
         demand_curation,
         cross_division,
-        project_id,
-        image_url,
-    }, { include: [{ model: project_1.Project, as: 'project' }, { model: opening_1.Opening, as: 'openings_list' }] }).then((jobPosition) => __awaiter(void 0, void 0, void 0, function* () {
-        const jobPositionWithAssociations = yield jobPosition_1.JobPosition.findByPk(jobPosition.id, { include: [{ model: project_1.Project, as: 'project' }, { model: opening_1.Opening, as: 'openings_list' }] });
+        owner_project_id,
+        image,
+    }, { include: [{ model: project_1.Project, as: 'owner_project' }, { model: opening_1.Opening, as: 'openings_list' }] }).then((jobPosition) => __awaiter(void 0, void 0, void 0, function* () {
+        const jobPositionWithAssociations = yield jobPosition_1.JobPosition.findByPk(jobPosition.id, { include: [{ model: project_1.Project, as: 'owner_project' }, { model: opening_1.Opening, as: 'openings_list' }] });
         res.json({
             status: "success",
             message: "Job position created successfully",
@@ -77,7 +80,7 @@ const getAllJobPositions = (req, res) => __awaiter(void 0, void 0, void 0, funct
     const limit = parseInt(req.query.limit) || 5;
     const offset = parseInt(req.query.offset) || 0;
     try {
-        const jobPositions = yield jobPosition_1.JobPosition.findAll({ offset, limit, include: [{ model: project_1.Project, as: 'project' }, { model: opening_1.Opening, as: 'openings_list' }] });
+        const jobPositions = yield jobPosition_1.JobPosition.findAll({ offset, limit, include: [{ model: project_1.Project, as: 'owner_project' }, { model: opening_1.Opening, as: 'openings_list' }] });
         res.json({
             status: "success",
             message: "All job positions found",
@@ -103,7 +106,7 @@ const getJobPositionById = (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
     try {
-        const jobPosition = yield jobPosition_1.JobPosition.findByPk(id, { include: [{ model: project_1.Project, as: 'project' }, { model: opening_1.Opening, as: 'openings_list' }] });
+        const jobPosition = yield jobPosition_1.JobPosition.findByPk(id, { include: [{ model: project_1.Project, as: 'owner_project' }, { model: opening_1.Opening, as: 'openings_list' }] });
         if (!jobPosition) {
             return res.status(404).json({
                 status: "error",
@@ -135,13 +138,13 @@ const updateJobPosition = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
     }
     try {
-        const existingJobPosition = yield jobPosition_1.JobPosition.findByPk(id, { include: [{ model: project_1.Project, as: 'project' }] });
+        const existingJobPosition = yield jobPosition_1.JobPosition.findByPk(id, { include: [{ model: project_1.Project, as: 'owner_project' }] });
         if (!existingJobPosition) {
             return res
                 .status(404)
                 .json({ status: "error", message: "Job position not found" });
         }
-        const project = yield project_1.Project.findByPk(existingJobPosition.project_id, { include: [{ model: client_1.Client, as: 'client' }] });
+        const project = yield project_1.Project.findByPk(existingJobPosition.owner_project_id, { include: [{ model: client_1.Client, as: 'owner_client' }] });
         if (!project) {
             return res.status(400).json({
                 status: "error",
@@ -149,9 +152,9 @@ const updateJobPosition = (req, res) => __awaiter(void 0, void 0, void 0, functi
             });
         }
         const { exclusivity } = req.body;
-        const demand_curation = determineDemandCuration(project.client.high_growth, exclusivity);
+        const demand_curation = determineDemandCuration(project.owner_client.high_growth, exclusivity);
         yield jobPosition_1.JobPosition.update(Object.assign(Object.assign({}, req.body), { demand_curation }), { where: { id } });
-        const updatedJobPosition = yield jobPosition_1.JobPosition.findByPk(id, { include: [{ model: project_1.Project, as: 'project' }, { model: opening_1.Opening, as: 'openings_list' }] });
+        const updatedJobPosition = yield jobPosition_1.JobPosition.findByPk(id, { include: [{ model: project_1.Project, as: 'owner_project' }, { model: opening_1.Opening, as: 'openings_list' }] });
         res.json({
             status: "success",
             message: "Job position updated",

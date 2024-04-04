@@ -13,6 +13,8 @@ exports.User = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const client_1 = require("./client");
 const project_1 = require("./project");
+const userRole_1 = require("./userRole");
+const role_1 = require("./role");
 let User = class User extends sequelize_typescript_1.Model {
 };
 exports.User = User;
@@ -28,10 +30,6 @@ __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING(128)),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
-__decorate([
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING(128)),
-    __metadata("design:type", String)
-], User.prototype, "role", void 0);
 __decorate([
     sequelize_typescript_1.CreatedAt,
     sequelize_typescript_1.Column,
@@ -59,6 +57,10 @@ __decorate([
     (0, sequelize_typescript_1.HasMany)(() => project_1.Project),
     __metadata("design:type", Array)
 ], User.prototype, "projects", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsToMany)(() => role_1.Role, () => userRole_1.UserRole),
+    __metadata("design:type", Array)
+], User.prototype, "roles", void 0);
 exports.User = User = __decorate([
     (0, sequelize_typescript_1.Table)({
         tableName: 'user',

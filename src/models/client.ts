@@ -2,23 +2,25 @@ import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, Foreig
 import { Optional } from 'sequelize';
 import { User } from './user';
 import { Project } from './project';
-import { Employee } from './employee';
+import { Division } from './enums';
+// import { Employee } from './employee';
 
 interface ClientAttributes {
     id: number;
+    owner_user_id: number;
+    owner_user: User;
     name: string;
-    user_id: number;
-    user: User;
-    division: string;
+    division: Division;
     details: string;
     high_growth: boolean;
-    projects: Project[];
-    employees: Employee[];
     image: string;
+    contract_pdf: string;
+    projects: Project[];
+    // employees: Employee[];
     activeDB: boolean;
 }
 
-export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id' | "activeDB" |"details" | "user" | "projects" | "employees" > {}
+export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id' | "activeDB" |"details" | "owner_user" | "projects" > {}
 
 
 @Table({
@@ -35,11 +37,11 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   // Foreign key user
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)
-  public user_id!: number;
+  public owner_user_id!: number;
 
   // has one user
   @BelongsTo(() => User)
-  public user!: User;
+  public owner_user!: User;
 
   @Column(DataType.STRING)
   public division!: string;
@@ -52,6 +54,9 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
 
   @Column(DataType.STRING)
   public image!: string;
+
+  @Column(DataType.STRING)
+  public contract_pdf!: string;
   
   @CreatedAt
   @Column
@@ -65,7 +70,6 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   @Column
   public deletedAt!: Date;
 
-
   // Default true
   @Column({ type:DataType.BOOLEAN, defaultValue: true })
   public activeDB!: boolean;
@@ -74,7 +78,4 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   @HasMany(() => Project)
   public projects!: Project[];
 
-  //Has many employees
-  @HasMany(() => Employee)
-  public employees!: Employee[];
 }

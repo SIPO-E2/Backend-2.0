@@ -23,12 +23,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteOpening = exports.editOpening = exports.createOpening = exports.getOpening = exports.getOpenings = void 0;
 const models_1 = require("../models");
 const models_2 = require("../models");
-const models_3 = require("../models");
 // Getting openings
 const getOpenings = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { from = 0, to = 5 } = req.query;
     // DB
-    yield models_3.Opening.findAll({ offset: Number(from), limit: Number(to), include: [{ model: models_1.Employee, as: "employee" }, { model: models_2.JobPosition, as: "jobPosition" }] })
+    yield models_2.Opening.findAll({ offset: Number(from), limit: Number(to), include: [{ model: models_1.JobPosition, as: "owner_jobPosition" }] })
         .then((openings) => {
         res.json({
             status: "success",
@@ -49,7 +48,7 @@ exports.getOpenings = getOpenings;
 const getOpening = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     // DB
-    yield models_3.Opening.findByPk(id, { include: [{ model: models_1.Employee, as: "employee" }, { model: models_2.JobPosition, as: "jobPosition" }] })
+    yield models_2.Opening.findByPk(id, { include: [{ model: models_1.JobPosition, as: "owner_jobPosition" }] })
         .then((openings) => {
         res.json({
             status: "success",
@@ -68,17 +67,17 @@ const getOpening = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getOpening = getOpening;
 // Creating a opening
 const createOpening = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { status_opening, open_date, close_date, close_reason, hours_required, employee_id, jobPosition_id } = req.body;
-    // if employee not found return error because the relationship is required
-    const employee = yield models_1.Employee.findByPk(employee_id);
-    if (!employee) {
-        res.json({
-            status: "error",
-            message: " Employee of Opening not found",
-        });
-        return;
-    }
-    const jobPosition = yield models_2.JobPosition.findByPk(jobPosition_id);
+    const { status, reason_current_status, open_date, close_date, close_reason, hours_required, owner_jobPosition_id } = req.body;
+    // // if employee not found return error because the relationship is required
+    // const employee = await Employee.findByPk(employee_id);
+    // if (!employee) {
+    //     res.json({
+    //         status: "error",
+    //         message: " Employee of Opening not found",
+    //     });
+    //     return;
+    // }
+    const jobPosition = yield models_1.JobPosition.findByPk(owner_jobPosition_id);
     if (!jobPosition) {
         res.json({
             status: "error",
@@ -86,8 +85,8 @@ const createOpening = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
         return;
     }
-    yield models_3.Opening.create({ status_opening, open_date, close_date, close_reason, hours_required, employee_id, jobPosition_id }, { include: [{ model: models_1.Employee, as: "employee" }, { model: models_2.JobPosition, as: "jobPosition" }] }).then((opening) => __awaiter(void 0, void 0, void 0, function* () {
-        const openingWithAssociations = yield models_3.Opening.findByPk(opening.id, { include: [{ model: models_1.Employee, as: "employee" }, { model: models_2.JobPosition, as: "jobPosition" }] });
+    yield models_2.Opening.create({ status, open_date, close_date, close_reason, hours_required, owner_jobPosition_id, reason_current_status }, { include: [{ model: models_1.JobPosition, as: "owner_jobPosition" }] }).then((opening) => __awaiter(void 0, void 0, void 0, function* () {
+        const openingWithAssociations = yield models_2.Opening.findByPk(opening.id, { include: [{ model: models_1.JobPosition, as: "owner_jobPosition" }] });
         res.json({
             status: "success",
             message: "Opening created",
@@ -108,9 +107,9 @@ const editOpening = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const resto = __rest(req.body, []);
     //   dont update jobPosition_id
     //   delete resto.jobPosition_id;
-    yield models_3.Opening.update(resto, { where: { id } })
+    yield models_2.Opening.update(resto, { where: { id } })
         .then(() => __awaiter(void 0, void 0, void 0, function* () {
-        const openingUpdated = yield models_3.Opening.findByPk(id, { include: [{ model: models_1.Employee, as: "employee" }, { model: models_2.JobPosition, as: "jobPosition" }] });
+        const openingUpdated = yield models_2.Opening.findByPk(id, { include: [{ model: models_1.JobPosition, as: "owner_jobPosition" }] });
         res.json({
             status: "success",
             message: "Opening updated",
@@ -129,7 +128,7 @@ exports.editOpening = editOpening;
 // Deleting a opening (soft delete)
 const deleteOpening = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    yield models_3.Opening.update({ activeDB: false }, { where: { id } })
+    yield models_2.Opening.update({ activeDB: false }, { where: { id } })
         .then(() => {
         res.json({
             status: "success",

@@ -1,20 +1,22 @@
-import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany, BelongsToMany } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
 import { Client } from './client';
 import { Project } from './project';
+import { UserRole } from './userRole';
+import { Role } from './role';
 
 interface UserAttributes {
     id: number;
     name: string;
     email: string;
     password: string;
-    role: string;
     clients: Client[];
     projects: Project[];
+    roles: Role[]; 
     activeDB: boolean;
 }
 
-export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | "activeDB" | "clients" | "projects"> {}
+export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | "activeDB" | "clients" | "projects" | "roles"> {}
 
 @Table({
   tableName: 'user',
@@ -31,9 +33,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @Column(DataType.STRING(128))
   public password!: string;
-
-  @Column(DataType.STRING(128))
-  public role!: string;
+  
 
   @CreatedAt
   @Column
@@ -58,4 +58,8 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   //Has many projects
   @HasMany(() => Project)
   public projects!: Project[];
+
+    // Belongs to many users
+    @BelongsToMany(() => Role, () => UserRole)
+    public roles!: Role[];
 }

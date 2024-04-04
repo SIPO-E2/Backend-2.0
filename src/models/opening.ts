@@ -9,26 +9,29 @@ import {
   DeletedAt,
   ForeignKey,
   BelongsTo,
+  BelongsToMany,
 } from "sequelize-typescript";
 import { Optional } from "sequelize";
-import { Employee } from './employee';
+import { Employee } from "./employee";
+import { EmployeeOpening } from "./employeeOpening";
 import { JobPosition } from './jobPosition';
+import { Status } from "./enums";
 
 interface OpeningAttributes {
   id: number;
-  status_opening: string;
+  status: Status;
+  status_date: Date;
+  reason_current_status: string;
   open_date: Date;
   close_date: Date;
   close_reason: string;
   hours_required: number;
-  employee_id: number;
-  employee: Employee;
-  jobPosition: JobPosition;
-  jobPosition_id: number;
+  owner_jobPosition_id: number;
+  owner_jobPosition: JobPosition;
   activeDB: boolean;
 }
 
-export interface OpeningCreationAttributes extends Optional<OpeningAttributes, 'id' | "activeDB" | "jobPosition" | "employee"> { }
+export interface OpeningCreationAttributes extends Optional<OpeningAttributes, 'id' | "activeDB" | "owner_jobPosition"| "status_date" > { }
 
 
 @Table({
@@ -40,26 +43,24 @@ export class Opening extends Model<
   OpeningAttributes,
   OpeningCreationAttributes
 > {
+  @Column(DataType.ENUM(...Object.values(Status)))
+  public status!: string;
+
+  @Column(DataType.DATE)
+  public status_date!: Date;
+
   @Column(DataType.STRING(128))
-  public status_opening!: string;
+  public reason_current_status!: string;
 
-  // Foreign key employee
-  @ForeignKey(() => Employee)
-  @Column(DataType.INTEGER)
-  public employee_id!: number;
-
-  // has one employee
-  @BelongsTo(() => Employee)
-  public employee!: Employee;
 
   // Foreign key JobPosition
   @ForeignKey(() => JobPosition)
   @Column(DataType.INTEGER)
-  public jobPosition_id!: number;
+  public owner_jobPosition_id!: number;
 
   // has one JobPosition
   @BelongsTo(() => JobPosition)
-  public jobPosition!: JobPosition;
+  public owner_jobPosition!: JobPosition;
 
   @Column(DataType.DATE)
   public open_date!: Date;
@@ -89,4 +90,9 @@ export class Opening extends Model<
   // Default true
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
   public activeDB!: boolean;
+
+  // Add this inside your Opening model
+  @BelongsToMany(() => Employee, () => EmployeeOpening)
+  public employees!: Employee[];
+
 }

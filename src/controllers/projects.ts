@@ -11,7 +11,7 @@ export const getProjects = async(req:Request, res:Response) => {
     const { from = 0, to = 5} = req.query;
 
   // DB
-  await Project.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]} )
+  await Project.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]} )
     .then((projects) => {
       res.json({
         status: "success",
@@ -34,7 +34,7 @@ export const getProject = async( req: Request, res:Response) =>{
     const { id } = req.params;
 
   //DB
-  await Project.findByPk(id, {include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]})
+  await Project.findByPk(id, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]})
     .then((project) => {
       res.json({
         status: "success",
@@ -57,20 +57,21 @@ export const postProject = async (req: Request, res: Response) => {
   const {
     name,
     status,
-    user_id,
-    client_id,
+    reason_current_status,
+    owner_user_id,
+    owner_client_id,
     region,
-    job_positions = [],
+    job_positions_list = [],
     posting_date,
     exp_closure_date,
     image,
   }: ProjectCreationAttributes = req.body;
 
-  const owner = await User.findByPk(user_id);
-  const client = await Client.findByPk(client_id);
+  const owner_user = await User.findByPk(owner_user_id);
+  const client = await Client.findByPk(owner_client_id);
 
   // if user or client not found return error because the relationship is required
-  if (!client || !owner) {
+  if (!client || !owner_user) {
     res.json({
       status: "error",
       message: "User or Client of Project not found",
@@ -82,16 +83,17 @@ export const postProject = async (req: Request, res: Response) => {
   await Project.create({
     name,
     status,
-    user_id,
-    client_id,
+    reason_current_status,
+    owner_user_id,
+    owner_client_id,
     region,
-    job_positions,
+    job_positions_list,
     posting_date,
     exp_closure_date,
     image,
-  }, {include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]})
+  }, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]})
     .then(async(project) => {
-      const projectWithAssociations = await Project.findByPk(project.id, {include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]});
+      const projectWithAssociations = await Project.findByPk(project.id, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]});
       res.json({
         status: "success",
         message: "Project created",
@@ -115,7 +117,7 @@ export const updateProject = async (req: Request, res: Response) => {
 
   await Project.update(resto, { where: { id } })
     .then(async () => {
-      const updatedProject = await Project.findByPk(id, {include: [{model: User, as: "owner"}, {model: Client, as: "client"}, {model: JobPosition, as: "job_positions"}]});
+      const updatedProject = await Project.findByPk(id, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]});
       res.json({
         status: "success",
         message: "Project updated",

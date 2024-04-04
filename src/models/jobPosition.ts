@@ -15,40 +15,37 @@ import {
 import { Optional } from "sequelize";
 import { Opening } from "./opening";
 import { Project } from "./project";
+import { DemandCuration, Division, Exclusivity, PostingType, Region, Status } from "./enums";
 
 // Asumiendo que Exclusivity y DemandCuration son enums o tipos definidos anteriormente
-export enum Exclusivity {
-  Committed = "Committed",
-  NonCommitted = "NonCommitted",
-}
 
-export enum DemandCuration {
-  Strategic = "Strategic",
-  Committed = "Committed",
-  Open = "Open",
-}
 
 interface JobPositionAttributes {
   id: number;
+  owner_project_id: number; 
+  owner_project: Project; 
   name: string;
+  status: Status;
+  reason_current_status: string;
+  status_date: Date;
+  progress: number;
   bill_rate: number;
-  posting_type: string;
-  division: string;
-  skills_position: string[];
-  region: string;
-  exclusivity: Exclusivity;
-  demand_curation: DemandCuration;
+  division: Division;
+  region: Region;
   cross_division: boolean;
+  image: string;
+  skills_position: string[];
+  demand_curation: DemandCuration;
+  posting_type: PostingType;
+  exclusivity: Exclusivity;
+  // TODO: ADD ALLOCATIONS
   openings_list: Opening[];
-  project_id: number; 
-  project: Project; 
-  image_url: string;
   // So we can use soft delete
   activeDB: boolean;
 }
 
 export interface JobPositionCreationAttributes
-  extends Optional<JobPositionAttributes, "id" | "activeDB" | "openings_list" | "project"> {}
+  extends Optional<JobPositionAttributes, "id" | "owner_project"| "status_date"| "progress"| "demand_curation" | "activeDB" | "openings_list" > {}
 
 @Table({
   tableName: "job_position",
@@ -65,26 +62,36 @@ export class JobPosition extends Model<
   @Column({ type: DataType.STRING, allowNull: false })
   name!: string;
 
+  @Column({ type: DataType.STRING, allowNull: false })
+  status!: Status;
+
+  @Column({ type: DataType.STRING, allowNull: false })
+  reason_current_status!: string;
+
+  @Column({ type: DataType.DATE, allowNull: true })
+  status_date!: Date;
+
+  @Column({ type: DataType.DECIMAL(10, 2), defaultValue: 0 })
+  progress!: number;
+
   @Column({ type: DataType.FLOAT, allowNull: false })
   bill_rate!: number;
+  
+  @Column({ type: DataType.STRING, allowNull: false })
+  division!: Division;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  posting_type!: string;
+  region!: Region;
+
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
+  cross_division!: boolean;
+
 
   @Column({ type: DataType.STRING, allowNull: false })
-  division!: string;
+  image!: string;
 
-  @Column({ type: DataType.ARRAY(DataType.STRING), allowNull: true })
-  skills_position?: string[];
-
-  @Column({ type: DataType.STRING, allowNull: true })
-  region?: string;
-
-  @Column({
-    type: DataType.ENUM(...Object.values(Exclusivity)),
-    allowNull: false,
-  })
-  exclusivity!: Exclusivity;
+  @Column({ type: DataType.ARRAY(DataType.STRING), allowNull: false })
+  skills_position!: string[];
 
   @Column({
     type: DataType.ENUM(...Object.values(DemandCuration)),
@@ -92,11 +99,15 @@ export class JobPosition extends Model<
   })
   demand_curation!: DemandCuration;
 
-  @Column({ type: DataType.BOOLEAN, allowNull: false })
-  cross_division!: boolean;
+  @Column({ type: DataType.STRING, allowNull: false })
+  posting_type!: string;
 
-  @Column({ type: DataType.STRING, allowNull: true })
-  image_url?: string;
+
+  @Column({
+    type: DataType.ENUM(...Object.values(Exclusivity)),
+    allowNull: false,
+  })
+  exclusivity!: Exclusivity;
 
   @HasMany(() => Opening)
   openings_list!: Opening[];
@@ -104,11 +115,11 @@ export class JobPosition extends Model<
   // Foreign key project
   @ForeignKey(() => Project)
   @Column(DataType.INTEGER)
-  project_id!: number;
+  owner_project_id!: number;
 
   // has one project
   @BelongsTo(() => Project)
-  project!: Project;
+  owner_project!: Project;
 
   @CreatedAt
   @Column
@@ -123,6 +134,6 @@ export class JobPosition extends Model<
   deletedAt?: Date;
 
   // Para el manejo de borrado suave
-  @Column({ type: DataType.BOOLEAN, allowNull: true })
-  activeDB?: boolean;
+  @Column({ type: DataType.BOOLEAN, defaultValue: true})
+  activeDB!: boolean;
 }

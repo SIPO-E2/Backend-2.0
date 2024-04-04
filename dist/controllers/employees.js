@@ -23,12 +23,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEmployee = exports.updateEmployee = exports.postEmployee = exports.getEmployee = exports.getEmployees = void 0;
 const employee_1 = require("../models/employee");
 const models_1 = require("../models");
-const models_2 = require("../models");
 // Getting employees
 const getEmployees = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { from = 0, to = 5 } = req.query;
     // DB
-    yield employee_1.Employee.findAll({ offset: Number(from), limit: Number(to), include: [{ model: models_1.Client, as: "client" }, { model: models_2.Opening, as: "openings" }] }).then((employees) => {
+    yield employee_1.Employee.findAll({ offset: Number(from), limit: Number(to), include: [{ model: models_1.Opening, as: "openings" }] }).then((employees) => {
         res.json({
             status: "success",
             message: "employees found",
@@ -47,7 +46,7 @@ exports.getEmployees = getEmployees;
 const getEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     // DB
-    yield employee_1.Employee.findByPk(id, { include: [{ model: models_1.Client, as: "client" }, { model: models_2.Opening, as: "openings" }] }).then((employee) => {
+    yield employee_1.Employee.findByPk(id, { include: [{ model: models_1.Opening, as: "openings" }] }).then((employee) => {
         res.json({
             status: "success",
             message: "employee found",
@@ -64,8 +63,8 @@ const getEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getEmployee = getEmployee;
 // Creating a employee
 const postEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url, client_id } = req.body;
-    yield employee_1.Employee.create({ name, status, email, cellphone, job_title, job_grade, joining_date, division, tech_stack, gender, skills_employee, propose_action, reason_current_state, image_url, client_id }, { include: [{ model: models_1.Client, as: "client" }, { model: models_2.Opening, as: "openings" }] }).then((employee) => {
+    const { status, reason_current_status, salary, job_title, job_grade, joining_date, candidateId } = req.body;
+    yield employee_1.Employee.create({ status, job_title, job_grade, joining_date, reason_current_status, salary, candidateId }, { include: [{ model: models_1.Opening, as: "openings" }] }).then((employee) => {
         res.json({
             status: "success",
             message: "employee created",
@@ -85,7 +84,7 @@ const updateEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const { id } = req.params;
     const resto = __rest(req.body, []);
     yield employee_1.Employee.update(resto, { where: { id } }).then(() => __awaiter(void 0, void 0, void 0, function* () {
-        const updatedEmployee = yield employee_1.Employee.findByPk(id, { include: [{ model: models_1.Client, as: "client" }, { model: models_2.Opening, as: "openings" }] });
+        const updatedEmployee = yield employee_1.Employee.findByPk(id, { include: [{ model: models_1.Opening, as: "openings" }] });
         res.json({
             status: "success",
             message: "Employee updated",
