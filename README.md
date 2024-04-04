@@ -1,10 +1,4 @@
-## 3.7.4-Seminario-Evaluativo
-
-# TODOs:
-- <Model>CreationAttributes export is it necessary?
-- Made the relations from the DBDiagram
-- function controllers name
-- db config models import bug
+## Ciclo 1
 
 # Installations
 
@@ -21,6 +15,11 @@ Remember modify the file and delete the .example
 it needs to be .env
 
 - PORT = 8080 (example it can be any number)
+- DB_NAME=
+- DB_USER=
+- DB_PASS=
+- DB_HOST=
+- DB_PORT=
 
 # Compile
 
