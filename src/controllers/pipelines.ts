@@ -2,12 +2,26 @@ import { Request, Response } from "express";
 import { Pipeline } from '../models/pipeline';
 import { Candidate } from '../models/candidate';
 import { PipelineCreationAttributes } from '../models/pipeline';
+import { Person } from "../models";
 
 // Getting all pipelines
 export const getPipelines = async(req: Request, res: Response) => {
  const { from = 0, to = 5 } = req.query;
 
- await Pipeline.findAll({ offset: Number(from), limit: Number(to), include: [{ model: Candidate, as: 'candidateInformation' }] }).then(
+ await Pipeline.findAll({ offset: Number(from), limit: Number(to), include: 
+  [
+    { 
+      model: Candidate, 
+      as: 'candidateInformation',
+      include: 
+      [
+        { 
+          model: Person, 
+          as: 'personInformation' 
+        }
+      ]
+    }
+  ] }).then(
     pipelines => {
       res.json({
         status: "success",
