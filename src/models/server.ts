@@ -19,7 +19,7 @@ import {
   routerBillings,
   routerPipelines
 } from "../routes";
-// import cors from 'cors';
+import cors from 'cors';
 
 class Server {
   private app: Application;
@@ -69,7 +69,7 @@ class Server {
 
   middlewares() {
     // // CORS
-    // this.app.use(cors());
+    this.app.use(cors());
 
     // Parsing body
     this.app.use(express.json());

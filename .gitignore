@@ -22,6 +22,7 @@ build/
 
 # Ignore package-lock.json for npm
 package-lock.json
+pnpm-lock.yaml
 
 # Ignore yarn.lock for yarn
 yarn.lock
@@ -41,3 +42,5 @@ yarn.lock
 # ignore js generated files
 dest/*
 dist/*
+dist
+dist/
