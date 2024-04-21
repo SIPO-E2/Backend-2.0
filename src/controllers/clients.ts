@@ -38,7 +38,7 @@ export const getClients = async (req: Request, res: Response) => {
 };
 
 // Getting a client
-export const getClient = async (req: Request, res: Response) => {
+export const getClientById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   // DB
