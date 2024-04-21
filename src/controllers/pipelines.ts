@@ -6,22 +6,23 @@ import { Person } from "../models";
 
 // Getting all pipelines
 export const getPipelines = async(req: Request, res: Response) => {
- const { from = 0, to = 5 } = req.query;
 
- await Pipeline.findAll({ offset: Number(from), limit: Number(to), include: 
-  [
-    { 
-      model: Candidate, 
-      as: 'candidateInformation',
-      include: 
-      [
-        { 
-          model: Person, 
-          as: 'personInformation' 
-        }
-      ]
-    }
-  ] }).then(
+ await Pipeline.findAll({ 
+  include: 
+    [
+      { 
+        model: Candidate, 
+        as: 'candidateInformation',
+        include: 
+        [
+          { 
+            model: Person, 
+            as: 'personInformation' 
+          }
+        ]
+      }
+    ]
+   }).then(
     pipelines => {
       res.json({
         status: "success",

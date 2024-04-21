@@ -7,10 +7,9 @@ import {ClientCreationAttributes} from '../models/client';
 
 // Getting clients
 export const getClients = async(req: Request, res: Response) => {
-    const { from = 0, to = 5 } = req.query;
 
     // DB
-    await Client.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "owner_user"}, {model: Project, as:"projects"}]}).then(
+    await Client.findAll({ include: [{model: User, as: "owner_user"}, {model: Project, as:"projects"}]}).then(
         clients => {
             res.json({
                 status: "success",

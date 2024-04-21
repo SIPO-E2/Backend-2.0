@@ -8,10 +8,8 @@ import { Opening } from "../models";
 
 // Getting employees
 export const getEmployees = async(req: Request, res: Response) => {
-    const { from = 0, to = 5 } = req.query;
-
     // DB
-    await Employee.findAll({ offset: Number(from), limit: Number(to), include:[{model:Opening,as: "openings"} ] }).then(
+    await Employee.findAll({ include:[{model:Opening,as: "openings"} ] }).then(
         (        employees) => {
             res.json({
                 status: "success",

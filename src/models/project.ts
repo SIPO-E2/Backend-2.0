@@ -15,7 +15,7 @@ import { Optional } from "sequelize";
 import { Client } from "./client";
 import { User } from "./user";
 import { JobPosition } from "./jobPosition";
-import { Status, Region } from "./enums";
+import { Status, Region, ReasonCurrentStatus} from "./enums";
 
 
 interface ProjectAttributes{
@@ -26,7 +26,7 @@ interface ProjectAttributes{
     owner_client: Client;
     name: string;
     status: Status;
-    reason_current_status: string;
+    reason_current_status: ReasonCurrentStatus;
     status_date: Date;
     progress: number;
     revenue: number;

@@ -1,13 +1,13 @@
 // interview.ts
 import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { InterviewStatus } from './enums'; // Assuming you have an enum for InterviewStatus
+import { InterviewStatus, ReasonCurrentStatus } from './enums'; // Assuming you have an enum for InterviewStatus
 import { Optional } from 'sequelize';
 import { Allocation } from './allocation';
 
 interface InterviewAttributes {
     id: string;
     status: InterviewStatus;
-    reason_current_status: string;
+    reason_current_status: ReasonCurrentStatus;
     status_date: Date;
     allocation_id: number;
     allocation: Allocation;

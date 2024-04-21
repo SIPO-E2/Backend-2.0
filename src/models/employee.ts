@@ -2,7 +2,7 @@ import { Table, Column, Model, DataType, AllowNull, BelongsToMany, CreatedAt, Up
 import { Optional } from 'sequelize';
 import { Opening } from './opening';
 import { EmployeeOpening } from './employeeOpening';
-import { EmployeeStatus } from './enums';
+import { EmployeeStatus, ReasonCurrentStatus } from './enums';
 import { Candidate } from './candidate';
 import { Bench } from './bench';
 import { Billing } from './billing';
@@ -13,7 +13,7 @@ interface EmployeeAttributes {
     candidateId: number;
     candidateInformation: Candidate;
     status: EmployeeStatus;
-    reason_current_status: string;
+    reason_current_status: ReasonCurrentStatus;
     status_date: Date;
     salary: number;
     job_title: string;

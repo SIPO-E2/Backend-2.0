@@ -2,7 +2,7 @@
 import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, ForeignKey, BelongsTo, HasOne, HasMany } from 'sequelize-typescript';
 import { Person } from './person';
 import { Optional } from 'sequelize';
-import { CandidateStatus, CandidateWorkStatus } from './enums'; // Assuming you have an enum for CandidateStatus
+import { CandidateStatus, CandidateWorkStatus, ReasonCurrentStatus, ProposedAction} from './enums'; // Assuming you have an enum for CandidateStatus
 import { Allocation } from './allocation';
 import { Pipeline } from './pipeline';
 import { Employee } from './employee';
@@ -13,9 +13,9 @@ interface CandidateAttributes {
     personInformation: Person;
     status: CandidateStatus;
     workStatus: CandidateWorkStatus;
-    reason_current_status: string;
+    reason_current_status: ReasonCurrentStatus;
     status_date: Date;
-    propose_action: string;
+    propose_action: ProposedAction;
     allocations: Allocation[];
     activeDB: boolean;
 }

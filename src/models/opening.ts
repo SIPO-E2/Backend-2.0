@@ -15,13 +15,13 @@ import { Optional } from "sequelize";
 import { Employee } from "./employee";
 import { EmployeeOpening } from "./employeeOpening";
 import { JobPosition } from './jobPosition';
-import { Status } from "./enums";
+import { Status, ReasonCurrentStatus} from "./enums";
 
 interface OpeningAttributes {
   id: number;
   status: Status;
   status_date: Date;
-  reason_current_status: string;
+  reason_current_status: ReasonCurrentStatus;
   open_date: Date;
   close_date: Date;
   close_reason: string;

@@ -35,17 +35,30 @@ export enum InterviewStatus {
 
 // Location
 export enum Region {
-    Mexico = "Mexico",
-    Brazil = "Brazil",
-    USA = "USA"
 
+    CDMX = "CDMX",
+    HMO = "HMO",
+    CUU = "CUU",
+    MID = "MID",
+    SLP = "SLP",
+
+    CAMP = "CAMPINA",
+    SAOPA = "SAO PAULO",
+
+    COLOM = "COLOMBIA",
+    PERU = "PERU",
+    CR = "COSTA RICA",
+    ARG = "ARGENTINA",
+    DOM = "DOMINICANA",
+    DLL = "DALLAS",
+    PHX = "PHOENIX"
 }
 
 export enum Division {
-    IT = "IT",
-    HR = "HR",
-    Finance = "Finance",
-    Sales = "Sales"
+    Mexico = "Encora Mexico",
+    Brazil = "Encora Brazil",
+    CSA = "Encora Central & South America",
+    US = "Encora United States"
 }
 
 
@@ -72,4 +85,29 @@ export enum PostingType {
 export enum Gender {
     Male = "Male",
     Female = "Female"
+}
+
+//Others
+
+export enum ReasonCurrentStatus{
+    InTraining = "In training",
+    Induction = "Induction/Orientation",
+    Shadow = "Shadow resource",
+    AwaitingClient = "Awaiting client confirmation/joining",
+    Maternity = "Maternity leave",
+    Sabbatical = "Sabbatical/Other leave",
+    Intern = "Intern",
+    MovedBilling = "Moved to billing",
+    OtherRCS = "Other",
+}
+
+export enum ProposedAction{
+    ProjectSearch = "Project search",
+    InternProject = "Using in internal project",
+    UpSkilling = "Upskilling/Cross training",
+    Backup = "Backup/Shadow other projects",
+    ResourcePool = "Resource pool",
+    NoAction = "No action required",
+    OtherPA = "Others",
+    Attrition = "Attrition"
 }

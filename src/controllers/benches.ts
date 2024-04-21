@@ -6,28 +6,30 @@ import { Candidate, Person } from "../models";
 
 // Getting all benches
 export const getBenches = async(req: Request, res: Response) => {
- const { from = 0, to = 5 } = req.query;
+ 
 
- await Bench.findAll({ offset: Number(from), limit: Number(to), include:
-  [
-    { 
-      model: Employee, 
-      as: 'employeeInformation' ,
-      include: 
-      [
-        { 
-          model: Candidate, 
-          as: 'candidateInformation',
-          include:[
-            {
-              model: Person,
-              as: 'personInformation'
-            }
-          ]
-        }
-      ]
-    }
-  ] }).then(
+ await Bench.findAll({
+  include:
+    [
+      { 
+        model: Employee, 
+        as: 'employeeInformation' ,
+        include: 
+        [
+          { 
+            model: Candidate, 
+            as: 'candidateInformation',
+            include:[
+              {
+                model: Person,
+                as: 'personInformation'
+              }
+            ]
+          }
+        ]
+      }
+    ] 
+  }).then(
     benches => {
       res.json({
         status: "success",

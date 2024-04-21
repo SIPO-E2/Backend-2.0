@@ -6,28 +6,29 @@ import { Candidate, Person } from "../models";
 
 // Getting all billing records
 export const getBillings = async(req: Request, res: Response) => {
- const { from = 0, to = 5 } = req.query;
 
- await Billing.findAll({ offset: Number(from), limit: Number(to), include:
-  [
-    { 
-      model: Employee, 
-      as: 'employeeInformation' ,
-      include: 
-      [
-        { 
-          model: Candidate, 
-          as: 'candidateInformation',
-          include:[
-            {
-              model: Person,
-              as: 'personInformation'
-            }
-          ]
-        }
-      ]
-    }
-  ]}).then(
+ await Billing.findAll({ 
+    include:
+    [
+      { 
+        model: Employee, 
+        as: 'employeeInformation' ,
+        include: 
+        [
+          { 
+            model: Candidate, 
+            as: 'candidateInformation',
+            include:[
+              {
+                model: Person,
+                as: 'personInformation'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }).then(
     billings => {
       res.json({
         status: "success",

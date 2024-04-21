@@ -6,9 +6,8 @@ import { PersonCreationAttributes } from '../models/person';
 
 // Getting all persons
 export const getPersons = async(req: Request, res: Response) => {
- const { from = 0, to = 5 } = req.query;
 
- await Person.findAll({ offset: Number(from), limit: Number(to), include: [{ model: Candidate, as: 'candidateInformation' }] }).then(
+ await Person.findAll({ include: [{ model: Candidate, as: 'candidateInformation' }] }).then(
     persons => {
       res.json({
         status: "success",

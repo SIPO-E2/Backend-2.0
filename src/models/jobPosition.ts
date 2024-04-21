@@ -15,7 +15,7 @@ import {
 import { Optional } from "sequelize";
 import { Opening } from "./opening";
 import { Project } from "./project";
-import { DemandCuration, Division, Exclusivity, PostingType, Region, Status } from "./enums";
+import { DemandCuration, Division, Exclusivity, PostingType, Region, Status, ReasonCurrentStatus} from "./enums";
 
 // Asumiendo que Exclusivity y DemandCuration son enums o tipos definidos anteriormente
 
@@ -26,7 +26,7 @@ interface JobPositionAttributes {
   owner_project: Project; 
   name: string;
   status: Status;
-  reason_current_status: string;
+  reason_current_status: ReasonCurrentStatus;
   status_date: Date;
   progress: number;
   bill_rate: number;
