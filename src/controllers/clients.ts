@@ -5,33 +5,36 @@ import { Project } from "../models";
 import { Employee } from "../models";
 import { ClientCreationAttributes } from "../models/client";
 
-// Getting clients
 export const getClients = async (req: Request, res: Response) => {
-  const { from = 0, to = 5 } = req.query;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 12;
+  const offset = (page - 1) * limit;
 
-  // DB
-  await Client.findAll({
-    offset: Number(from),
-    limit: Number(to),
-    include: [
-      { model: User, as: "owner_user" },
-      { model: Project, as: "projects" },
-    ],
-  })
-    .then((clients) => {
-      res.json({
-        status: "success",
-        message: "Clients found",
-        data: clients,
-      });
-    })
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "Clients not found",
-        error: e,
-      });
+  try {
+    const [clients, total] = await Promise.all([
+      Client.findAll({
+        include: [
+          { model: User, as: "owner_user" },
+          { model: Project, as: "projects" },
+        ],
+        limit,
+        offset,
+      }),
+      Client.count(),
+    ]);
+    res.json({
+      status: "success",
+      message: "Clients found",
+      data: clients,
+      total,
     });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Clients not found",
+      error: String(error),
+    });
+  }
 };
 
 // Getting a client
