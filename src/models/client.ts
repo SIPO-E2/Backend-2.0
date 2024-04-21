@@ -1,36 +1,52 @@
-import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
-import { Optional } from 'sequelize';
-import { User } from './user';
-import { Project } from './project';
-import { Division } from './enums';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  CreatedAt,
+  UpdatedAt,
+  DeletedAt,
+  ForeignKey,
+  BelongsTo,
+  HasMany,
+} from "sequelize-typescript";
+import { Optional } from "sequelize";
+import { User } from "./user";
+import { Project } from "./project";
+import { Division } from "./enums";
 // import { Employee } from './employee';
 
 interface ClientAttributes {
-    id: number;
-    owner_user_id: number;
-    owner_user: User;
-    name: string;
-    division: Division;
-    details: string;
-    high_growth: boolean;
-    image: string;
-    contract_pdf: string;
-    projects: Project[];
-    // employees: Employee[];
-    activeDB: boolean;
+  id: number;
+  owner_user_id: number;
+  owner_user: User;
+  name: string;
+  division: Division;
+  high_growth: boolean;
+  projects: Project[];
+  // employees: Employee[];
+  activeDB: boolean;
+  //new changes
+  joiningDate: Date;
+  experience: string;
+  money: number; // Luego se cambia a salary
+  imageURL: string;
+  contractFile: File | null;
+  additonalDetails: string;
 }
 
-export interface ClientCreationAttributes extends Optional<ClientAttributes, 'id' | "activeDB" |"details" | "owner_user" | "projects" > {}
-
+export interface ClientCreationAttributes
+  extends Optional<
+    ClientAttributes,
+    "id" | "activeDB" | "additonalDetails" | "owner_user" | "projects"
+  > {}
 
 @Table({
-  tableName: 'client',
+  tableName: "client",
   timestamps: true,
   paranoid: true,
 })
-
 export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
-
   @Column(DataType.STRING)
   public name!: string;
 
@@ -43,21 +59,33 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   @BelongsTo(() => User)
   public owner_user!: User;
 
-  @Column(DataType.STRING)
-  public division!: string;
+  @Column({
+    type: DataType.ENUM(...Object.values(Division)),
+    allowNull: false,
+  })
+  division!: Division;
 
   @Column(DataType.STRING)
-  public details?: string;
+  public additonalDetails?: string;
 
   @Column(DataType.BOOLEAN)
   public high_growth!: boolean;
 
   @Column(DataType.STRING)
-  public image!: string;
+  public imageURL!: string;
 
   @Column(DataType.STRING)
-  public contract_pdf!: string;
-  
+  public contractFile!: string;
+
+  @Column(DataType.DATE)
+  public joiningDate!: Date;
+
+  @Column(DataType.STRING)
+  public experience!: string;
+
+  @Column(DataType.STRING)
+  public money!: string;
+
   @CreatedAt
   @Column
   public createdAt!: Date;
@@ -71,11 +99,10 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   public deletedAt!: Date;
 
   // Default true
-  @Column({ type:DataType.BOOLEAN, defaultValue: true })
+  @Column({ type: DataType.BOOLEAN, defaultValue: true })
   public activeDB!: boolean;
 
   //Has many projects
   @HasMany(() => Project)
   public projects!: Project[];
-
 }
