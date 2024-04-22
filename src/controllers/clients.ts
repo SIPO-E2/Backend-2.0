@@ -4,35 +4,49 @@ import { User } from "../models";
 import { Project } from "../models";
 import { Employee } from "../models";
 import { ClientCreationAttributes } from "../models/client";
+import { Op } from "sequelize";
 
 export const getClients = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 12;
   const offset = (page - 1) * limit;
+  const { name, division, highGrowth } = req.query;
+
+  const whereClause: { [key: string]: any } = {};
+  if (typeof name === "string" && name !== "") {
+    whereClause.name = { [Op.like]: `%${name}%` };
+  }
+  if (typeof division === "string" && division !== "") {
+    whereClause.division = division;
+  }
+  if (typeof highGrowth === "string") {
+    whereClause.high_growth = highGrowth === "true"; // Ensuring that the value is a boolean
+  }
 
   try {
-    const [clients, total] = await Promise.all([
-      Client.findAll({
-        include: [
-          { model: User, as: "owner_user" },
-          { model: Project, as: "projects" },
-        ],
-        limit,
-        offset,
-      }),
-      Client.count(),
-    ]);
+    const clients = await Client.findAll({
+      where: whereClause,
+      include: [
+        { model: User, as: "owner_user" },
+        { model: Project, as: "projects" },
+      ],
+      limit,
+      offset,
+    });
+    const totalClients = await Client.count({ where: whereClause });
+
     res.json({
       status: "success",
       message: "Clients found",
       data: clients,
-      total,
+      total: totalClients,
     });
   } catch (error) {
+    console.error("Error fetching clients:", error);
     res.status(500).json({
       status: "error",
-      message: "Clients not found",
-      error: String(error),
+      message: "Error fetching clients",
+      error: error,
     });
   }
 };
