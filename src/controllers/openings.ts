@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Employee } from '../models';
+import { Employee, Project, User } from '../models';
 import { JobPosition } from '../models';
 import { Opening } from '../models';
 import {OpeningCreationAttributes} from '../models/opening';
@@ -10,7 +10,7 @@ export const getOpenings = async (req: Request, res: Response) => {
   const { from = 0, to = 5 } = req.query;
 
   // DB
-  await Opening.findAll({ offset: Number(from), limit: Number(to), include: [{model: JobPosition, as: "owner_jobPosition"}] })
+  await Opening.findAll({ offset: Number(from), limit: Number(to), include: [{ model: JobPosition, as: "owner_jobPosition", include:[{model:Project, as: "owner_project", include:[{model:User, as: "owner_user"}]}] }] })
     .then((openings) => {
       res.json({
         status: "success",
@@ -32,7 +32,7 @@ export const getOpening = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   // DB
-  await Opening.findByPk(id, { include: [{ model: JobPosition, as: "owner_jobPosition" }] })
+  await Opening.findByPk(id, { include: [{ model: JobPosition, as: "owner_jobPosition", include:[{model:Project, as: "owner_project", include:[{model:User, as: "owner_user"}]}] }] })
     .then((openings) => {
       res.json({
         status: "success",
