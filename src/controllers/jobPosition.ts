@@ -103,12 +103,6 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
           [{
           model: Client,
           as: 'owner_client',
-          include:
-          [
-            {
-            model: User,
-            as: 'owner'
-          }]
         }]
       }, {
         model: Opening,
