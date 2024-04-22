@@ -5,6 +5,7 @@ import {
 } from "../models/jobPosition";
 import { Project } from "../models/project";
 import { Client } from "../models/client";
+import { User } from "../models/user";
 import { Opening } from "../models/opening";
 import { Exclusivity, DemandCuration } from "../models/enums";
 
@@ -30,7 +31,9 @@ const determineDemandCuration =  (
 export const createJobPosition = async (req: Request, res: Response) => {
     const { name, bill_rate, posting_type, status, reason_current_status, division, openings_list = [], skills_position, region, exclusivity, cross_division, owner_project_id, image}:JobPositionCreationAttributes = req.body;
     
-    const project = await Project.findByPk(owner_project_id, { include: [{model: Client, as: 'owner_client'}]});
+    //Obtener
+    const project = await Project.findByPk(owner_project_id, { include: 
+      [{model: Client, as: 'owner_client'}]});
 
     if (!project) {
       return res.status(400).json({
@@ -88,7 +91,7 @@ export const createJobPosition = async (req: Request, res: Response) => {
 // Get all job positions
 export const getAllJobPositions = async (req: Request, res: Response) => {
   // Corrección: Uso de 'limit' y 'offset' para la paginación, con valores predeterminados más claros
-  const limit = parseInt(req.query.limit as string) || 5;
+  const limit = parseInt(req.query.limit as string) || 10;
   const offset = parseInt(req.query.offset as string) || 0;
 
   try {
@@ -117,17 +120,37 @@ export const getJobPositionById = async (req: Request, res: Response) => {
   }
 
   try {
-    const jobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'owner_project'}, {model: Opening, as: 'openings_list'}]} );
+    const jobPosition = await JobPosition.findByPk(id, {
+      include: [{
+        model: Project, 
+        as: 'owner_project',
+        include: [{
+          model: Client,
+          as: 'owner_client',
+          include: [{
+            model: User,
+            as: 'owner'
+          }]
+        }]
+      }, {
+        model: Opening,
+        as: 'openings_list'
+      }]
+    });
     if (!jobPosition) {
       return res.status(404).json({
         status: "error",
         message: "Job position not found",
       });
     }
+
+    const ownerName = jobPosition.owner_project?.owner_client?.owner_user?.name;
+
     res.json({
       status: "success",
       message: "Job position found",
       data: jobPosition,
+      ownerName: ownerName || "No owner name available"
     });
   } catch (e) {
     res.status(500).json({

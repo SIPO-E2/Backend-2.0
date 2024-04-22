@@ -8,7 +8,7 @@ import { JobPosition } from "../models/jobPosition";
 //Getting projects
 
 export const getProjects = async(req:Request, res:Response) => {
-    const { from = 0, to = 5} = req.query;
+    const { from = 0, to = 10} = req.query;
 
   // DB
   await Project.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]} )

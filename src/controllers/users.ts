@@ -7,7 +7,7 @@ import {Client} from '../models';
 
 // Getting users
 export const getUsers = async(req: Request, res: Response) => {
-    const { from = 0, to = 5 } = req.query;
+    const { from = 0, to = 10 } = req.query;
 
     // DB
     await User.findAll({ offset: Number(from), limit: Number(to), include: [{model: Project, as: "projects"}, {model: Client, as:"clients"},  {model: Role, as: "roles"}]}).then(

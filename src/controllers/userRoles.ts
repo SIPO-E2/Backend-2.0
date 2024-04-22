@@ -6,7 +6,7 @@ import { Role } from '../models';
 
 // Getting all user roles
 export const getUserRoles = async(req: Request, res: Response) => {
-    const { from = 0, to = 5 } = req.query;
+    const { from = 0, to = 10 } = req.query;
 
     // DB
     await UserRole.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "user"}, {model: Role, as: "role"}]}).then(

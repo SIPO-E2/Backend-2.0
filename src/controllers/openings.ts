@@ -7,7 +7,7 @@ import {OpeningCreationAttributes} from '../models/opening';
 
 // Getting openings
 export const getOpenings = async (req: Request, res: Response) => {
-  const { from = 0, to = 5 } = req.query;
+  const { from = 0, to = 10 } = req.query;
 
   // DB
   await Opening.findAll({ offset: Number(from), limit: Number(to), include: [{model: JobPosition, as: "owner_jobPosition"}] })
