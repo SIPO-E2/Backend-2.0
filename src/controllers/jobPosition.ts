@@ -7,6 +7,7 @@ import { Project } from "../models/project";
 import { Client } from "../models/client";
 import { Opening } from "../models/opening";
 import { Exclusivity, DemandCuration } from "../models/enums";
+import { User } from "../models";
 
 
 const determineDemandCuration =  (
@@ -92,7 +93,7 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
   const offset = parseInt(req.query.offset as string) || 0;
 
   try {
-    const jobPositions = await JobPosition.findAll({ offset, limit, include: [{model: Project, as: 'owner_project'}, {model: Opening, as: 'openings_list'}] });
+    const jobPositions = await JobPosition.findAll({ offset, limit, include: [{model: Project, as: 'owner_project', include:[{model:User, as: "owner_user"}]}, {model: Opening, as: 'openings_list'}] });
     res.json({
       status: "success",
       message: "All job positions found",
@@ -117,7 +118,7 @@ export const getJobPositionById = async (req: Request, res: Response) => {
   }
 
   try {
-    const jobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'owner_project'}, {model: Opening, as: 'openings_list'}]} );
+    const jobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'owner_project', include:[{model:User, as: "owner_user"}]}, {model: Opening, as: 'openings_list'}]} );
     if (!jobPosition) {
       return res.status(404).json({
         status: "error",
