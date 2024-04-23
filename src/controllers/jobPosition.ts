@@ -5,6 +5,7 @@ import {
 } from "../models/jobPosition";
 import { Project } from "../models/project";
 import { Client } from "../models/client";
+import { User } from "../models/user";
 import { Opening } from "../models/opening";
 import { Exclusivity, DemandCuration } from "../models/enums";
 
@@ -92,7 +93,29 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
   const offset = parseInt(req.query.offset as string) || 0;
 
   try {
-    const jobPositions = await JobPosition.findAll({ offset, limit, include: [{model: Project, as: 'owner_project'}, {model: Opening, as: 'openings_list'}] });
+    const jobPositions = await JobPosition.findAll({ offset, limit, 
+      include: 
+      [
+        {
+        model: Project,
+        as: 'owner_project',
+        include:
+          [{
+          model: Client,
+          as: 'owner_client',
+          include:
+          [
+            {
+            model: User,
+            as: 'owner'
+          }]
+        }]
+      }, {
+        model: Opening,
+        as: 'openings_list'
+      }]
+    });
+
     res.json({
       status: "success",
       message: "All job positions found",
