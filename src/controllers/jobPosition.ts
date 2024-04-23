@@ -93,7 +93,7 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
   const offset = parseInt(req.query.offset as string) || 0;
 
   try {
-    const jobPositions = await JobPosition.findAll({ offset, limit, include: [{model: Project, as: 'owner_project', include:[{model:User, as: "owner_user"}]}, {model: Opening, as: 'openings_list'}] });
+    const jobPositions = await JobPosition.findAll({ offset, limit, include: [{model: Project, as: 'owner_project', include:[{model:User, as: "owner_user"}, {model:Client, as:"owner_client"}]}, {model: Opening, as: 'openings_list'}] });
     res.json({
       status: "success",
       message: "All job positions found",
