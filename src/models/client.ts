@@ -26,19 +26,18 @@ interface ClientAttributes {
   projects: Project[];
   // employees: Employee[];
   activeDB: boolean;
-  //new changes
   joiningDate: Date;
   experience: string;
   money: number; // Luego se cambia a salary
   imageURL: string;
   contractFile: File | null;
-  additonalDetails: string;
+  additionalDetails: string;
 }
 
 export interface ClientCreationAttributes
   extends Optional<
     ClientAttributes,
-    "id" | "activeDB" | "additonalDetails" | "owner_user" | "projects"
+    "id" | "activeDB" | "additionalDetails" | "owner_user" | "projects"
   > {}
 
 @Table({
@@ -66,7 +65,7 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   division!: Division;
 
   @Column(DataType.STRING)
-  public additonalDetails?: string;
+  public additionalDetails?: string;
 
   @Column(DataType.BOOLEAN)
   public high_growth!: boolean;
