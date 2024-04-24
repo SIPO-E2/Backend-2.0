@@ -145,7 +145,7 @@ export const postClient = async (req: Request, res: Response) => {
     });
 };
 
-// Updating a client
+// Updating a clientt
 export const updateClient = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { ...resto } = req.body;
