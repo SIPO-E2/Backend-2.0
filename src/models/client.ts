@@ -30,7 +30,7 @@ interface ClientAttributes {
   activeDB: boolean;
   joiningDate: Date;
   experience: string;
-  money: number; // Luego se cambia a salary
+  salary: number; // Luego se cambia a salary
   imageURL: string;
   contractFile: File | null;
   additionalDetails: string;
@@ -85,7 +85,7 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   public experience!: string;
 
   @Column(DataType.STRING)
-  public money!: string;
+  public salary!: string;
 
   @CreatedAt
   @Column

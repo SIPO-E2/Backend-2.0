@@ -90,7 +90,7 @@ export const postClient = async (req: Request, res: Response) => {
     contractFile,
     joiningDate,
     experience,
-    money,
+    salary,
   }: ClientCreationAttributes = req.body;
 
   // if user not found return error because the relationship is required
@@ -114,7 +114,7 @@ export const postClient = async (req: Request, res: Response) => {
       contractFile,
       joiningDate,
       experience,
-      money,
+      salary,
     },
     {
       include: [
