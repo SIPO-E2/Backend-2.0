@@ -19,7 +19,11 @@ export const getClients = async (req: Request, res: Response) => {
     whereClause.name = { [Op.like]: `%${name}%` };
   }
   if (divisions) {
-    whereClause.divisions = { [Op.overlap]: [divisions] };
+    if (!Object.values(Division).includes(divisions as Division)) {
+      return res.status(400).json({ message: "Invalid division provided" });
+    }
+    // Filtering by clients whose 'divisions' field contains the specified value
+    whereClause.divisions = { [Op.contains]: [divisions] };
   }
   if (highGrowth !== undefined) {
     whereClause.high_growth = highGrowth === "true";
@@ -161,7 +165,6 @@ export const updateClient = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Client not found" });
     }
 
-    // Asegúrate de que cada división proporcionada es válida antes de actualizar
     const validDivisions = divisions.every((division: Division) =>
       Object.values(Division).includes(division)
     );
@@ -169,7 +172,7 @@ export const updateClient = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid division(s) provided" });
     }
 
-    // Actualiza el cliente directamente con las nuevas divisiones
+    // Update the client directly with the new divisions
     await client.update({ name, divisions });
 
     return res.status(200).json({
