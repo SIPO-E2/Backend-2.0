@@ -10,7 +10,7 @@ export const getClients = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 12;
   const offset = (page - 1) * limit;
-  const { name, division, highGrowth } = req.query;
+  const { name, division, highGrowth, activeDB } = req.query;
 
   const whereClause: { [key: string]: any } = {};
   if (typeof name === "string" && name !== "") {
@@ -20,7 +20,10 @@ export const getClients = async (req: Request, res: Response) => {
     whereClause.division = division;
   }
   if (typeof highGrowth === "string") {
-    whereClause.high_growth = highGrowth === "true"; // Ensuring that the value is a boolean
+    whereClause.high_growth = highGrowth === "true";
+  }
+  if (typeof activeDB === "string") {
+    whereClause.activeDB = activeDB === "true";
   }
 
   try {
