@@ -13,16 +13,17 @@ export const getClients = async (req: Request, res: Response) => {
   const { name, divisions, highGrowth, activeDB } = req.query;
 
   const whereClause: { [key: string]: any } = {};
-  if (typeof name === "string" && name !== "") {
+
+  if (name) {
     whereClause.name = { [Op.like]: `%${name}%` };
   }
-  if (divisions && divisions.length) {
-    whereClause.division = { [Op.contains]: divisions };
+  if (divisions) {
+    whereClause.divisions = { [Op.overlap]: [divisions] };
   }
-  if (typeof highGrowth === "string") {
+  if (highGrowth !== undefined) {
     whereClause.high_growth = highGrowth === "true";
   }
-  if (typeof activeDB === "string") {
+  if (activeDB !== undefined) {
     whereClause.activeDB = activeDB === "true";
   }
 
