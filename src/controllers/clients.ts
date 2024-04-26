@@ -10,14 +10,14 @@ export const getClients = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 12;
   const offset = (page - 1) * limit;
-  const { name, division, highGrowth, activeDB } = req.query;
+  const { name, divisions, highGrowth, activeDB } = req.query;
 
   const whereClause: { [key: string]: any } = {};
   if (typeof name === "string" && name !== "") {
     whereClause.name = { [Op.like]: `%${name}%` };
   }
-  if (typeof division === "string" && division !== "") {
-    whereClause.division = division;
+  if (divisions && divisions.length) {
+    whereClause.division = { [Op.contains]: divisions };
   }
   if (typeof highGrowth === "string") {
     whereClause.high_growth = highGrowth === "true";
@@ -86,7 +86,7 @@ export const postClient = async (req: Request, res: Response) => {
   const {
     name,
     owner_user_id,
-    division,
+    divisions,
     additionalDetails,
     high_growth,
     imageURL,
@@ -110,7 +110,7 @@ export const postClient = async (req: Request, res: Response) => {
     {
       name,
       owner_user_id,
-      division,
+      divisions,
       additionalDetails,
       high_growth,
       imageURL,
@@ -151,7 +151,7 @@ export const postClient = async (req: Request, res: Response) => {
 // Updating a clientt
 export const updateClient = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { ...resto } = req.body;
+  const { divisions, ...resto } = req.body;
 
   // // dont update user_id
   // delete resto.user_id;

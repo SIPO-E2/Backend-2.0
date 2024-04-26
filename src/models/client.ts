@@ -23,7 +23,7 @@ interface ClientAttributes {
   owner_user_id: number;
   owner_user: User;
   name: string;
-  division: Division;
+  divisions: Division;
   high_growth: boolean;
   projects: Project[];
   // employees: Employee[];
@@ -61,10 +61,10 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes> {
   public owner_user!: User;
 
   @Column({
-    type: DataType.ENUM(...Object.values(Division)),
+    type: DataType.ARRAY(DataType.ENUM(...Object.values(Division))),
     allowNull: false,
   })
-  division!: Division;
+  divisions!: Division[];
 
   @Column(DataType.STRING)
   public additionalDetails?: string;
