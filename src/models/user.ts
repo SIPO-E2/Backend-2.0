@@ -1,30 +1,45 @@
-import { Table, Column, Model, DataType, AllowNull, CreatedAt, UpdatedAt, DeletedAt, HasMany, BelongsToMany } from 'sequelize-typescript';
-import { Optional } from 'sequelize';
-import { Client } from './client';
-import { Project } from './project';
-import { UserRole } from './userRole';
-import { Role } from './role';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  AllowNull,
+  CreatedAt,
+  UpdatedAt,
+  DeletedAt,
+  HasMany,
+  BelongsToMany,
+} from "sequelize-typescript";
+import { Optional } from "sequelize";
+import { Client } from "./client";
+import { Project } from "./project";
+import { UserRole } from "./userRole";
+import { Role } from "./role";
 
 interface UserAttributes {
-    id: number;
-    name: string;
-    email: string;
-    password: string;
-    clients: Client[];
-    projects: Project[];
-    roles: Role[]; 
-    activeDB: boolean;
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  profileImage: string;
+  clients: Client[];
+  projects: Project[];
+  roles: Role[];
+  activeDB: boolean;
 }
 
-export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | "activeDB" | "clients" | "projects" | "roles"> {}
+export interface UserCreationAttributes
+  extends Optional<
+    UserAttributes,
+    "id" | "activeDB" | "clients" | "projects" | "roles"
+  > {}
 
 @Table({
-  tableName: 'user',
+  tableName: "user",
   timestamps: true,
   paranoid: true,
 })
 export class User extends Model<UserAttributes, UserCreationAttributes> {
-
   @Column(DataType.STRING(128))
   public name!: string;
 
@@ -33,7 +48,9 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @Column(DataType.STRING(128))
   public password!: string;
-  
+
+  @Column(DataType.STRING(128))
+  public profileImage!: string;
 
   @CreatedAt
   @Column
@@ -48,7 +65,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   public deletedAt!: Date;
 
   // Default true
-  @Column({ type:DataType.BOOLEAN, defaultValue: true })
+  @Column({ type: DataType.BOOLEAN, defaultValue: true })
   public activeDB!: boolean;
 
   //Has many clients
@@ -59,7 +76,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @HasMany(() => Project)
   public projects!: Project[];
 
-    // Belongs to many users
-    @BelongsToMany(() => Role, () => UserRole)
-    public roles!: Role[];
+  // Belongs to many users
+  @BelongsToMany(() => Role, () => UserRole)
+  public roles!: Role[];
 }
