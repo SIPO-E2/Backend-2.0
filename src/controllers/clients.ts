@@ -5,6 +5,7 @@ import { Project } from "../models";
 import { Employee } from "../models";
 import { ClientCreationAttributes } from "../models/client";
 import { Op } from "sequelize";
+import { Division } from "../models/enums";
 
 export const getClients = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
@@ -149,35 +150,36 @@ export const postClient = async (req: Request, res: Response) => {
     });
 };
 
-// Updating a clientt
 export const updateClient = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { divisions, ...resto } = req.body;
+  const { name, divisions } = req.body;
 
-  // // dont update user_id
-  // delete resto.user_id;
+  try {
+    const client = await Client.findByPk(id);
 
-  await Client.update(resto, { where: { id } })
-    .then(async () => {
-      const updatedClient = await Client.findByPk(id, {
-        include: [
-          { model: User, as: "owner_user" },
-          { model: Project, as: "projects" },
-        ],
-      });
-      res.json({
-        status: "success",
-        message: "Client updated",
-        data: updatedClient,
-      });
-    })
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "Client not updated",
-        error: e,
-      });
+    if (!client) {
+      return res.status(404).json({ message: "Client not found" });
+    }
+
+    // Asegúrate de que cada división proporcionada es válida antes de actualizar
+    const validDivisions = divisions.every((division: Division) =>
+      Object.values(Division).includes(division)
+    );
+    if (!validDivisions) {
+      return res.status(400).json({ message: "Invalid division(s) provided" });
+    }
+
+    // Actualiza el cliente directamente con las nuevas divisiones
+    await client.update({ name, divisions });
+
+    return res.status(200).json({
+      message: "Client updated successfully",
+      data: client,
     });
+  } catch (error) {
+    console.error("Error updating client:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 //Delete a client(soft delete)

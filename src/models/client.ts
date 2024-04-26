@@ -23,10 +23,9 @@ interface ClientAttributes {
   owner_user_id: number;
   owner_user: User;
   name: string;
-  divisions: Division;
+  divisions: Division[]; // Cambiar el tipo de dato a un array de Division
   high_growth: boolean;
   projects: Project[];
-  // employees: Employee[];
   activeDB: boolean;
   joiningDate: Date;
   experience: string;
