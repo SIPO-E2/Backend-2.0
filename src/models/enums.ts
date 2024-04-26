@@ -8,12 +8,15 @@ export enum Status {
 export enum EmployeeStatus {
     Bench = "Bench",
     Billing = "Billing",
-    Fired = "Fired"
+    Hired = "Proactive hire",
+    Resigned = "Proactive hire",
+    Other = "Attrited/Resigned"
 }
 
 export enum CandidateStatus {
     StandBy = "Stand By",
-    Hired = "Hired"
+    Hired = "Hired",
+    Other = "Other"
 }
 
 export enum CandidateWorkStatus {
@@ -84,11 +87,11 @@ export enum PostingType {
 // General Information
 export enum Gender {
     Male = "Male",
-    Female = "Female"
+    Female = "Female",
+    Unknown = "Unknown"
 }
 
 //Others
-
 export enum ReasonCurrentStatus{
     InTraining = "In training",
     Induction = "Induction/Orientation",
@@ -96,8 +99,14 @@ export enum ReasonCurrentStatus{
     AwaitingClient = "Awaiting client confirmation/joining",
     Maternity = "Maternity leave",
     Sabbatical = "Sabbatical/Other leave",
-    Intern = "Intern",
+    PrevCA ="Previous Client attrition",
+    PrevCHCr = "Previous Client HC reduction",
+    TranBP = "Transition between projects",
+    NoAvailableProjects = "Transition between projects",
+    InternalProject = "Internal project",
     MovedBilling = "Moved to billing",
+    PerformanceIssue = "Performance issues/PIP ",
+    Intern = "Intern",
     OtherRCS = "Other",
 }
 
