@@ -156,7 +156,18 @@ export const postClient = async (req: Request, res: Response) => {
 
 export const updateClient = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, divisions } = req.body;
+  const {
+    name,
+    owner_user_id,
+    divisions,
+    high_growth,
+    imageURL,
+    contractFile,
+    joiningDate,
+    experience,
+    salary,
+    additionalDetails,
+  } = req.body;
 
   try {
     const client = await Client.findByPk(id);
@@ -165,6 +176,7 @@ export const updateClient = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Client not found" });
     }
 
+    // Validar las divisiones para asegurarse de que son valores válidos
     const validDivisions = divisions.every((division: Division) =>
       Object.values(Division).includes(division)
     );
@@ -172,9 +184,21 @@ export const updateClient = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid division(s) provided" });
     }
 
-    // Update the client directly with the new divisions
-    await client.update({ name, divisions });
+    // Actualizar el cliente con los nuevos valores
+    await client.update({
+      name,
+      owner_user_id,
+      divisions,
+      high_growth,
+      imageURL,
+      contractFile,
+      joiningDate,
+      experience,
+      salary,
+      additionalDetails,
+    });
 
+    // Respuesta exitosa con el cliente actualizado
     return res.status(200).json({
       message: "Client updated successfully",
       data: client,
