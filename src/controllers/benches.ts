@@ -6,8 +6,6 @@ import { Candidate, Person } from "../models";
 
 // Getting all benches
 export const getBenches = async(req: Request, res: Response) => {
- 
-
  await Bench.findAll({
   include:
     [
@@ -50,7 +48,26 @@ export const getBenches = async(req: Request, res: Response) => {
 export const getBench = async(req: Request, res: Response) => {
  const { id } = req.params;
 
- await Bench.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] }).then(
+ await Bench.findByPk(id, { include:
+  [
+    { 
+      model: Employee, 
+      as: 'employeeInformation' ,
+      include: 
+      [
+        { 
+          model: Candidate, 
+          as: 'candidateInformation',
+          include:[
+            {
+              model: Person,
+              as: 'personInformation'
+            }
+          ]
+        }
+      ]
+    }
+  ] }).then(
     bench => {
       res.json({
         status: "success",
@@ -99,7 +116,26 @@ export const updateBench = async(req: Request, res: Response) => {
 
  await Bench.update(resto, { where: { id } }).then(
     async () => {
-      const updatedBench = await Bench.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] });
+      const updatedBench = await Bench.findByPk(id, { include:
+        [
+          { 
+            model: Employee, 
+            as: 'employeeInformation' ,
+            include: 
+            [
+              { 
+                model: Candidate, 
+                as: 'candidateInformation',
+                include:[
+                  {
+                    model: Person,
+                    as: 'personInformation'
+                  }
+                ]
+              }
+            ]
+          }
+        ] });
       res.json({
         status: "success",
         message: "Bench updated",

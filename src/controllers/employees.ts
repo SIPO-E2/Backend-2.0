@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Employee } from '../models/employee';
 import {EmployeeCreationAttributes} from '../models/employee';
-import { Opening } from "../models";
+import { Candidate, Opening, Person } from "../models";
 
 
 
@@ -9,7 +9,23 @@ import { Opening } from "../models";
 // Getting employees
 export const getEmployees = async(req: Request, res: Response) => {
     // DB
-    await Employee.findAll({ include:[{model:Opening,as: "openings"} ] }).then(
+    await Employee.findAll({ 
+        include:
+        [
+            
+            { model: Candidate, 
+                as: 'candidateInformation',
+                include: 
+                [
+                  { 
+                    model: Person, 
+                    as: 'personInformation' 
+                  }
+                ]
+            },
+            {model:Opening,as: "openings"} 
+        
+        ] }).then(
         (        employees) => {
             res.json({
                 status: "success",

@@ -21,7 +21,8 @@ export enum CandidateStatus {
 
 export enum CandidateWorkStatus {
     Pipeline = "Pipeline",
-    Employee = "Employee"
+    Employee = "Employee",
+    Other = "Other"
 }
 
 export enum AllocationStatus {
@@ -61,7 +62,8 @@ export enum Division {
     Mexico = "Encora Mexico",
     Brazil = "Encora Brazil",
     CSA = "Encora Central & South America",
-    US = "Encora United States"
+    US = "Encora United States",
+    default = "Encora"
 }
 
 

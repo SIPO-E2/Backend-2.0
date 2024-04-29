@@ -49,7 +49,26 @@ export const getBillings = async(req: Request, res: Response) => {
 export const getBilling = async(req: Request, res: Response) => {
  const { id } = req.params;
 
- await Billing.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] }).then(
+ await Billing.findByPk(id, { include:
+  [
+    { 
+      model: Employee, 
+      as: 'employeeInformation' ,
+      include: 
+      [
+        { 
+          model: Candidate, 
+          as: 'candidateInformation',
+          include:[
+            {
+              model: Person,
+              as: 'personInformation'
+            }
+          ]
+        }
+      ]
+    }
+  ] }).then(
     billing => {
       res.json({
         status: "success",
@@ -98,7 +117,26 @@ export const updateBilling = async(req: Request, res: Response) => {
 
  await Billing.update(resto, { where: { id } }).then(
     async () => {
-      const updatedBilling = await Billing.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] });
+      const updatedBilling = await Billing.findByPk(id, { include:
+        [
+          { 
+            model: Employee, 
+            as: 'employeeInformation' ,
+            include: 
+            [
+              { 
+                model: Candidate, 
+                as: 'candidateInformation',
+                include:[
+                  {
+                    model: Person,
+                    as: 'personInformation'
+                  }
+                ]
+              }
+            ]
+          }
+        ] });
       res.json({
         status: "success",
         message: "Billing updated",

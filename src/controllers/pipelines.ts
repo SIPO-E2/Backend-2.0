@@ -6,7 +6,6 @@ import { Person } from "../models";
 
 // Getting all pipelines
 export const getPipelines = async(req: Request, res: Response) => {
-
  await Pipeline.findAll({ 
   include: 
     [
@@ -43,7 +42,22 @@ export const getPipelines = async(req: Request, res: Response) => {
 export const getPipeline = async(req: Request, res: Response) => {
  const { id } = req.params;
 
- await Pipeline.findByPk(id, { include: [{ model: Candidate, as: 'candidateInformation' }] }).then(
+ await Pipeline.findByPk(id, { 
+  include: 
+    [
+      { 
+        model: Candidate, 
+        as: 'candidateInformation',
+        include: 
+        [
+          { 
+            model: Person, 
+            as: 'personInformation' 
+          }
+        ]
+      }
+    ] })
+  .then(
     pipeline => {
       res.json({
         status: "success",
@@ -85,14 +99,27 @@ export const postPipeline = async(req: Request, res: Response) => {
  );
 }
 
-// Updating an existing pipeline and their candidate
+// Updating an existing pipeline and their candidate and person
 export const updatePipeline = async(req: Request, res: Response) => {
  const { id } = req.params;
  const { ...resto } = req.body;
 
  await Pipeline.update(resto, { where: { id } }).then(
     async () => {
-      const updatedPipeline = await Pipeline.findByPk(id, { include: [{ model: Candidate, as: 'candidateInformation' }] });
+      const updatedPipeline = await Pipeline.findByPk(id, { include: 
+        [
+          { 
+            model: Candidate, 
+            as: 'candidateInformation',
+            include: 
+            [
+              { 
+                model: Person, 
+                as: 'personInformation' 
+              }
+            ]
+          }
+        ] });
       res.json({
         status: "success",
         message: "Pipeline updated",
