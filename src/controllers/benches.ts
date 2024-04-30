@@ -12,15 +12,17 @@ export const getBenches = async(req: Request, res: Response) => {
       { 
         model: Employee, 
         as: 'employeeInformation' ,
+
         include: 
         [
           { 
             model: Candidate, 
             as: 'candidateInformation',
+
             include:[
               {
                 model: Person,
-                as: 'personInformation'
+                as: 'personInformation',
               }
             ]
           }
