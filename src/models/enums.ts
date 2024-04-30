@@ -9,7 +9,7 @@ export enum EmployeeStatus {
     Bench = "Bench",
     Billing = "Billing",
     Hired = "Proactive hire",
-    Resigned = "Proactive hire",
+    Resigned = "Proactive ",
     Other = "Attrited/Resigned"
 }
 

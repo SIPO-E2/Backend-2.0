@@ -4,47 +4,51 @@ import { Employee } from '../models/employee';
 import { BenchCreationAttributes } from '../models/bench';
 import { Candidate, Person } from "../models";
 
-// Getting all benches
+// Getting benches
+// Getting benches
 export const getBenches = async(req: Request, res: Response) => {
- await Bench.findAll({
-  include:
-    [
-      { 
-        model: Employee, 
-        as: 'employeeInformation' ,
-
-        include: 
-        [
-          { 
-            model: Candidate, 
-            as: 'candidateInformation',
-
-            include:[
-              {
-                model: Person,
-                as: 'personInformation',
-              }
-            ]
+  // DB
+  await Bench.findAll({ 
+      include: [
+          {
+              model: Employee, 
+              as: 'employeeInformation',
+              attributes: ['id', 'candidateId', 'status', 'reason_current_status', 'status_date', 'salary', 'job_title', 'job_grade', 'joining_date'],
+              include: [{
+                  model: Candidate,
+                  as: 'candidateInformation',
+                  attributes: ['id', 'personId', 'status', 'workStatus', 'reason_current_status', 'status_date', 'propose_action'],
+                  include: [{
+                      model: Person,
+                      as: 'personInformation',
+                      attributes: ['id', 'name', 'email', 'celphone', 'gender', 'image', 'division', 'tech_stack', 'skills', 'createdAt', 'updatedAt', 'deletedAt', 'activeDB']
+                  }]
+              }]
           }
-        ]
-      }
-    ] 
+      ]
   }).then(
-    benches => {
+      (benches) => {
+          res.json({
+              status: "success",
+              message: "Benches found",
+              data: benches,
+          });
+      }   
+  ).catch( (e) =>{
       res.json({
-        status: "success",
-        message: "Benches found",
-        data: benches,
+          status: "error",
+          message: "Benches not found",
+          error: e
       });
-    }   
- ).catch( e =>{
-    res.json({
-      status: "error",
-      message: "Benches not found",
-      error: e
-    });
- });
+  });
 }
+
+
+
+
+
+ 
+ 
 
 // Getting a specific bench by ID, including their employee
 export const getBench = async(req: Request, res: Response) => {
@@ -88,28 +92,41 @@ export const getBench = async(req: Request, res: Response) => {
  );
 }
 
-// Creating a new bench and associating an employee
 export const postBench = async(req: Request, res: Response) => {
- const { benchSince, billingStartDate, employeeId }: BenchCreationAttributes = req.body;
+  const { benchSince, billingStartDate, employeeId }: BenchCreationAttributes = req.body;
   
- await Bench.create({ benchSince, billingStartDate, employeeId }, { include: [{ model: Employee, as: 'employeeInformation' }] }).then(
-    bench => {
-      res.json({
-        status: "success",
-        message: "Bench created",
-        data: bench,
+  try {
+      // Verificar si el empleado con el ID proporcionado existe
+      const employee = await Employee.findByPk(employeeId);
+      if (!employee) {
+          return res.status(404).json({
+              status: "error",
+              message: "Employee not found",
+          });
+      }
+
+      // Crear el nuevo banco asociado al empleado encontrado
+      const bench = await Bench.create({
+          benchSince,
+          billingStartDate,
+          employeeId,
+          employeeInformation: employee // Asociar el objeto de empleado
       });
-    }
- ).catch(
-    e => {
+
       res.json({
-        status: "error",
-        message: "Bench not created",
-        error: e
+          status: "success",
+          message: "Bench created",
+          data: bench,
       });
-    }
- );
+  } catch (error) {
+      res.status(500).json({
+          status: "error",
+          message: "Bench not created",
+          error: error
+      });
+  }
 }
+
 
 // Updating an existing bench and their employee
 export const updateBench = async(req: Request, res: Response) => {

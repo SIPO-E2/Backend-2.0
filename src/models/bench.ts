@@ -2,6 +2,7 @@
 import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, DeletedAt, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Employee } from './employee';
 import { Optional } from 'sequelize';
+import { Person } from "./person"
 
 interface BenchAttributes {
     id: number;
@@ -12,7 +13,7 @@ interface BenchAttributes {
     activeDB: boolean;
 }
 
-export interface BenchCreationAttributes extends Optional<BenchAttributes, 'id' | 'activeDB' | "employeeInformation"> {}
+export interface BenchCreationAttributes extends Optional<BenchAttributes, 'id' | 'activeDB'> {}
 
 @Table({
  tableName: 'bench',
@@ -25,8 +26,12 @@ export class Bench extends Model<BenchAttributes, BenchCreationAttributes> {
  @Column(DataType.INTEGER)
  public employeeId!: number;
 
- @BelongsTo(() => Employee)
+ @BelongsTo(() => Employee, 'employeeId')
  public employeeInformation!: Employee;
+
+ @BelongsTo(() => Person, 'personId') // Define la relación con Person
+ public personInformation!: Person; // Agrega esta propiedad para la información de la persona
+ 
 
  @Column(DataType.DATE)
  public benchSince!: Date;
