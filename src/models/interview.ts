@@ -15,7 +15,7 @@ interface InterviewAttributes {
     activeDB: boolean;
 }
 
-export interface InterviewCreationAttributes extends Optional<InterviewAttributes, 'id' | 'activeDB' | "allocation" | "status_date"> {}
+export interface InterviewCreationAttributes extends Optional<InterviewAttributes, 'id' | 'activeDB' | "allocation" | "status_date" | "interview_date" | "allocation_id" | "status" | "reason_current_status"> {}
 
 @Table({
  tableName: 'interview',

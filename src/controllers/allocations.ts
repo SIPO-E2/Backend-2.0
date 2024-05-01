@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
 import { Allocation } from '../models';
-import { Candidate,JobPosition, Client, Interview } from '../models';
+import { Candidate, JobPosition, Client, Interview } from '../models';
 import { AllocationCreationAttributes } from '../models/allocation';
 
 // Getting all allocations
-export const getAllocations = async(req: Request, res: Response) => {
-    await Allocation.findAll({ 
+export const getAllocations = async (req: Request, res: Response) => {
+    await Allocation.findAll({
         include: [
             { model: Candidate, as: 'candidate' },
             { model: JobPosition, as: 'jobPosition' },
             { model: Client, as: 'client' },
             { model: Interview, as: 'interviews' }
-        ] 
+        ]
     }).then(
         allocations => {
             res.json({
@@ -20,7 +20,7 @@ export const getAllocations = async(req: Request, res: Response) => {
                 data: allocations,
             });
         }
-    ).catch( e => {
+    ).catch(e => {
         res.json({
             status: "error",
             message: "Allocations not found",
@@ -30,16 +30,16 @@ export const getAllocations = async(req: Request, res: Response) => {
 }
 
 // Getting a specific allocation by ID
-export const getAllocation = async(req: Request, res: Response) => {
+export const getAllocation = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    await Allocation.findByPk(id, { 
+    await Allocation.findByPk(id, {
         include: [
             { model: Candidate, as: 'candidate' },
             { model: JobPosition, as: 'jobPosition' },
             { model: Client, as: 'client' },
             { model: Interview, as: 'interviews' }
-        ] 
+        ]
     }).then(
         allocation => {
             res.json({
@@ -48,7 +48,7 @@ export const getAllocation = async(req: Request, res: Response) => {
                 data: allocation,
             });
         }
-    ).catch( e => {
+    ).catch(e => {
         res.json({
             status: "error",
             message: "Allocation not found",
@@ -58,9 +58,9 @@ export const getAllocation = async(req: Request, res: Response) => {
 }
 
 // Creating a new allocation
-export const postAllocation = async(req: Request, res: Response) => {
+export const postAllocation = async (req: Request, res: Response) => {
     const { status, reason_current_status, candidateId, jobPositionId, client_id, details }: AllocationCreationAttributes = req.body;
-    
+
     await Allocation.create({ status, reason_current_status, candidateId, jobPositionId, client_id, details }).then(
         allocation => {
             res.json({
@@ -69,7 +69,7 @@ export const postAllocation = async(req: Request, res: Response) => {
                 data: allocation,
             });
         }
-    ).catch( e => {
+    ).catch(e => {
         res.json({
             status: "error",
             message: "Allocation not created",
@@ -79,54 +79,138 @@ export const postAllocation = async(req: Request, res: Response) => {
 }
 
 // Updating an existing allocation
-export const updateAllocation = async(req: Request, res: Response) => {
-    const { id } = req.params;
+// export const updateAllocation = async(req: Request, res: Response) => {
+//     const { id } = req.params;
+//     const { ...resto } = req.body;
+
+//     await Allocation.update(resto, { where: { id } }).then(
+//         async () => {
+//             const updatedAllocation = await Allocation.findByPk(id, { 
+//                 include: [
+//                     { model: Candidate, as: 'candidate' },
+//                     { model: JobPosition, as: 'jobPosition' },
+//                     { model: Client, as: 'client' },
+//                     { model: Interview, as: 'interviews' }
+//                 ] 
+//             });
+//             res.json({
+//                 status: "success",
+//                 message: "Allocation updated",
+//                 data: updatedAllocation,
+//             });
+//         }
+//     ).catch( e => {
+//         res.json({
+//             status: "error",
+//             message: "Allocation not updated",
+//             error: e
+//         });
+//     });
+// }
+
+// Deleting an allocation (soft delete)
+// export const deleteAllocation = async(req: Request, res: Response) => {
+//     const { id } = req.params;
+
+//     await Allocation.update({ activeDB: false}, { where: { id }}).then(
+//         () => {
+//             res.json({
+//                 status: "success",
+//                 message: "Allocation deleted",
+//                 data: {
+//                     id
+//                 },
+//             });
+//         }
+//     ).catch( e => {
+//         res.json({
+//             status: "error",
+//             message: "Allocation not deleted",
+//             error: e
+//         });
+//     });
+// }
+
+export const updateAllocation = async (req: Request, res: Response) => {
+    const { candidateId, jobPositionId } = req.params;
     const { ...resto } = req.body;
 
-    await Allocation.update(resto, { where: { id } }).then(
-        async () => {
-            const updatedAllocation = await Allocation.findByPk(id, { 
-                include: [
-                    { model: Candidate, as: 'candidate' },
-                    { model: JobPosition, as: 'jobPosition' },
-                    { model: Client, as: 'client' },
-                    { model: Interview, as: 'interviews' }
-                ] 
+
+
+    // const candidateIdNumber = Number(candidateId);
+    // const jobPositionIdNumber = Number(jobPositionId);
+
+    // if (isNaN(candidateIdNumber) || isNaN(jobPositionIdNumber)) {
+    //     return res.status(400).json({
+    //         status: "error",
+    //         message: "candidateId and jobPositionId must be valid numbers",
+    //     });
+    // }
+
+    await Allocation.update(resto, { where: { candidateId, jobPositionId } })
+        .then(async () => {
+            const updatedAllocation = await Allocation.findOne({
+                where: { candidateId, jobPositionId },
+                include: [Candidate, JobPosition],
             });
+            if (!updatedAllocation) {
+                return res.status(404).json({
+                    status: "error",
+                    message: "Allocation not found",
+                });
+            }
             res.json({
                 status: "success",
                 message: "Allocation updated",
                 data: updatedAllocation,
             });
-        }
-    ).catch( e => {
-        res.json({
-            status: "error",
-            message: "Allocation not updated",
-            error: e
+        })
+        .catch((e) => {
+            res.status(500).json({
+                status: "error",
+                message: "Allocation not updated",
+                error: e.toString(),
+            });
         });
-    });
-}
+};
 
-// Deleting an allocation (soft delete)
-export const deleteAllocation = async(req: Request, res: Response) => {
-    const { id } = req.params;
 
-    await Allocation.update({ activeDB: false}, { where: { id }}).then(
-        () => {
+export const deleteAllocation = async (req: Request, res: Response) => {
+    const { candidateId, jobPositionId } = req.params;
+
+    const candidateIdNumber = parseInt(candidateId);
+    const jobPositionIdNumber = parseInt(jobPositionId);
+
+    if (isNaN(candidateIdNumber) || isNaN(jobPositionIdNumber)) {
+        return res.status(400).json({
+            status: "error",
+            message: "candidateId and jobPositionId must be valid numbers",
+        });
+    }
+
+    // if (!candidateId || !jobPositionId || isNaN(candidateId) || isNaN(jobPositionId)) {
+    //     return res.status(400).json({
+    //         status: "error",
+    //         message: "candidateId and jobPositionId must be valid numbers",
+    //     });
+    // }
+
+    await Allocation.update({ activeDB: false }, { where: { candidateId: candidateId, jobPositionId: jobPositionId } })
+        .then(() => {
             res.json({
                 status: "success",
                 message: "Allocation deleted",
                 data: {
-                    id
+                    candidateId: candidateIdNumber,
+                    jobPositionId: jobPositionIdNumber,
                 },
             });
-        }
-    ).catch( e => {
-        res.json({
-            status: "error",
-            message: "Allocation not deleted",
-            error: e
+        })
+        .catch((e) => {
+            res.status(500).json({
+                status: "error",
+                message: "Allocation not deleted",
+                error: e.toString(),
+            });
         });
-    });
-}
+};

@@ -14,8 +14,8 @@ router.get('/:id', [], getAllocation);
 
 router.post('/',[], postAllocation);
 
-router.patch('/:id', [], updateAllocation);
+router.patch('/:candidateId/:jobPositionId', [], updateAllocation);
 
-router.delete('/:id', [], deleteAllocation);
+router.delete('/:candidateId/:jobPositionId', [], deleteAllocation);
 
 export default router;

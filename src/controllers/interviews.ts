@@ -45,9 +45,9 @@ export const getInterview = async(req: Request, res: Response) => {
 
 // Creating a new interview
 export const postInterview = async(req: Request, res: Response) => {
-    const { status, reason_current_status, allocation_id, interview_date }: InterviewCreationAttributes = req.body;
+    const { allocation, status_date, interview_date,  allocation_id, status, reason_current_status }: InterviewCreationAttributes = req.body;
     
-    await Interview.create({ status, reason_current_status, allocation_id, interview_date }).then(
+    await Interview.create({ allocation, status_date, interview_date,  allocation_id, status, reason_current_status}).then(
         interview => {
             res.json({
                 status: "success",
@@ -91,21 +91,25 @@ export const updateInterview = async(req: Request, res: Response) => {
 export const deleteInterview = async(req: Request, res: Response) => {
     const { id } = req.params;
 
-    await Interview.update({ activeDB: false}, { where: { id }}).then(
-        () => {
-            res.json({
-                status: "success",
-                message: "Interview deleted",
-                data: {
-                    id
-                },
-            });
-        }
-    ).catch( e => {
-        res.json({
+    // Find the interview record by ID
+    const interview = await Interview.findByPk(id);
+
+    if (!interview) {
+        return res.status(404).json({
             status: "error",
-            message: "Interview not deleted",
-            error: e
+            message: "Interview not found",
         });
+    }
+
+    // Update the interview record to mark it as inactive
+    await interview.update({ activeDB: false });
+
+    res.json({
+        status: "success",
+        message: "Interview deleted",
+        data: {
+            id
+        },
     });
 }
+
