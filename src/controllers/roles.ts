@@ -12,6 +12,7 @@ export const getRoles = async (req: Request, res: Response) => {
     name = "",
     updatedStart = "",
     updatedEnd = "",
+    activeDB,
   } = req.query;
 
   const offset = (Number(page) - 1) * Number(limit);
@@ -30,6 +31,7 @@ export const getRoles = async (req: Request, res: Response) => {
           [Op.between]: [updatedStartDate, updatedEndDate],
         },
       }),
+    ...(activeDB !== undefined && { activeDB: activeDB === "true" }), // Adding the activeDB filter
   };
 
   try {
