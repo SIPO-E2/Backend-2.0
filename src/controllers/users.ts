@@ -93,11 +93,20 @@ export const postUser = async (req: Request, res: Response) => {
       ],
     }
   )
-    .then((user) => {
+
+    .then(async (user) => {
+      const userWithAssociations = await User.findByPk(user.id, {
+        include: [
+          { model: Project, as: "projects" },
+          { model: Client, as: "clients" },
+          { model: Role, as: "roles" },
+        ],
+      });
+
       res.json({
         status: "success",
         message: "User created",
-        data: user,
+        data: userWithAssociations,
       });
     })
     .catch((e) => {
