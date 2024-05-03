@@ -10,7 +10,7 @@ import { Exclusivity, DemandCuration } from "../models/enums";
 import { User } from "../models";
 
 
-const determineDemandCuration =  (
+const determineDemandCuration = (
   high_growth: boolean,
   exclusivity: Exclusivity
 ) => {
@@ -28,76 +28,89 @@ const determineDemandCuration =  (
 };
 
 
-export const createJobPosition = async (req: Request, res: Response) => {
-    const { name, bill_rate, posting_type, status, reason_current_status, division, openings_list = [], skills_position, region, exclusivity, cross_division, owner_project_id, image}:JobPositionCreationAttributes = req.body;
-    
-    const project = await Project.findByPk(owner_project_id, { include: [{model: Client, as: 'owner_client'}]});
+export const postJobPosition = async (req: Request, res: Response) => {
+  const { name, bill_rate, posting_type, status, reason_current_status, division, openings_list = [], skills_position, region, exclusivity, cross_division, owner_project_id, image }: JobPositionCreationAttributes = req.body;
 
-    if (!project) {
-      return res.status(400).json({
-        status: "error",
-        message: "Project of JobPosition not found",
+  if (!name || !bill_rate || !posting_type || !status || !reason_current_status || !division || !openings_list || !skills_position || !region || !exclusivity || !cross_division || !owner_project_id || !image) {
+    return res.status(400).json({
+      status: "error",
+      message: "All fields are required",
+    });
+  }
+  if (isNaN(owner_project_id)) {
+    return res.status(400).json({
+      status: "error",
+      message: "owner_project_id must be a valid number",
+    });
+  }
+
+  const project = await Project.findByPk(owner_project_id, { include: [{ model: Client, as: 'owner_client' }] });
+
+  if (!project) {
+    return res.status(400).json({
+      status: "error",
+      message: "Project of JobPosition not found",
+    });
+  }
+
+  if (exclusivity != Exclusivity.Committed && exclusivity != Exclusivity.NonCommitted) {
+    return res.status(400).json({
+      status: "error",
+      message: "Committed exclusivity is only available for high growth clients",
+    });
+  }
+
+  const demand_curation: DemandCuration = determineDemandCuration(project.owner_client.high_growth, exclusivity);
+
+
+
+  await JobPosition.create({
+    name,
+    status,
+    reason_current_status,
+    bill_rate,
+    posting_type,
+    division,
+    skills_position,
+    region,
+    exclusivity,
+    demand_curation,
+    cross_division,
+    owner_project_id,
+    image,
+  }, { include: [{ model: Project, as: 'owner_project' }, { model: Opening, as: 'openings_list' }] }).then(
+    async (jobPosition) => {
+      const jobPositionWithAssociations = await JobPosition.findByPk(jobPosition.id, { include: [{ model: Project, as: 'owner_project' }, { model: Opening, as: 'openings_list' }] });
+      res.json({
+        status: "success",
+        message: "Job position created successfully",
+        data: jobPositionWithAssociations,
       });
     }
-
-    if (exclusivity != Exclusivity.Committed && exclusivity != Exclusivity.NonCommitted) {
-      return res.status(400).json({
+  ).catch(
+    e => {
+      res.json({
         status: "error",
-        message: "Committed exclusivity is only available for high growth clients",
+        message: "Job position not created",
+        error: e
       });
     }
-    
-    const demand_curation:DemandCuration = determineDemandCuration(project.owner_client.high_growth, exclusivity);
-
-
-
-    await JobPosition.create({
-      name,
-      status,
-      reason_current_status,
-      bill_rate,
-      posting_type,
-      division,
-      skills_position,
-      region,
-      exclusivity,
-      demand_curation,
-      cross_division,
-      owner_project_id,
-      image,
-    }, {include: [{model: Project, as: 'owner_project'}, {model: Opening, as: 'openings_list'}]}).then(
-      async(jobPosition) => {
-        const jobPositionWithAssociations = await JobPosition.findByPk(jobPosition.id, {include: [{model: Project, as: 'owner_project'}, {model: Opening, as: 'openings_list'}]});
-        res.json({
-          status: "success",
-          message: "Job position created successfully",
-          data: jobPositionWithAssociations,
-        });
-      }
-    ).catch(
-      e => {
-        res.json({
-          status: "error",
-          message: "Job position not created",
-          error: e
-        });
-      }
-    );
+  );
 
 };
 
 // Get all job positions
 export const getAllJobPositions = async (req: Request, res: Response) => {
   try {
-    const jobPositions = await JobPosition.findAll({ 
-      include: [{ 
-        model: Project, 
-        as: 'owner_project', 
+    const jobPositions = await JobPosition.findAll({
+      include: [{
+        model: Project,
+        as: 'owner_project',
         include: [{ model: User, as: "owner_user" }, { model: Client, as: "owner_client" }]
-      }, { 
-        model: Opening, 
-        as: 'openings_list' 
-      }] 
+      }, {
+        model: Opening,
+        as: 'openings_list'
+      }]
     });
     res.json({
       status: "success",
@@ -124,7 +137,7 @@ export const getJobPositionById = async (req: Request, res: Response) => {
   }
 
   try {
-    const jobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'owner_project', include:[{model:User, as: "owner_user"}]}, {model: Opening, as: 'openings_list'}]} );
+    const jobPosition = await JobPosition.findByPk(id, { include: [{ model: Project, as: 'owner_project', include: [{ model: User, as: "owner_user" }] }, { model: Opening, as: 'openings_list' }] });
     if (!jobPosition) {
       return res.status(404).json({
         status: "error",
@@ -148,6 +161,16 @@ export const getJobPositionById = async (req: Request, res: Response) => {
 // Update a job position
 export const updateJobPosition = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
+
+  const jobPositionIdNumber = Number(id);
+
+  if (isNaN(jobPositionIdNumber)) {
+    return res.status(400).json({
+      status: "error",
+      message: "Job position id must be a valid number",
+    });
+  }
+
   if (!id) {
     return res.status(400).json({
       status: "error",
@@ -156,14 +179,14 @@ export const updateJobPosition = async (req: Request, res: Response) => {
   }
 
   try {
-    const existingJobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'owner_project'}]});
+    const existingJobPosition = await JobPosition.findByPk(id, { include: [{ model: Project, as: 'owner_project' }] });
     if (!existingJobPosition) {
       return res
-      .status(404)
-      .json({ status: "error", message: "Job position not found" });
+        .status(404)
+        .json({ status: "error", message: "Job position not found" });
     }
-    const project = await Project.findByPk(existingJobPosition.owner_project_id, { include: [{model: Client, as: 'owner_client'}]});
-    
+    const project = await Project.findByPk(existingJobPosition.owner_project_id, { include: [{ model: Client, as: 'owner_client' }] });
+
     if (!project) {
       return res.status(400).json({
         status: "error",
@@ -173,14 +196,14 @@ export const updateJobPosition = async (req: Request, res: Response) => {
 
     const { exclusivity } = req.body;
 
-    const demand_curation:DemandCuration = determineDemandCuration(project.owner_client.high_growth, exclusivity);
+    const demand_curation: DemandCuration = determineDemandCuration(project.owner_client.high_growth, exclusivity);
 
     await JobPosition.update(
-      { ...req.body, demand_curation},
+      { ...req.body, demand_curation },
       { where: { id } }
     );
 
-    const updatedJobPosition = await JobPosition.findByPk(id, {include: [{model: Project, as: 'owner_project'}, {model: Opening, as: 'openings_list'}]});
+    const updatedJobPosition = await JobPosition.findByPk(id, { include: [{ model: Project, as: 'owner_project' }, { model: Opening, as: 'openings_list' }] });
     res.json({
       status: "success",
       message: "Job position updated",
@@ -198,25 +221,34 @@ export const updateJobPosition = async (req: Request, res: Response) => {
 
 // Soft Delete a job position
 export const deleteJobPosition = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  if (!id) {
+  const { id } = req.params;
+
+  const jobPositionIdNumber = parseInt(id);
+
+  if (!jobPositionIdNumber || isNaN(jobPositionIdNumber)) {
     return res.status(400).json({
       status: "error",
-      message: "Invalid job position ID",
+      message: "Job position id must be a valid number",
     });
   }
 
-  try {
-    await JobPosition.update({ activeDB: false }, { where: { id } });
-    res.json({
-      status: "success",
-      message: "Job position deleted",
-    });
-  } catch (e) {
-    res.status(500).json({
-      status: "error",
-      message: "Error deleting job position",
-      error: e,
-    });
-  }
+  await JobPosition.update({ activeDB: false }, { where: { id } }).then(
+    () => {
+        res.json({
+            status: "success",
+            message: "Job position deleted",
+            data: {
+                id
+            },
+        });
+    }
+).catch(
+    e => {
+        res.json({
+            status: "error",
+            message: "Job position not deleted",
+            error: e
+        });
+    }
+);
 };
