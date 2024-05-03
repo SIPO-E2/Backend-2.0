@@ -61,6 +61,19 @@ export const getAllocation = async (req: Request, res: Response) => {
 export const postAllocation = async (req: Request, res: Response) => {
     const { status, reason_current_status, candidateId, jobPositionId, client_id, details }: AllocationCreationAttributes = req.body;
 
+    if (!status || !reason_current_status || !candidateId || !jobPositionId || !client_id || !details) {
+        return res.status(400).json({
+            status: "error",
+            message: "All fields are required",
+        });
+    }
+    if (isNaN(candidateId) || isNaN(jobPositionId) || isNaN(client_id)){
+        return res.status(400).json({
+            status: "error",
+            message: "candidateId must be a valid number",
+        });
+    }
+
     await Allocation.create({ status, reason_current_status, candidateId, jobPositionId, client_id, details }).then(
         allocation => {
             res.json({

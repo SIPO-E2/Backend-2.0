@@ -41,8 +41,7 @@ class Server {
     interviews: "/api/interviews",
     pipelines: "/api/pipelines",
     benches: "/api/benches",
-    billings: "/api/billings",
-
+    billings: "/api/billings"
   };
 
   constructor() {
