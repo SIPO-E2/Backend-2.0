@@ -88,12 +88,17 @@ export const createJobPosition = async (req: Request, res: Response) => {
 
 // Get all job positions
 export const getAllJobPositions = async (req: Request, res: Response) => {
-  // Corrección: Uso de 'limit' y 'offset' para la paginación, con valores predeterminados más claros
-  const limit = parseInt(req.query.limit as string) || 5;
-  const offset = parseInt(req.query.offset as string) || 0;
-
   try {
-    const jobPositions = await JobPosition.findAll({ offset, limit, include: [{model: Project, as: 'owner_project', include:[{model:User, as: "owner_user"}, {model:Client, as:"owner_client"}]}, {model: Opening, as: 'openings_list'}] });
+    const jobPositions = await JobPosition.findAll({ 
+      include: [{ 
+        model: Project, 
+        as: 'owner_project', 
+        include: [{ model: User, as: "owner_user" }, { model: Client, as: "owner_client" }]
+      }, { 
+        model: Opening, 
+        as: 'openings_list' 
+      }] 
+    });
     res.json({
       status: "success",
       message: "All job positions found",
@@ -107,6 +112,7 @@ export const getAllJobPositions = async (req: Request, res: Response) => {
     });
   }
 };
+
 // Get job position by id
 export const getJobPositionById = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
