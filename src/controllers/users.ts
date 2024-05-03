@@ -32,6 +32,14 @@ export const getUsers = async(req: Request, res: Response) => {
 export const getUser = async(req: Request, res: Response) => {
     const { id } = req.params;
 
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
+
     // DB
     await User.findByPk(id, {include: [{model: Project, as: "projects"}, {model: Client, as:"clients"}, {model: Role, as: "roles"}]}).then(
         user => {
@@ -56,6 +64,14 @@ export const getUser = async(req: Request, res: Response) => {
 // Creating a user
 export const postUser = async(req: Request, res: Response) => {
     const { name, email, password }:UserCreationAttributes = req.body;
+
+    if (!name || !email || !password) {
+        res.json({
+            status: "error",
+            message: "Name, email and password are required",
+        });
+        return;
+    }
     
     await User.create({ name, email, password}, {include:[{model: Project, as: "projects"}, {model: Client, as:"clients"},  {model: Role, as: "roles"}]}).then(
         user => {
@@ -81,6 +97,14 @@ export const updateUser = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
+
     await User.update(resto, { where: { id } }).then(
         async () => {
             const updatedUser = await User.findByPk(id, {include: [{model: Project, as: "projects"}, {model: Client, as:"clients"},  {model: Role, as: "roles"}]});
@@ -104,6 +128,14 @@ export const updateUser = async(req: Request, res: Response) => {
 // Deleting a user (soft delete)
 export const deleteUser = async(req: Request, res: Response) => {
     const { id } = req.params;
+
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
 
     await User.update({ activeDB: false}, { where: { id }}).then(
         () => {

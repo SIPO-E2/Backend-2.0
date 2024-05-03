@@ -8,17 +8,20 @@ export enum Status {
 export enum EmployeeStatus {
     Bench = "Bench",
     Billing = "Billing",
-    Fired = "Fired"
+    Hired = "Proactive hire",
+    Other = "Attrited/Resigned"
 }
 
 export enum CandidateStatus {
     StandBy = "Stand By",
-    Hired = "Hired"
+    Hired = "Hired",
+    Other = "Other"
 }
 
 export enum CandidateWorkStatus {
     Pipeline = "Pipeline",
-    Employee = "Employee"
+    Employee = "Employee",
+    Other = "Other"
 }
 
 export enum AllocationStatus {
@@ -35,17 +38,31 @@ export enum InterviewStatus {
 
 // Location
 export enum Region {
-    Mexico = "Mexico",
-    Brazil = "Brazil",
-    USA = "USA"
 
+    CDMX = "CDMX",
+    HMO = "HMO",
+    CUU = "CUU",
+    MID = "MID",
+    SLP = "SLP",
+
+    CAMP = "CAMPINA",
+    SAOPA = "SAO PAULO",
+
+    COLOM = "COLOMBIA",
+    PERU = "PERU",
+    CR = "COSTA RICA",
+    ARG = "ARGENTINA",
+    DOM = "DOMINICANA",
+    DLL = "DALLAS",
+    PHX = "PHOENIX"
 }
 
 export enum Division {
-    IT = "IT",
-    HR = "HR",
-    Finance = "Finance",
-    Sales = "Sales"
+    Mexico = "Encora Mexico",
+    Brazil = "Encora Brazil",
+    CSA = "Encora Central & South America",
+    US = "Encora United States",
+    default = "Encora"
 }
 
 
@@ -71,5 +88,36 @@ export enum PostingType {
 // General Information
 export enum Gender {
     Male = "Male",
-    Female = "Female"
+    Female = "Female",
+    Unknown = "Unknown"
+}
+
+//Others
+export enum ReasonCurrentStatus{
+    InTraining = "In training",
+    Induction = "Induction/Orientation",
+    Shadow = "Shadow resource",
+    AwaitingClient = "Awaiting client confirmation/joining",
+    Maternity = "Maternity leave",
+    Sabbatical = "Sabbatical/Other leave",
+    PrevCA ="Previous Client attrition",
+    PrevCHCr = "Previous Client HC reduction",
+    TranBP = "Transition between projects",
+    NoAvailableProjects = "Transition between projects",
+    InternalProject = "Internal project",
+    MovedBilling = "Moved to billing",
+    PerformanceIssue = "Performance issues/PIP ",
+    Intern = "Intern",
+    OtherRCS = "Other",
+}
+
+export enum ProposedAction{
+    ProjectSearch = "Project search",
+    InternProject = "Using in internal project",
+    UpSkilling = "Upskilling/Cross training",
+    Backup = "Backup/Shadow other projects",
+    ResourcePool = "Resource pool",
+    NoAction = "No action required",
+    OtherPA = "Others",
+    Attrition = "Attrition"
 }
