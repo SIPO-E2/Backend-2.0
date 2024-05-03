@@ -7,11 +7,11 @@ import { JobPosition } from "../models/jobPosition";
 
 //Getting projects
 
-export const getProjects = async(req:Request, res:Response) => {
-    const { from = 0, to = 5} = req.query;
+export const getProjects = async (req: Request, res: Response) => {
+  const { from = 0, to = 5 } = req.query;
 
   // DB
-  await Project.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]} )
+  await Project.findAll({ offset: Number(from), limit: Number(to), include: [{ model: User, as: "owner_user" }, { model: Client, as: "owner_client" }, { model: JobPosition, as: "job_positions_list" }] })
     .then((projects) => {
       res.json({
         status: "success",
@@ -30,11 +30,11 @@ export const getProjects = async(req:Request, res:Response) => {
 
 //Getting a project
 
-export const getProject = async( req: Request, res:Response) =>{
-    const { id } = req.params;
+export const getProject = async (req: Request, res: Response) => {
+  const { id } = req.params;
 
   //DB
-  await Project.findByPk(id, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]})
+  await Project.findByPk(id, { include: [{ model: User, as: "owner_user" }, { model: Client, as: "owner_client" }, { model: JobPosition, as: "job_positions_list" }] })
     .then((project) => {
       res.json({
         status: "success",
@@ -67,10 +67,17 @@ export const postProject = async (req: Request, res: Response) => {
     image,
   }: ProjectCreationAttributes = req.body;
 
+
+  if (!name || !status || !reason_current_status || !owner_user_id || !owner_client_id || !region || !job_positions_list || !posting_date || !exp_closure_date || !image) {
+    return res.status(400).json({
+      status: "error",
+      message: "All fields are required",
+    });
+  }
+
   const owner_user = await User.findByPk(owner_user_id);
   const client = await Client.findByPk(owner_client_id);
 
-  // if user or client not found return error because the relationship is required
   if (!client || !owner_user) {
     res.json({
       status: "error",
@@ -91,9 +98,9 @@ export const postProject = async (req: Request, res: Response) => {
     posting_date,
     exp_closure_date,
     image,
-  }, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]})
-    .then(async(project) => {
-      const projectWithAssociations = await Project.findByPk(project.id, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]});
+  }, { include: [{ model: User, as: "owner_user" }, { model: Client, as: "owner_client" }, { model: JobPosition, as: "job_positions_list" }] })
+    .then(async (project) => {
+      const projectWithAssociations = await Project.findByPk(project.id, { include: [{ model: User, as: "owner_user" }, { model: Client, as: "owner_client" }, { model: JobPosition, as: "job_positions_list" }] });
       res.json({
         status: "success",
         message: "Project created",
@@ -107,7 +114,7 @@ export const postProject = async (req: Request, res: Response) => {
         data: e,
       });
     });
-    
+
 };
 
 //Updating a project
@@ -115,9 +122,24 @@ export const updateProject = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { ...resto } = req.body;
 
+  const projectIdNumber = Number(id);
+
+  if (isNaN(projectIdNumber)) {
+    return res.status(400).json({
+      status: "error",
+      message: "Project id must be a valid number",
+    });
+  }
+
   await Project.update(resto, { where: { id } })
     .then(async () => {
-      const updatedProject = await Project.findByPk(id, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]});
+      const updatedProject = await Project.findByPk(id, { include: [{ model: User, as: "owner_user" }, { model: Client, as: "owner_client" }, { model: JobPosition, as: "job_positions_list" }] });
+      if (!updatedProject) {
+        return res.status(404).json({
+          status: "error",
+          message: "Project not found",
+        });
+      }
       res.json({
         status: "success",
         message: "Project updated",
@@ -136,6 +158,15 @@ export const updateProject = async (req: Request, res: Response) => {
 //Deleting a user (soft delete)
 export const deleteProject = async (req: Request, res: Response) => {
   const { id } = req.params;
+
+  const projectIdNumber = parseInt(id);
+
+  if (!projectIdNumber || isNaN(projectIdNumber)) {
+    return res.status(400).json({
+        status: "error",
+        message: "Project id must be a valid number",
+    });
+}
 
   await Project.update({ activeDB: false }, { where: { id } })
     .then(() => {
