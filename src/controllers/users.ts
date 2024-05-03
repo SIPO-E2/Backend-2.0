@@ -3,35 +3,51 @@ import { Role, User } from "../models";
 import { UserCreationAttributes } from "../models/user";
 import { Project } from "../models";
 import { Client } from "../models";
+import { Op } from "sequelize";
 
 // Getting users
 export const getUsers = async (req: Request, res: Response) => {
-  const { from = 0, to = 5 } = req.query;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 12;
+  const offset = (page - 1) * limit;
+  const { name, activeDB } = req.query;
 
-  // DB
-  await User.findAll({
-    offset: Number(from),
-    limit: Number(to),
-    include: [
-      { model: Project, as: "projects" },
-      { model: Client, as: "clients" },
-      { model: Role, as: "roles" },
-    ],
-  })
-    .then((users) => {
-      res.json({
-        status: "success",
-        message: "Users found",
-        data: users,
-      });
-    })
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "Users not found",
-        error: e,
-      });
+  const whereClause: { [key: string]: any } = {};
+
+  if (name) {
+    whereClause.name = { [Op.like]: `%${name}%` };
+  }
+  if (activeDB !== undefined) {
+    whereClause.activeDB = activeDB === "true";
+  }
+
+  try {
+    const users = await User.findAll({
+      where: whereClause,
+      include: [
+        { model: Project, as: "projects" },
+        { model: Client, as: "clients" },
+        { model: Role, as: "roles" },
+      ],
+      limit,
+      offset,
     });
+    const totalUsers = await User.count({ where: whereClause });
+
+    res.json({
+      status: "success",
+      message: "Users found",
+      data: users,
+      total: totalUsers,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Error fetching users",
+      error: error,
+    });
+  }
 };
 
 // Getting a user
