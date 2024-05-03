@@ -121,30 +121,28 @@ export const postUser = async (req: Request, res: Response) => {
 // Updating a user
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { ...resto } = req.body;
+  const { name, email, password, profileImage } = req.body;
 
-  await User.update(resto, { where: { id } })
-    .then(async () => {
-      const updatedUser = await User.findByPk(id, {
-        include: [
-          { model: Project, as: "projects" },
-          { model: Client, as: "clients" },
-          { model: Role, as: "roles" },
-        ],
-      });
-      res.json({
-        status: "success",
-        message: "User updated",
-        data: updatedUser,
-      });
-    })
-    .catch((e) => {
-      res.json({
-        status: "error",
-        message: "User not updated",
-        error: e,
-      });
+  try {
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await user.update({ name, email, password, profileImage });
+
+    return res.status(200).json({
+      message: "User updated successfully",
+      data: user,
     });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({
+      message: "Error updating user",
+      error: error,
+    });
+  }
 };
 
 // Deleting a user (soft delete)
