@@ -64,10 +64,10 @@ export const getUserRole = async(req: Request, res: Response) => {
 export const postUserRole = async(req: Request, res: Response) => {
     const { userId, roleId }:UserRoleCreationAttributes = req.body;
 
-    if (!userId || !roleId) {
+    if (!userId || !roleId || isNaN(userId) || isNaN(roleId)){
         res.json({
             status: "error",
-            message: "User ID or Role ID not provided",
+            message: "User ID or Role ID not provided or not a number",
         });
         return;
     }

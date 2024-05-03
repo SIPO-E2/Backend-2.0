@@ -55,10 +55,10 @@ export const getCandidate = async(req: Request, res: Response) => {
 export const postCandidate = async(req: Request, res: Response) => {
     const { personId, status, workStatus, reason_current_status, status_date, propose_action }: CandidateCreationAttributes = req.body;
 
-    if (!personId || !status || !workStatus || !reason_current_status || !status_date || !propose_action) {
+    if (!personId || isNaN(personId) || !status || !workStatus || !reason_current_status || !status_date || !propose_action) {
         res.json({
             status: "error",
-            message: "Please provide all required fields",
+            message: "Please provide all required fields and make sure personId is a number",
         });
         return;
     }
@@ -122,7 +122,7 @@ export const deleteCandidate = async(req: Request, res: Response) => {
         });
         return;
     }
-    
+
     await Candidate.update({ activeDB: false}, { where: { id }}).then(
         () => {
             res.json({

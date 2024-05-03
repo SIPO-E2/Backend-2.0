@@ -47,7 +47,7 @@ export const getBench = async(req: Request, res: Response) => {
  const { id } = req.params;
 
  if (!id) {
-  res.json({
+  return res.status(400).json({
     status: "error",
     message: "ID not provided",
   });
@@ -97,10 +97,10 @@ export const getBench = async(req: Request, res: Response) => {
 export const postBench = async(req: Request, res: Response) => {
  const { benchSince, billingStartDate, employeeId }: BenchCreationAttributes = req.body;
 
- if (!benchSince || !billingStartDate || !employeeId) {
-  res.json({
+ if (!benchSince || !billingStartDate || !employeeId || isNaN(employeeId)) {
+  return res.status(400).json({
     status: "error",
-    message: "Please provide all required fields",
+    message: "Please provide all required fields and make sure employeeId is a number",
   });
   return;
  }
@@ -130,7 +130,7 @@ export const updateBench = async(req: Request, res: Response) => {
  const { ...resto } = req.body;
 
  if (!id) {
-  res.json({
+  return res.status(400).json({
     status: "error",
     message: "ID not provided",
   });
@@ -162,13 +162,13 @@ export const deleteBench = async(req: Request, res: Response) => {
  const { id } = req.params;
  
  if (!id) {
-  res.json({
+  return res.status(400).json({
     status: "error",
     message: "ID not provided",
   });
   return;
  }
- 
+
  await Bench.update({ activeDB: false }, { where: { id } }).then(
     () => {
       res.json({

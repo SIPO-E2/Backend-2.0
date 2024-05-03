@@ -88,10 +88,10 @@ export const getPipeline = async(req: Request, res: Response) => {
 export const postPipeline = async(req: Request, res: Response) => {
  const { expectedSalary, pipelineSince, pipelineEndDate, candidateId }: PipelineCreationAttributes = req.body;
 
- if (!expectedSalary || !pipelineSince || !pipelineEndDate || !candidateId) {
+ if (!expectedSalary || !pipelineSince || !pipelineEndDate || !candidateId || isNaN(candidateId)) {
    res.json({
      status: "error",
-     message: "Missing required fields",
+     message: "Missing required fields or invalid candidateId type",
    });
    return;
  }
