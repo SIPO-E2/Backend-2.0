@@ -9,23 +9,23 @@ import { Candidate, Person } from "../models";
 export const getBenches = async(req: Request, res: Response) => {
   // DB
   await Bench.findAll({ 
+    include: [
+    {
+      model: Employee,
+      as: 'employeeInformation',
       include: [
-          {
-              model: Employee, 
-              as: 'employeeInformation',
-              attributes: ['id', 'candidateId', 'status', 'reason_current_status', 'status_date', 'salary', 'job_title', 'job_grade', 'joining_date'],
-              include: [{
-                  model: Candidate,
-                  as: 'candidateInformation',
-                  attributes: ['id', 'personId', 'status', 'workStatus', 'reason_current_status', 'status_date', 'propose_action'],
-                  include: [{
-                      model: Person,
-                      as: 'personInformation',
-                      attributes: ['id', 'name', 'email', 'celphone', 'gender', 'image', 'division', 'tech_stack', 'skills', 'createdAt', 'updatedAt', 'deletedAt', 'activeDB']
-                  }]
-              }]
-          }
-      ]
+        {
+          model: Candidate,
+          as: 'candidateInformation',
+          include: [
+            {
+              model: Person,
+              as: 'personInformation'
+            }
+          ]
+        }]
+      }
+    ]
   }).then(
       (benches) => {
           res.json({
@@ -43,12 +43,6 @@ export const getBenches = async(req: Request, res: Response) => {
   });
 }
 
-
-
-
-
- 
- 
 
 // Getting a specific bench by ID, including their employee
 export const getBench = async(req: Request, res: Response) => {

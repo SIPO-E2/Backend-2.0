@@ -48,7 +48,23 @@ export const getEmployee = async(req: Request, res: Response) => {
     const { id } = req.params;
 
     // DB
-    await Employee.findByPk(id, {include:[{model:Opening,as: "openings"} ]}).then(
+    await Employee.findByPk(id, {
+        include:
+        [
+            
+            { model: Candidate, 
+                as: 'candidateInformation',
+                include: 
+                [
+                  { 
+                    model: Person, 
+                    as: 'personInformation' 
+                  }
+                ]
+            },
+            {model:Opening,as: "openings"} 
+        
+        ]}).then(
         (employee) => {
             res.json({
                 status: "success",
