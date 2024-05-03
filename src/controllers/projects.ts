@@ -1,189 +1,157 @@
 import { Request, Response } from "express";
 import { Project } from "../models/project";
+import { ProjectCreationAttributes } from "../models/project";
 import { User } from "../models/user";
 import { Client } from "../models/client";
 import { JobPosition } from "../models/jobPosition";
-import { Op } from "sequelize";
 
-// Get a list of projects with advanced filters and pagination
-export const getProjects = async (req: Request, res: Response) => {
-  const {
-    page = 1,
-    limit = 10,
-    name = "",
-    updatedStart = "",
-    updatedEnd = "",
-    activeDB,
-  } = req.query;
+//Getting projects
 
-  const offset = (Number(page) - 1) * Number(limit);
-  let updatedStartDate = updatedStart ? new Date(updatedStart.toString()) : null;
-  let updatedEndDate = updatedEnd ? new Date(updatedEnd.toString()) : null;
+export const getProjects = async(req:Request, res:Response) => {
+    const { from = 0, to = 5} = req.query;
 
-  const whereClause = {
-    ...(name && { name: { [Op.like]: `%${name}%` } }),
-    ...(updatedStartDate && updatedEndDate && {
-      updatedAt: { [Op.between]: [updatedStartDate, updatedEndDate] },
-    }),
-    ...(activeDB !== undefined && { activeDB: activeDB === "true" }),
-  };
-
-  try {
-    const projects = await Project.findAll({
-      where: whereClause,
-      offset: offset,
-      limit: Number(limit),
-      include: [
-        { model: User, as: "owner_user" },
-        { model: Client, as: "owner_client" },
-        { model: JobPosition, as: "job_positions_list" }
-      ],
-      order: [["updatedAt", "DESC"]],
-    });
-
-    res.json({
-      status: "success",
-      message: "Projects found",
-      data: projects,
-      pagination: {
-        page: Number(page),
-        limit: Number(limit),
-        total: await Project.count({ where: whereClause }),
-      },
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({
+  // DB
+  await Project.findAll({ offset: Number(from), limit: Number(to), include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]} )
+    .then((projects) => {
+      res.json({
+        status: "success",
+        message: "Projects found",
+        data: projects,
+      });
+    })
+    .catch((e) => {
+      res.json({
         status: "error",
         message: "Projects not found",
-        error: error.message,
+        data: e,
       });
-    } else {
-      res.status(500).json({
-        status: "error",
-        message: "An unexpected error occurred",
-      });
-    }
-  }
+    });
 };
 
-// Get a specific project by ID
-export const getProject = async (req: Request, res: Response) => {
-  const { id } = req.params;
+//Getting a project
 
-  try {
-    const project = await Project.findByPk(id, {
-      include: [
-        { model: User, as: "owner_user" },
-        { model: Client, as: "owner_client" },
-        { model: JobPosition, as: "job_positions_list" }
-      ]
-    });
+export const getProject = async( req: Request, res:Response) =>{
+    const { id } = req.params;
 
-    if (project) {
+  //DB
+  await Project.findByPk(id, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]})
+    .then((project) => {
       res.json({
         status: "success",
         message: "Project found",
         data: project,
       });
-    } else {
-      res.status(404).json({
+    })
+    .catch((e) => {
+      res.json({
         status: "error",
         message: "Project not found",
+        data: e,
       });
-    }
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Error retrieving project",
-      error: error instanceof Error ? error.message : "Unknown error",
     });
-  }
 };
 
-// Create a new project
+//Creating a project
+
 export const postProject = async (req: Request, res: Response) => {
-  try {
-    const project = await Project.create(req.body, {
-      include: [
-        { model: User, as: "owner_user" },
-        { model: Client, as: "owner_client" },
-        { model: JobPosition, as: "job_positions_list" }
-      ]
-    });
+  const {
+    name,
+    status,
+    reason_current_status,
+    owner_user_id,
+    owner_client_id,
+    region,
+    job_positions_list = [],
+    posting_date,
+    exp_closure_date,
+    image,
+  }: ProjectCreationAttributes = req.body;
 
-    res.status(201).json({
-      status: "success",
-      message: "Project created",
-      data: project,
-    });
-  } catch (error) {
-    res.status(500).json({
+  const owner_user = await User.findByPk(owner_user_id);
+  const client = await Client.findByPk(owner_client_id);
+
+  // if user or client not found return error because the relationship is required
+  if (!client || !owner_user) {
+    res.json({
       status: "error",
-      message: "Project not created",
-      error: error instanceof Error ? error.message : "Unknown error",
+      message: "User or Client of Project not found",
+      data: null,
     });
+    return;
   }
+
+  await Project.create({
+    name,
+    status,
+    reason_current_status,
+    owner_user_id,
+    owner_client_id,
+    region,
+    job_positions_list,
+    posting_date,
+    exp_closure_date,
+    image,
+  }, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]})
+    .then(async(project) => {
+      const projectWithAssociations = await Project.findByPk(project.id, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]});
+      res.json({
+        status: "success",
+        message: "Project created",
+        data: projectWithAssociations,
+      });
+    })
+    .catch((e) => {
+      res.json({
+        status: "suerrorccess",
+        message: "Project not created",
+        data: e,
+      });
+    });
+    
 };
 
-// Update an existing project
+//Updating a project
 export const updateProject = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const { ...resto } = req.body;
 
-  try {
-    const updateResult = await Project.update(req.body, {
-      where: { id },
-      returning: true, // This option is for Sequelize to return the updated object
-    });
-
-    if (updateResult[0] === 1) {
-      const updatedProject = await Project.findByPk(id);
+  await Project.update(resto, { where: { id } })
+    .then(async () => {
+      const updatedProject = await Project.findByPk(id, {include: [{model: User, as: "owner_user"}, {model: Client, as: "owner_client"}, {model: JobPosition, as: "job_positions_list"}]});
       res.json({
         status: "success",
         message: "Project updated",
         data: updatedProject,
       });
-    } else {
-      res.status(404).json({
+    })
+    .catch((e) => {
+      res.json({
         status: "error",
-        message: "Project not found",
+        message: "Project not updated",
+        data: e,
       });
-    }
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Project not updated",
-      error: error instanceof Error ? error.message : "Unknown error",
     });
-  }
 };
 
-// Soft delete a project
+//Deleting a user (soft delete)
 export const deleteProject = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  try {
-    const result = await Project.update({ activeDB: false }, {
-      where: { id }
-    });
-
-    if (result[0] > 0) {
+  await Project.update({ activeDB: false }, { where: { id } })
+    .then(() => {
       res.json({
         status: "success",
         message: "Project deleted",
-        data: { id },
+        data: {
+          id,
+        },
       });
-    } else {
-      res.status(404).json({
-        status: "error",
-        message: "Project not found",
+    })
+    .catch((e) => {
+      res.json({
+        status: "success",
+        message: "Project not deleted",
+        data: e,
       });
-    }
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Project not deleted",
-      error: error instanceof Error ? error.message : "Unknown error",
     });
-  }
 };
