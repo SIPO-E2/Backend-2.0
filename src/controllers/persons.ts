@@ -30,6 +30,14 @@ export const getPersons = async(req: Request, res: Response) => {
 export const getPerson = async(req: Request, res: Response) => {
  const { id } = req.params;
 
+  if (!id) {
+    res.json({
+      status: "error",
+      message: "ID not provided",
+    });
+    return;
+  }
+
  await Person.findByPk(id, { include: [{ model: Candidate, as: 'candidateInformation' }] }).then(
     person => {
       res.json({
@@ -52,7 +60,15 @@ export const getPerson = async(req: Request, res: Response) => {
 // Creating a new person and associating a candidate
 export const postPerson = async(req: Request, res: Response) => {
  const { name, email, celphone, gender, image, division, tech_stack, skills}: PersonCreationAttributes & { candidate: Candidate } = req.body;
-  
+
+ if (!name || !email || !celphone || !gender || !image || !division || !tech_stack || !skills) {
+    res.json({
+        status: "error",
+        message: "Missing required fields",
+    });
+    return;
+ }
+
  // Assuming candidate is created separately and their ID is passed
  await Person.create({ name, email, celphone, gender, image, division, tech_stack, skills }, { include: [{ model: Candidate, as: 'candidateInformation' }] }).then(
     person => {
@@ -78,6 +94,14 @@ export const updatePerson = async(req: Request, res: Response) => {
  const { id } = req.params;
  const { ...resto } = req.body;
 
+  if (!id) {
+      res.json({
+        status: "error",
+        message: "ID not provided",
+      });
+      return;
+    }
+
  await Person.update(resto, { where: { id } }).then(
     async () => {
       const updatedPerson = await Person.findByPk(id, { include: [{ model: Candidate, as: 'candidateInformation' }] });
@@ -102,6 +126,14 @@ export const updatePerson = async(req: Request, res: Response) => {
 // soft deleting an existing person with activeDB set to false
 export const deletePerson = async(req: Request, res: Response) => {
  const { id } = req.params;
+
+  if (!id) {
+    res.json({
+      status: "error",
+      message: "ID not provided",
+    });
+    return;
+  }
 
  await Person.update({ activeDB: false }, { where: { id } }).then(
     () => {

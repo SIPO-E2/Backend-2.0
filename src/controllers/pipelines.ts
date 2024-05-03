@@ -43,6 +43,14 @@ export const getPipelines = async(req: Request, res: Response) => {
 export const getPipeline = async(req: Request, res: Response) => {
  const { id } = req.params;
 
+  if (!id) {
+    res.json({
+      status: "error",
+      message: "ID not provided",
+    });
+    return;
+  }
+
  await Pipeline.findByPk(id, { 
   include: 
   [
@@ -79,6 +87,14 @@ export const getPipeline = async(req: Request, res: Response) => {
 // Creating a new pipeline and associating a candidate
 export const postPipeline = async(req: Request, res: Response) => {
  const { expectedSalary, pipelineSince, pipelineEndDate, candidateId }: PipelineCreationAttributes = req.body;
+
+ if (!expectedSalary || !pipelineSince || !pipelineEndDate || !candidateId) {
+   res.json({
+     status: "error",
+     message: "Missing required fields",
+   });
+   return;
+ }
   
  await Pipeline.create({ expectedSalary, pipelineSince, pipelineEndDate, candidateId }, { include: [{ model: Candidate, as: 'candidateInformation' }] }).then(
     pipeline => {
@@ -104,6 +120,14 @@ export const updatePipeline = async(req: Request, res: Response) => {
  const { id } = req.params;
  const { ...resto } = req.body;
 
+ if (!id) {
+   res.json({
+     status: "error",
+     message: "ID not provided",
+   });
+   return;
+ }
+
  await Pipeline.update(resto, { where: { id } }).then(
     async () => {
       const updatedPipeline = await Pipeline.findByPk(id, { include: [{ model: Candidate, as: 'candidateInformation' }] });
@@ -127,6 +151,14 @@ export const updatePipeline = async(req: Request, res: Response) => {
 // soft deleting an existing pipeline with activeDB set to false
 export const deletePipeline = async(req: Request, res: Response) => {
  const { id } = req.params;
+
+ if (!id) {
+   res.json({
+     status: "error",
+     message: "ID not provided",
+   });
+   return;
+ }
 
  await Pipeline.update({ activeDB: false }, { where: { id } }).then(
     () => {

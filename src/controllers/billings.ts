@@ -49,6 +49,14 @@ export const getBillings = async(req: Request, res: Response) => {
 export const getBilling = async(req: Request, res: Response) => {
  const { id } = req.params;
 
+  if (!id) {
+    res.json({
+      status: "error",
+      message: "ID not provided",
+    });
+    return;
+  }
+
  await Billing.findByPk(id, { 
   include:
   [
@@ -91,6 +99,14 @@ export const getBilling = async(req: Request, res: Response) => {
 // Creating a new billing record and associating an employee
 export const postBilling = async(req: Request, res: Response) => {
  const { billingSince, workHours, employeeId }: BillingCreationAttributes = req.body;
+
+ if (!billingSince || !workHours || !employeeId) {
+    res.json({
+      status: "error",
+      message: "Missing required fields",
+    });
+    return;
+  }
   
  await Billing.create({ billingSince, workHours, employeeId }, { include: [{ model: Employee, as: 'employeeInformation' }] }).then(
     billing => {
@@ -116,6 +132,14 @@ export const updateBilling = async(req: Request, res: Response) => {
  const { id } = req.params;
  const { ...resto } = req.body;
 
+ if (!id) {
+    res.json({
+      status: "error",
+      message: "ID not provided",
+    });
+    return;
+  }
+
  await Billing.update(resto, { where: { id } }).then(
     async () => {
       const updatedBilling = await Billing.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] });
@@ -139,6 +163,14 @@ export const updateBilling = async(req: Request, res: Response) => {
 // soft deleting an existing billing record with activeDB set to false
 export const deleteBilling = async(req: Request, res: Response) => {
  const { id } = req.params;
+
+  if (!id) {
+    res.json({
+      status: "error",
+      message: "ID not provided",
+    });
+    return;
+  }
 
  await Billing.update({ activeDB: false }, { where: { id } }).then(
     () => {

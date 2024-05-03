@@ -46,6 +46,14 @@ export const getEmployees = async(req: Request, res: Response) => {
 export const getEmployee = async(req: Request, res: Response) => {
     const { id } = req.params;
 
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
+
     // DB
     await Employee.findByPk(id, {
         include:
@@ -87,6 +95,14 @@ export const getEmployee = async(req: Request, res: Response) => {
 export const postEmployee = async(req: Request, res: Response) => {
     const { status, reason_current_status, salary, job_title, job_grade, joining_date, candidateId }:EmployeeCreationAttributes = req.body;
     
+    if (!status || !reason_current_status || !salary || !job_title || !job_grade || !joining_date || !candidateId) {
+        res.json({
+            status: "error",
+            message: "Please provide all required fields",
+        });
+        return;
+    }
+
     await Employee.create({  status, job_title, job_grade, joining_date, reason_current_status, salary, candidateId}, {include:[{model:Opening,as: "openings"} ]}).then(
         (        employee) => {
             res.json({
@@ -111,6 +127,14 @@ export const updateEmployee = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
+
     await Employee.update(resto, { where: { id } }).then(
         async () => {
             const updatedEmployee = await Employee.findByPk(id, {include:[{model:Opening,as: "openings"} ]});
@@ -134,6 +158,14 @@ export const updateEmployee = async(req: Request, res: Response) => {
 // Deleting a employee (soft delete)
 export const deleteEmployee = async(req: Request, res: Response) => {
     const { id } = req.params;
+
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
 
     await Employee.update({ activeDB: false}, { where: { id }}).then(
         () => {

@@ -7,7 +7,7 @@ import { Candidate, Person } from "../models";
 // Getting all benches
 export const getBenches = async(req: Request, res: Response) => {
  const { from = 0, to = 5 } = req.query;
- 
+
  await Bench.findAll({ offset: Number(from), limit: Number(to), 
   include: [
     {
@@ -45,6 +45,14 @@ export const getBenches = async(req: Request, res: Response) => {
 // Getting a specific bench by ID, including their employee
 export const getBench = async(req: Request, res: Response) => {
  const { id } = req.params;
+
+ if (!id) {
+  res.json({
+    status: "error",
+    message: "ID not provided",
+  });
+  return;
+ }
 
  await Bench.findByPk(id, { 
   include:
@@ -88,6 +96,14 @@ export const getBench = async(req: Request, res: Response) => {
 // Creating a new bench and associating an employee
 export const postBench = async(req: Request, res: Response) => {
  const { benchSince, billingStartDate, employeeId }: BenchCreationAttributes = req.body;
+
+ if (!benchSince || !billingStartDate || !employeeId) {
+  res.json({
+    status: "error",
+    message: "Please provide all required fields",
+  });
+  return;
+ }
   
  await Bench.create({ benchSince, billingStartDate, employeeId }, { include: [{ model: Employee, as: 'employeeInformation' }] }).then(
     bench => {
@@ -113,6 +129,14 @@ export const updateBench = async(req: Request, res: Response) => {
  const { id } = req.params;
  const { ...resto } = req.body;
 
+ if (!id) {
+  res.json({
+    status: "error",
+    message: "ID not provided",
+  });
+  return;
+ }
+
  await Bench.update(resto, { where: { id } }).then(
     async () => {
       const updatedBench = await Bench.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] });
@@ -136,7 +160,15 @@ export const updateBench = async(req: Request, res: Response) => {
 // soft deleting an existing bench with activeDB set to false
 export const deleteBench = async(req: Request, res: Response) => {
  const { id } = req.params;
-
+ 
+ if (!id) {
+  res.json({
+    status: "error",
+    message: "ID not provided",
+  });
+  return;
+ }
+ 
  await Bench.update({ activeDB: false }, { where: { id } }).then(
     () => {
       res.json({

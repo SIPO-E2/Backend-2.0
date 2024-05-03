@@ -31,6 +31,14 @@ export const getUserRoles = async(req: Request, res: Response) => {
 export const getUserRole = async(req: Request, res: Response) => {
     const { id } = req.params;
 
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
+
     // DB
     await UserRole.findByPk(id, {include: [{model: User, as: "user"}, {model: Role, as: "role"}]}).then(
         userRole => {
@@ -55,6 +63,14 @@ export const getUserRole = async(req: Request, res: Response) => {
 // Creating a new user role
 export const postUserRole = async(req: Request, res: Response) => {
     const { userId, roleId }:UserRoleCreationAttributes = req.body;
+
+    if (!userId || !roleId) {
+        res.json({
+            status: "error",
+            message: "User ID or Role ID not provided",
+        });
+        return;
+    }
     
     await UserRole.create({ userId, roleId }).then(
         userRole => {
@@ -80,6 +96,14 @@ export const updateUserRole = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
+
     await UserRole.update(resto, { where: { id } }).then(
         async () => {
             const updatedUserRole = await UserRole.findByPk(id, {include: [{model: User, as: "user"}, {model: Role, as: "role"}]});
@@ -103,6 +127,14 @@ export const updateUserRole = async(req: Request, res: Response) => {
 // Deleting a user role (soft delete)
 export const deleteUserRole = async(req: Request, res: Response) => {
     const { id } = req.params;
+
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
 
     await UserRole.update({ activeDB: false}, { where: { id }}).then(
         () => {
