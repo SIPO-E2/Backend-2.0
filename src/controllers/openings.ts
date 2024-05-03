@@ -116,7 +116,7 @@ export const updateOpening = async (req: Request, res: Response) => {
       if (!updatedOpening) {
         return res.status(404).json({
           status: "error",
-          message: "Client not found",
+          message: "Opening not found",
         });
       }
       res.json({
