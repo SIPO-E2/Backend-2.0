@@ -91,74 +91,19 @@ export const postAllocation = async (req: Request, res: Response) => {
     });
 }
 
-// Updating an existing allocation
-// export const updateAllocation = async(req: Request, res: Response) => {
-//     const { id } = req.params;
-//     const { ...resto } = req.body;
-
-//     await Allocation.update(resto, { where: { id } }).then(
-//         async () => {
-//             const updatedAllocation = await Allocation.findByPk(id, { 
-//                 include: [
-//                     { model: Candidate, as: 'candidate' },
-//                     { model: JobPosition, as: 'jobPosition' },
-//                     { model: Client, as: 'client' },
-//                     { model: Interview, as: 'interviews' }
-//                 ] 
-//             });
-//             res.json({
-//                 status: "success",
-//                 message: "Allocation updated",
-//                 data: updatedAllocation,
-//             });
-//         }
-//     ).catch( e => {
-//         res.json({
-//             status: "error",
-//             message: "Allocation not updated",
-//             error: e
-//         });
-//     });
-// }
-
-// Deleting an allocation (soft delete)
-// export const deleteAllocation = async(req: Request, res: Response) => {
-//     const { id } = req.params;
-
-//     await Allocation.update({ activeDB: false}, { where: { id }}).then(
-//         () => {
-//             res.json({
-//                 status: "success",
-//                 message: "Allocation deleted",
-//                 data: {
-//                     id
-//                 },
-//             });
-//         }
-//     ).catch( e => {
-//         res.json({
-//             status: "error",
-//             message: "Allocation not deleted",
-//             error: e
-//         });
-//     });
-// }
-
 export const updateAllocation = async (req: Request, res: Response) => {
     const { candidateId, jobPositionId } = req.params;
     const { ...resto } = req.body;
 
+    const candidateIdNumber = Number(candidateId);
+    const jobPositionIdNumber = Number(jobPositionId);
 
-
-    // const candidateIdNumber = Number(candidateId);
-    // const jobPositionIdNumber = Number(jobPositionId);
-
-    // if (isNaN(candidateIdNumber) || isNaN(jobPositionIdNumber)) {
-    //     return res.status(400).json({
-    //         status: "error",
-    //         message: "candidateId and jobPositionId must be valid numbers",
-    //     });
-    // }
+    if (isNaN(candidateIdNumber) || isNaN(jobPositionIdNumber)) {
+        return res.status(400).json({
+            status: "error",
+            message: "candidateId and jobPositionId must be valid numbers",
+        });
+    }
 
     await Allocation.update(resto, { where: { candidateId, jobPositionId } })
         .then(async () => {
@@ -194,19 +139,13 @@ export const deleteAllocation = async (req: Request, res: Response) => {
     const candidateIdNumber = parseInt(candidateId);
     const jobPositionIdNumber = parseInt(jobPositionId);
 
-    if (isNaN(candidateIdNumber) || isNaN(jobPositionIdNumber)) {
+
+    if (!candidateId || !jobPositionId || isNaN(candidateIdNumber) || isNaN(jobPositionIdNumber)) {
         return res.status(400).json({
             status: "error",
             message: "candidateId and jobPositionId must be valid numbers",
         });
     }
-
-    // if (!candidateId || !jobPositionId || isNaN(candidateId) || isNaN(jobPositionId)) {
-    //     return res.status(400).json({
-    //         status: "error",
-    //         message: "candidateId and jobPositionId must be valid numbers",
-    //     });
-    // }
 
     await Allocation.update({ activeDB: false }, { where: { candidateId: candidateId, jobPositionId: jobPositionId } })
         .then(() => {
