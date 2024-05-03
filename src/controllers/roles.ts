@@ -55,6 +55,14 @@ export const getRole = async(req: Request, res: Response) => {
 export const postRole = async(req: Request, res: Response) => {
     const { name }:RoleCreationAttributes = req.body;
     
+
+    if (!name) {
+        return res.status(400).json({
+            status: "error",
+            message: "All fields are required",
+        });
+    }
+
     await Role.create({ name }, {include: [{model: User, as: "users"}]}).then(
         role => {
             res.json({
@@ -79,9 +87,24 @@ export const updateRole = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
+    const RoleIdNumber = Number(id);
+
+    if (isNaN(RoleIdNumber)) {
+        return res.status(400).json({
+            status: "error",
+            message: "Role id must be a valid number",
+        });
+    }
+
     await Role.update(resto, { where: { id } }).then(
         async () => {
             const updatedRole = await Role.findByPk(id, {include: [{model: User, as: "users"}]});
+            if (!updatedRole) {
+                return res.status(404).json({
+                    status: "error",
+                    message: "Role not found",
+                });
+            }
             res.json({
                 status: "success",
                 message: "Role updated",
@@ -103,6 +126,14 @@ export const updateRole = async(req: Request, res: Response) => {
 export const deleteRole = async(req: Request, res: Response) => {
     const { id } = req.params;
 
+    const RoleIdNumber = parseInt(id);
+
+    if (!RoleIdNumber || isNaN(RoleIdNumber)) {
+        return res.status(400).json({
+            status: "error",
+            message: "Role id must be valid a number",
+        });
+    }
     await Role.update({ activeDB: false}, { where: { id }}).then(
         () => {
             res.json({
