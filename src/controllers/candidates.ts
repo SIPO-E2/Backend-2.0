@@ -26,6 +26,14 @@ export const getCandidates = async(req: Request, res: Response) => {
 export const getCandidate = async(req: Request, res: Response) => {
     const { id } = req.params;
 
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
+
     await Candidate.findByPk(id, { include: [{ model: Person, as: 'personInformation' }] }).then(
         candidate => {
             res.json({
@@ -46,6 +54,14 @@ export const getCandidate = async(req: Request, res: Response) => {
 // Creating a new candidate
 export const postCandidate = async(req: Request, res: Response) => {
     const { personId, status, workStatus, reason_current_status, status_date, propose_action }: CandidateCreationAttributes = req.body;
+
+    if (!personId || isNaN(personId) || !status || !workStatus || !reason_current_status || !status_date || !propose_action) {
+        res.json({
+            status: "error",
+            message: "Please provide all required fields and make sure personId is a number",
+        });
+        return;
+    }
     
     await Candidate.create({ personId, status, workStatus, reason_current_status, status_date, propose_action }).then(
         candidate => {
@@ -69,6 +85,14 @@ export const updateCandidate = async(req: Request, res: Response) => {
     const { id } = req.params;
     const { ...resto } = req.body;
 
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
+
     await Candidate.update(resto, { where: { id } }).then(
         async () => {
             const updatedCandidate = await Candidate.findByPk(id, { include: [{ model: Person, as: 'personInformation' }] });
@@ -90,6 +114,14 @@ export const updateCandidate = async(req: Request, res: Response) => {
 // Deleting a candidate (soft delete)
 export const deleteCandidate = async(req: Request, res: Response) => {
     const { id } = req.params;
+
+    if (!id) {
+        res.json({
+            status: "error",
+            message: "ID not provided",
+        });
+        return;
+    }
 
     await Candidate.update({ activeDB: false}, { where: { id }}).then(
         () => {

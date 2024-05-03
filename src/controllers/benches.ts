@@ -2,12 +2,30 @@ import { Request, Response } from "express";
 import { Bench } from '../models/bench';
 import { Employee } from '../models/employee';
 import { BenchCreationAttributes } from '../models/bench';
+import { Candidate, Person } from "../models";
 
 // Getting all benches
 export const getBenches = async(req: Request, res: Response) => {
  const { from = 0, to = 5 } = req.query;
 
- await Bench.findAll({ offset: Number(from), limit: Number(to), include: [{ model: Employee, as: 'employeeInformation' }] }).then(
+ await Bench.findAll({ offset: Number(from), limit: Number(to), 
+  include: [
+    {
+      model: Employee,
+      as: 'employeeInformation',
+      include: [
+        {
+          model: Candidate,
+          as: 'candidateInformation',
+          include: [
+            {
+              model: Person,
+              as: 'personInformation'
+            }
+          ]
+        }]
+      }
+    ] }).then(
     benches => {
       res.json({
         status: "success",
@@ -28,7 +46,35 @@ export const getBenches = async(req: Request, res: Response) => {
 export const getBench = async(req: Request, res: Response) => {
  const { id } = req.params;
 
- await Bench.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] }).then(
+ if (!id) {
+  return res.status(400).json({
+    status: "error",
+    message: "ID not provided",
+  });
+  return;
+ }
+
+ await Bench.findByPk(id, { 
+  include:
+  [
+    { 
+      model: Employee, 
+      as: 'employeeInformation' ,
+      include: 
+      [
+        { 
+          model: Candidate, 
+          as: 'candidateInformation',
+          include:[
+            {
+              model: Person,
+              as: 'personInformation'
+            }
+          ]
+        }
+      ]
+    }
+  ] }).then(
     bench => {
       res.json({
         status: "success",
@@ -50,6 +96,14 @@ export const getBench = async(req: Request, res: Response) => {
 // Creating a new bench and associating an employee
 export const postBench = async(req: Request, res: Response) => {
  const { benchSince, billingStartDate, employeeId }: BenchCreationAttributes = req.body;
+
+ if (!benchSince || !billingStartDate || !employeeId || isNaN(employeeId)) {
+  return res.status(400).json({
+    status: "error",
+    message: "Please provide all required fields and make sure employeeId is a number",
+  });
+  return;
+ }
   
  await Bench.create({ benchSince, billingStartDate, employeeId }, { include: [{ model: Employee, as: 'employeeInformation' }] }).then(
     bench => {
@@ -75,6 +129,14 @@ export const updateBench = async(req: Request, res: Response) => {
  const { id } = req.params;
  const { ...resto } = req.body;
 
+ if (!id) {
+  return res.status(400).json({
+    status: "error",
+    message: "ID not provided",
+  });
+  return;
+ }
+
  await Bench.update(resto, { where: { id } }).then(
     async () => {
       const updatedBench = await Bench.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] });
@@ -98,6 +160,14 @@ export const updateBench = async(req: Request, res: Response) => {
 // soft deleting an existing bench with activeDB set to false
 export const deleteBench = async(req: Request, res: Response) => {
  const { id } = req.params;
+ 
+ if (!id) {
+  return res.status(400).json({
+    status: "error",
+    message: "ID not provided",
+  });
+  return;
+ }
 
  await Bench.update({ activeDB: false }, { where: { id } }).then(
     () => {
