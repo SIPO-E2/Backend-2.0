@@ -118,29 +118,43 @@ export const postUser = async (req: Request, res: Response) => {
     });
 };
 
-// Updating a user
+// Update an existing user
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, email, password, profileImage } = req.body;
 
   try {
+    // Find the user by ID
     const user = await User.findByPk(id);
 
+    // If the user does not exist, return a 404 error
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Update the user with the provided data
     await user.update({ name, email, password, profileImage });
 
+    // Fetch the updated user including associated data
+    const updatedUser = await User.findByPk(id, {
+      include: [
+        { model: Project, as: "projects" },
+        { model: Client, as: "clients" },
+        { model: Role, as: "roles" },
+      ],
+    });
+
+    // Return a success response with the updated user
     return res.status(200).json({
       message: "User updated successfully",
-      data: user,
+      data: updatedUser,
     });
   } catch (error) {
     console.error("Error updating user:", error);
+    // If an error occurs, return a 500 error with details
     return res.status(500).json({
       message: "Error updating user",
-      error: error,
+      error: error, // Changed to error.message for better error reporting
     });
   }
 };
