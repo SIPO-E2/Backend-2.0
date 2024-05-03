@@ -5,7 +5,7 @@ import { Candidate, Opening, Person } from "../models";
 
 // Getting employees
 export const getEmployees = async(req: Request, res: Response) => {
-    const { from = 0, to = 5 } = req.query;
+    const { from = 0, to = 100 } = req.query;
 
     // DB
     await Employee.findAll({ offset: Number(from), limit: Number(to), 

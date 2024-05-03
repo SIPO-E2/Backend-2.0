@@ -25,7 +25,10 @@ export const getBenches = async(req: Request, res: Response) => {
           ]
         }]
       }
-    ] }).then(
+    ] })
+    
+    
+    .then(
     benches => {
       res.json({
         status: "success",
