@@ -13,7 +13,7 @@ export const getBillings = async(req: Request, res: Response) => {
     [
       { 
         model: Employee, 
-        as: 'employeeInformaztion' ,
+        as: 'employeeInformation' ,
         include: 
         [
           { 
@@ -28,7 +28,8 @@ export const getBillings = async(req: Request, res: Response) => {
           }
         ]
       }
-    ] }).then(
+    ]
+  }).then(
     billings => {
       res.json({
         status: "success",
