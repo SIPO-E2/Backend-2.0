@@ -2,12 +2,33 @@ import { Request, Response } from "express";
 import { Billing } from '../models/billing';
 import { Employee } from '../models/employee';
 import { BillingCreationAttributes } from '../models/billing';
+import { Candidate, Person } from "../models";
 
 // Getting all billing records
 export const getBillings = async(req: Request, res: Response) => {
  const { from = 0, to = 5 } = req.query;
 
- await Billing.findAll({ offset: Number(from), limit: Number(to), include: [{ model: Employee, as: 'employeeInformation' }] }).then(
+ await Billing.findAll({ offset: Number(from), limit: Number(to), 
+  include:
+    [
+      { 
+        model: Employee, 
+        as: 'employeeInformaztion' ,
+        include: 
+        [
+          { 
+            model: Candidate, 
+            as: 'candidateInformation',
+            include:[
+              {
+                model: Person,
+                as: 'personInformation'
+              }
+            ]
+          }
+        ]
+      }
+    ] }).then(
     billings => {
       res.json({
         status: "success",
@@ -28,7 +49,27 @@ export const getBillings = async(req: Request, res: Response) => {
 export const getBilling = async(req: Request, res: Response) => {
  const { id } = req.params;
 
- await Billing.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] }).then(
+ await Billing.findByPk(id, { 
+  include:
+  [
+    { 
+      model: Employee, 
+      as: 'employeeInformation' ,
+      include: 
+      [
+        { 
+          model: Candidate, 
+          as: 'candidateInformation',
+          include:[
+            {
+              model: Person,
+              as: 'personInformation'
+            }
+          ]
+        }
+      ]
+    }
+  ] }).then(
     billing => {
       res.json({
         status: "success",

@@ -2,12 +2,30 @@ import { Request, Response } from "express";
 import { Bench } from '../models/bench';
 import { Employee } from '../models/employee';
 import { BenchCreationAttributes } from '../models/bench';
+import { Candidate, Person } from "../models";
 
 // Getting all benches
 export const getBenches = async(req: Request, res: Response) => {
  const { from = 0, to = 5 } = req.query;
-
- await Bench.findAll({ offset: Number(from), limit: Number(to), include: [{ model: Employee, as: 'employeeInformation' }] }).then(
+ 
+ await Bench.findAll({ offset: Number(from), limit: Number(to), 
+  include: [
+    {
+      model: Employee,
+      as: 'employeeInformation',
+      include: [
+        {
+          model: Candidate,
+          as: 'candidateInformation',
+          include: [
+            {
+              model: Person,
+              as: 'personInformation'
+            }
+          ]
+        }]
+      }
+    ] }).then(
     benches => {
       res.json({
         status: "success",
@@ -28,7 +46,27 @@ export const getBenches = async(req: Request, res: Response) => {
 export const getBench = async(req: Request, res: Response) => {
  const { id } = req.params;
 
- await Bench.findByPk(id, { include: [{ model: Employee, as: 'employeeInformation' }] }).then(
+ await Bench.findByPk(id, { 
+  include:
+  [
+    { 
+      model: Employee, 
+      as: 'employeeInformation' ,
+      include: 
+      [
+        { 
+          model: Candidate, 
+          as: 'candidateInformation',
+          include:[
+            {
+              model: Person,
+              as: 'personInformation'
+            }
+          ]
+        }
+      ]
+    }
+  ] }).then(
     bench => {
       res.json({
         status: "success",
