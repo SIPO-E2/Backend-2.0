@@ -28,7 +28,7 @@ interface ProjectAttributes{
     status: Status;
     reason_current_status: string;
     status_date: Date;
-    progress: number;
+    progress: Date;
     revenue: number;
     region: Region;
     posting_date: Date;
