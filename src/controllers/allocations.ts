@@ -70,7 +70,7 @@ export const postAllocation = async (req: Request, res: Response) => {
     if (isNaN(candidateId) || isNaN(jobPositionId) || isNaN(client_id)){
         return res.status(400).json({
             status: "error",
-            message: "candidateId must be a valid number",
+            message: "candidateId and jobPositionId must be valid numbers",
         });
     }
 
@@ -138,7 +138,6 @@ export const deleteAllocation = async (req: Request, res: Response) => {
 
     const candidateIdNumber = parseInt(candidateId);
     const jobPositionIdNumber = parseInt(jobPositionId);
-
 
     if (!candidateId || !jobPositionId || isNaN(candidateIdNumber) || isNaN(jobPositionIdNumber)) {
         return res.status(400).json({

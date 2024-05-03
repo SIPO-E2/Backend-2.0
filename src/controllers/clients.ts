@@ -71,7 +71,6 @@ export const postClient = async (req: Request, res: Response) => {
         });
     }
 
-    // if user not found return error because the relationship is required
     const user = await User.findByPk(owner_user_id);
     if (!user) {
         res.json({
