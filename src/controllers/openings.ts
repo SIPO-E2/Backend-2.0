@@ -49,7 +49,7 @@ export const getOpening = async (req: Request, res: Response) => {
 };
 
 // Creating a opening
-export const postOpening = async (req: Request, res: Response) => {
+export const createOpening = async (req: Request, res: Response) => {
   const { status, reason_current_status, open_date, close_date, close_reason, hours_required, owner_jobPosition_id }: OpeningCreationAttributes = req.body;
 
   if (!status || !reason_current_status || !open_date || !close_date || !close_reason || !hours_required || !owner_jobPosition_id) {
@@ -97,7 +97,7 @@ export const postOpening = async (req: Request, res: Response) => {
 
 
 // Updating a opening
-export const updateOpening = async (req: Request, res: Response) => {
+export const editOpening = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { ...resto } = req.body;
 

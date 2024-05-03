@@ -28,7 +28,7 @@ const determineDemandCuration = (
 };
 
 
-export const postJobPosition = async (req: Request, res: Response) => {
+export const createJobPosition = async (req: Request, res: Response) => {
   const { name, bill_rate, posting_type, status, reason_current_status, division, openings_list = [], skills_position, region, exclusivity, cross_division, owner_project_id, image }: JobPositionCreationAttributes = req.body;
 
   if (!name || !bill_rate || !posting_type || !status || !reason_current_status || !division || !openings_list || !skills_position || !region || !exclusivity || !cross_division || !owner_project_id || !image) {
